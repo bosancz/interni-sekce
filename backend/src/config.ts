@@ -197,6 +197,8 @@ const backups = {
 	timezone: process.env["BACKUPS_TIMEZONE"] ?? "Europe/Prague",
 	maxAgeHours: process.env["BACKUPS_MAX_AGE_HOURS"] ? parseInt(process.env["BACKUPS_MAX_AGE_HOURS"], 10) : 36,
 	driveFolderId: process.env["BACKUP_DRIVE_FOLDER_ID"] || null,
+	runsDefaultLimit: 30,
+	runsMaxLimit: 100,
 };
 
 const photoContent = {

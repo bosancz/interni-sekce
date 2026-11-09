@@ -12,8 +12,12 @@ export class BackupRunsRepository {
 		@InjectRepository(BackupSchedule) private schedules: Repository<BackupSchedule>,
 	) {}
 
-	async listRuns(limit = 60) {
-		return this.repository.find({ order: { startedAt: "DESC", id: "DESC" }, take: limit });
+	async listRuns(options: { limit: number; offset?: number }) {
+		return this.repository.find({
+			order: { startedAt: "DESC", id: "DESC" },
+			take: options.limit,
+			skip: options.offset ?? 0,
+		});
 	}
 
 	async getLastRun(type: BackupRunTypes) {

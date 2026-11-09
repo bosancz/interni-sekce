@@ -134,7 +134,7 @@
 				</bo-card-header>
 				<bo-card-content>
 					<div class="bk-runs">
-						@for (run of b.runs; track run.id) {
+						@for (run of runs() ?? []; track run.id) {
 							<div class="bk-run">
 								<span class="bo-pill" [class]="statusLabels[run.status].pill">{{
 									statusLabels[run.status].label
@@ -165,4 +165,8 @@
 			<ion-skeleton-text [animated]="true" class="bk-skeleton"></ion-skeleton-text>
 		}
 	</div>
+
+	<ion-infinite-scroll [disabled]="!hasMoreRuns()" (ionInfinite)="onInfiniteScroll($any($event))">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
 </bo-page-content>

@@ -23,6 +23,8 @@ export class BackupRun {
 	})
 	bytes!: number | null;
 
+	@Column({ type: "int", nullable: true }) filesChecked!: number | null;
+
 	@Column({ type: "int", nullable: true }) filesTransferred!: number | null;
 
 	@Column({ type: "int", nullable: true }) filesRemoved!: number | null;

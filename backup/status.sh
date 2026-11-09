@@ -16,25 +16,27 @@ SQL
 }
 
 record_run_finish() {
-	local id=$1 status=$2 info=$3 error=$4 warnings=${5:-} file_name="" bytes="" files_transferred="" files_removed="" key value
+	local id=$1 status=$2 info=$3 error=$4 warnings=${5:-} file_name="" bytes="" files_checked="" files_transferred="" files_removed="" key value
 	[ -n "$id" ] || return 0
 	if [ -f "$info" ]; then
 		while IFS="=" read -r key value; do
 			case $key in
 			file_name) file_name=$value ;;
 			bytes) bytes=$value ;;
+			files_checked) files_checked=$value ;;
 			files_transferred) files_transferred=$value ;;
 			files_removed) files_removed=$value ;;
 			esac
 		done <"$info"
 	fi
 	status_sql -v id="$id" -v status="$status" -v file_name="$file_name" -v bytes="$bytes" \
-		-v files_transferred="$files_transferred" -v files_removed="$files_removed" -v error="$error" -v warnings="$warnings" <<'SQL' >/dev/null
+		-v files_checked="$files_checked" -v files_transferred="$files_transferred" -v files_removed="$files_removed" -v error="$error" -v warnings="$warnings" <<'SQL' >/dev/null
 UPDATE :"schema".backup_runs SET
 	status = :'status',
 	finished_at = now(),
 	file_name = NULLIF(:'file_name', ''),
 	bytes = NULLIF(:'bytes', '')::bigint,
+	files_checked = NULLIF(:'files_checked', '')::int,
 	files_transferred = NULLIF(:'files_transferred', '')::int,
 	files_removed = NULLIF(:'files_removed', '')::int,
 	error = NULLIF(:'error', ''),

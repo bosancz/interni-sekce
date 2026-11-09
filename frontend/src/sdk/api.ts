@@ -924,6 +924,12 @@ export namespace SDK {
          * @type {number}
          * @memberof BackupRunResponse
          */
+        'filesChecked'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunResponse
+         */
         'filesTransferred'?: number | null;
         /**
          * 
@@ -1062,12 +1068,6 @@ export namespace SDK {
          * @memberof BackupsSummaryResponse
          */
         'problems': Array<string>;
-        /**
-         * 
-         * @type {Array<BackupRunResponse>}
-         * @memberof BackupsSummaryResponse
-         */
-        'runs': Array<BackupRunResponse>;
     }
     
         /**
@@ -9844,6 +9844,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'listBackupRuns': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'getCPVEvents': AcLink;
         /**
          * 
@@ -11619,6 +11625,33 @@ export namespace SDK {
     
     
     
+    
+    /**
+     * Query parameters for listBackupRuns operation in BackupsApi.
+     * @export
+     * @interface BackupsApiListBackupRunsQueryParams
+     */
+    export interface BackupsApiListBackupRunsQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupsApiListBackupRuns
+         */
+        limit?: number
+    
+        //offset
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupsApiListBackupRuns
+         */
+        offset?: number
+    }
+    
+    
+    
+    
     /**
      * BackupsApi - object-oriented interface
      * @export
@@ -11667,6 +11700,54 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<BackupsSummaryResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {BackupsApiListBackupRunsQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof BackupsApi
+         */
+        
+        public async listBackupRuns(
+            queryParams: BackupsApiListBackupRunsQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/backups/runs`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.offset !== undefined) {
+                requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<BackupRunResponse>>(axiosRequestConfig);
         }
     }
     

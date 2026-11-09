@@ -1,6 +1,13 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit, computed, signal } from "@angular/core";
-import { IonButton, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
+import {
+	InfiniteScrollCustomEvent,
+	IonButton,
+	IonIcon,
+	IonInfiniteScroll,
+	IonInfiniteScrollContent,
+	IonSkeletonText,
+} from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
 	calendarOutline,
@@ -28,6 +35,8 @@ const STATUS_LABELS: Record<SDK.BackupRunStatusesEnum, { label: string; pill: st
 	error: { label: "Chyba", pill: "bo-pill-red" },
 };
 
+const RUNS_PAGE_SIZE = 30;
+
 const TYPE_LABELS: Record<SDK.BackupRunTypesEnum, string> = {
 	database: "Databáze",
 	files: "Soubory",
@@ -43,6 +52,8 @@ const TYPE_LABELS: Record<SDK.BackupRunTypesEnum, string> = {
 		IonButton,
 		IonIcon,
 		IonSkeletonText,
+		IonInfiniteScroll,
+		IonInfiniteScrollContent,
 		CardComponent,
 		CardHeaderComponent,
 		CardTitleComponent,
@@ -53,6 +64,10 @@ const TYPE_LABELS: Record<SDK.BackupRunTypesEnum, string> = {
 })
 export class BackupsComponent implements OnInit {
 	backups = signal<SDK.BackupsSummaryResponse | undefined>(undefined);
+	runs = signal<SDK.BackupRunResponse[] | undefined>(undefined);
+	hasMoreRuns = signal(false);
+
+	private runsRequest = 0;
 
 	cards = computed(() => {
 		const backups = this.backups();
@@ -86,10 +101,39 @@ export class BackupsComponent implements OnInit {
 	}
 
 	async load() {
+		await Promise.all([this.loadSummary(), this.loadRuns()]);
+	}
+
+	async loadSummary() {
 		try {
 			this.backups.set(await this.api.BackupsApi.getBackups().then((res) => res.data));
 		} catch {
 			this.toastService.toast("Nepodařilo se načíst stav záloh.", { color: "warning" });
+		}
+	}
+
+	async loadRuns(more = false) {
+		const offset = more ? (this.runs()?.length ?? 0) : 0;
+		const request = ++this.runsRequest;
+
+		try {
+			const runs = await this.api.BackupsApi.listBackupRuns({ limit: RUNS_PAGE_SIZE, offset }).then(
+				(res) => res.data,
+			);
+			if (request !== this.runsRequest) return;
+			this.runs.set(more ? [...(this.runs() ?? []), ...runs] : runs);
+			this.hasMoreRuns.set(runs.length === RUNS_PAGE_SIZE);
+		} catch {
+			this.toastService.toast("Nepodařilo se načíst historii záloh.", { color: "warning" });
+			if (!more) this.runs.set([]);
+		}
+	}
+
+	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
+		try {
+			await this.loadRuns(true);
+		} finally {
+			e.target.complete();
 		}
 	}
 
@@ -132,6 +176,10 @@ export class BackupsComponent implements OnInit {
 		return `${count.toLocaleString("cs-CZ")} souborů`;
 	}
 
+	count(value: number) {
+		return value.toLocaleString("cs-CZ");
+	}
+
 	percent(progress: SDK.BackupRunProgressResponse) {
 		if (!progress.totalBytes) return 0;
 		return Math.min(100, Math.floor((progress.bytes / progress.totalBytes) * 100));
@@ -141,6 +189,7 @@ export class BackupsComponent implements OnInit {
 		return [
 			`${this.bytes(progress.bytes)} z ${this.bytes(progress.totalBytes)} (${this.percent(progress)} %)`,
 			`${progress.transfers.toLocaleString("cs-CZ")} z ${this.files(progress.totalTransfers)}`,
+			`zkontrolováno: ${this.count(progress.checks)}`,
 			`${this.bytes(progress.speed)}/s`,
 		].join(" · ");
 	}
@@ -167,9 +216,13 @@ export class BackupsComponent implements OnInit {
 			const size = this.bytes(run.bytes);
 			if (size) parts.push(size);
 		} else {
+			const counts: string[] = [];
+			if (run.filesChecked != null) counts.push(`zkontrolováno: ${this.count(run.filesChecked)}`);
 			if (run.filesTransferred != null)
-				parts.push(`nahráno ${this.files(run.filesTransferred)} (${this.bytes(run.bytes ?? 0)})`);
-			if (run.filesRemoved) parts.push(`${run.filesRemoved} do smazaných`);
+				counts.push(`nahráno: ${this.count(run.filesTransferred)} (${this.bytes(run.bytes ?? 0)})`);
+			if (run.filesTransferred != null || run.filesRemoved != null)
+				counts.push(`do smazaných: ${this.count(run.filesRemoved ?? 0)}`);
+			if (counts.length) parts.push(counts.join(", "));
 		}
 		const duration = this.duration(run);
 		if (duration) parts.push(duration);
