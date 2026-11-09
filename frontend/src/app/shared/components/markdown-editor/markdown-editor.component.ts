@@ -1,7 +1,9 @@
-import { Component, computed, inject, input, model, signal, viewChild } from "@angular/core";
+import { Component, ElementRef, computed, inject, input, model, signal, viewChild } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
-import { IonButton, IonSegment, IonSegmentButton, IonTextarea } from "@ionic/angular/standalone";
+import { IonButton, IonIcon, IonSegment, IonSegmentButton } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { list } from "ionicons/icons";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { TooltipDirective } from "../../directives/tooltip.directive";
 import { MarkdownPipe } from "../../pipes/markdown.pipe";
@@ -11,14 +13,14 @@ import { MarkdownPipe } from "../../pipes/markdown.pipe";
 	selector: "bo-markdown-editor",
 	templateUrl: "./markdown-editor.component.html",
 	styleUrl: "./markdown-editor.component.scss",
-	imports: [FormsModule, IonButton, IonTextarea, IonSegment, IonSegmentButton, MarkdownPipe, TooltipDirective],
+	imports: [FormsModule, IonButton, IonIcon, IonSegment, IonSegmentButton, MarkdownPipe, TooltipDirective],
 })
 export class MarkdownEditorComponent {
 	placeholder = input<string | undefined>();
 
 	content = model<string>("");
 
-	editor = viewChild(IonTextarea);
+	editor = viewChild<ElementRef<HTMLTextAreaElement>>("editor");
 
 	view = signal<"edit" | "preview" | "help">("edit");
 
@@ -27,6 +29,10 @@ export class MarkdownEditorComponent {
 	private readonly platformService = inject(PlatformService);
 
 	isLg = toSignal(this.platformService.isLg, { initialValue: this.platformService.isLg.value });
+
+	constructor() {
+		addIcons({ list });
+	}
 
 	onEditorKeydown(event: KeyboardEvent) {
 		if (!(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey) return;
@@ -112,7 +118,7 @@ export class MarkdownEditorComponent {
 		cursorOffsetWithoutSelection = 0,
 		cursorOffsetWithSelection = 0,
 	) {
-		const input = await this.editor()?.getInputElement();
+		const input = this.editor()?.nativeElement;
 		if (!input) return;
 
 		const value = input.value;
