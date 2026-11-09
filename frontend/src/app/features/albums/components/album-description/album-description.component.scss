@@ -1,0 +1,83 @@
+:host {
+	display: block;
+	margin-top: 2rem;
+}
+
+.section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-bottom: 0.75rem;
+
+	h2 {
+		margin: 0;
+		min-width: 0;
+	}
+
+	.actions {
+		display: flex;
+		flex-shrink: 0;
+	}
+
+	ion-button {
+		margin: 0;
+	}
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.description-text {
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--bo-neutral-badge);
+	border-radius: 10px;
+	background: var(--bo-blue-tint);
+
+	::ng-deep > :last-child {
+		margin-bottom: 0;
+	}
+}
+
+.chronicle {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.5rem 0.5rem 0.5rem 1rem;
+	border: 1px solid var(--bo-neutral-badge);
+	border-radius: 10px;
+
+	> ion-icon {
+		flex: none;
+		font-size: 1.5rem;
+		color: var(--bo-heading);
+	}
+
+	ion-button {
+		margin: 0 0 0 auto;
+	}
+}
+
+.chronicle-text {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.muted {
+	color: var(--bo-muted);
+	margin: 0;
+}
+
+.empty-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.5rem;
+
+	ion-button {
+		margin: 0;
+	}
+}

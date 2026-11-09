@@ -1,3 +1,29 @@
+.title-photo-warning {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5rem 0.75rem;
+	margin-bottom: 1rem;
+	padding: 10px 12px;
+	border-radius: var(--bo-radius-btn);
+	background: var(--bo-yellow-tint);
+	color: var(--bo-ink);
+
+	> ion-icon {
+		flex: none;
+		font-size: 1.25rem;
+		color: var(--bo-yellow);
+	}
+
+	> span {
+		flex: 1 1 260px;
+	}
+
+	ion-button {
+		margin: 0;
+	}
+}
+
 .album-top {
 	display: flex;
 	align-items: stretch;
@@ -26,4 +52,33 @@
 		height: 100%;
 		object-fit: cover;
 	}
+}
+
+.title-photo-change {
+	position: absolute;
+	right: 0.5rem;
+	bottom: 0.5rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.3rem 0.7rem;
+	border: 0;
+	border-radius: var(--bo-radius-pill);
+	background: rgba(255, 255, 255, 0.92);
+	color: var(--bo-blue);
+	font: inherit;
+	font-size: 0.8125rem;
+	font-weight: 700;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 150ms;
+
+	ion-icon {
+		color: var(--bo-yellow);
+	}
+}
+
+.title-photo:hover .title-photo-change,
+.title-photo-change:focus-visible {
+	opacity: 1;
 }

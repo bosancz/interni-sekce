@@ -1,134 +1,80 @@
-<bo-card class="mb-3">
-	<bo-card-header>
-		<bo-card-title>
-			<span class="section-label heading">Fotogalerie na web</span>
-		</bo-card-title>
-		@if (album(); as album) {
-			<span
-				slot="buttons"
-				class="bo-pill"
-				[class.bo-pill-green]="album.status === 'public'"
-				[class.bo-pill-yellow]="album.status !== 'public'"
-			>
-				@if (album.status === "public") {
-					Publikováno {{ album.datePublished | date: "d. M. y" }}
-				} @else {
-					Nepublikováno
-				}
-			</span>
-		}
-	</bo-card-header>
-	<bo-card-content>
-		@if (!event() || (event()?.album && !album())) {
+@if (!event()) {
+	<bo-card>
+		<bo-card-content>
 			<p><ion-skeleton-text animated></ion-skeleton-text></p>
-		} @else if (album(); as album) {
-			<p class="album-meta">
-				Album <a [routerLink]="['/galerie/alba', album.id]">{{ album.name }}</a> ·
-				{{ [album.dateFrom ?? undefined, album.dateTill ?? undefined] | dateRange: "d. M. y" }}
-			</p>
-
-			<div class="checklist">
-				<div class="check-row">
-					<span class="check" [class.done]="!!album.description">
-						<ion-icon name="checkmark-outline"></ion-icon>
-					</span>
-					<div class="check-body">
-						<span class="check-title">Popisek</span>
-						@if (album.description) {
-							<div class="description bo-markdown" [innerHTML]="album.description | markdown"></div>
+		</bo-card-content>
+	</bo-card>
+} @else if (event()?.album; as eventAlbum) {
+	<bo-card>
+		<bo-card-content>
+			<div class="album-card">
+				<div class="linked">
+					<span class="linked-icon"><ion-icon name="link-outline"></ion-icon></span>
+					<span class="linked-text">Album je propojené s akcí</span>
+					@if (album(); as album) {
+						@if (album.status === "public") {
+							<span class="bo-pill bo-pill-green">Zveřejněno na bosan.cz</span>
 						} @else {
-							<p class="muted">Chybí — krátce, jak akce proběhla, pro rodiče a děti na webu.</p>
+							<span class="bo-pill bo-pill-yellow">Nepublikováno</span>
 						}
-					</div>
+					}
 				</div>
 
-				<div class="check-row">
-					<span class="check" [class.done]="!!album.chronicleFileName">
-						<ion-icon name="checkmark-outline"></ion-icon>
-					</span>
-					<div class="check-body">
-						<span class="check-title">Kronika v PDF <span class="optional">· nepovinné</span></span>
-						@if (album.chronicleFileName; as fileName) {
-							<button type="button" class="chronicle-file" (click)="openChronicle()">
-								<ion-icon name="document-attach-outline"></ion-icon>
-								<span
-									>{{ fileName }} · {{ album.chronicleSize ?? 0 | prettyBytes: { locale: "cs" } }} ·
-									nahráno {{ album.chronicleUpdatedAt | date: "d. M. y" }}</span
-								>
-							</button>
-						} @else {
-							<p class="muted">Zatím nenahraná.</p>
-						}
-					</div>
+				<div class="album-name">
+					<a [routerLink]="['/galerie/alba', eventAlbum.id]">{{ album()?.name ?? eventAlbum.name }}</a>
+					@if (album()?.dateFrom) {
+						<span class="album-dates">{{ [album()!.dateFrom, album()!.dateTill] | dateRange }}</span>
+					}
 				</div>
 
-				<div class="check-row">
-					<span class="check" [class.done]="!!photos()?.length">
-						<ion-icon name="checkmark-outline"></ion-icon>
-					</span>
-					<div class="check-body">
-						<span class="check-title"
-							>Fotky <span class="optional">· {{ photos()?.length ?? 0 }}</span></span
-						>
-						@if (previewPhotos().length) {
-							<a class="photos" [routerLink]="['/galerie/alba', album.id]">
-								@for (photo of previewPhotos(); track photo.id) {
-									<img
-										[src]="photo | photoImageUrl: 'small'"
-										[style.background-color]="photo.bg"
-										alt=""
-									/>
-								}
-								@if (morePhotos()) {
-									<span class="more">+{{ morePhotos() }}</span>
-								}
-							</a>
-						} @else {
-							<p class="muted">Zatím žádné fotky.</p>
+				@if (album() && photos()) {
+					<ul class="checks">
+						@for (check of checks(); track check.label) {
+							<li [class.done]="check.done" [class.warn]="!check.done && check.warn">
+								<span class="check-box">
+									@if (check.done) {
+										<ion-icon name="checkmark"></ion-icon>
+									}
+								</span>
+								<span class="check-text">
+									<span class="check-label">{{ check.label }}</span>
+									<span class="check-note">· {{ check.note }}</span>
+								</span>
+							</li>
 						}
-					</div>
-				</div>
-			</div>
-
-			<div class="publish-bar" [class.published]="album.status === 'public'">
-				<ion-icon name="globe-outline"></ion-icon>
-				@if (album.status === "public") {
-					<span>Album je zveřejněné na bosan.cz.</span>
+					</ul>
 				} @else {
-					<span>Po publikaci se album objeví na bosan.cz.</span>
+					<p><ion-skeleton-text animated style="width: 60%"></ion-skeleton-text></p>
 				}
-				<div class="publish-actions">
-					<ion-button
-						[fill]="album.status !== 'public' && album._links.publishAlbum.applicable ? 'outline' : 'solid'"
-						[color]="album.status === 'public' ? 'success' : 'warning'"
-						[routerLink]="['/galerie/alba', album.id]"
-					>
-						<ion-icon name="create-outline" slot="start"></ion-icon>
-						Upravit
+
+				<div class="card-actions">
+					<ion-button fill="solid" color="warning" [routerLink]="['/galerie/alba', eventAlbum.id]">
+						Otevřít album
 					</ion-button>
-					@if (album.status !== "public" && album._links.publishAlbum.applicable) {
+					@if (canEditEvent()) {
 						<ion-button
-							fill="solid"
-							color="warning"
-							[disabled]="!album._links.publishAlbum.allowed || busy()"
-							[boTooltip]="album._links.publishAlbum.allowed ? null : noPermissionText"
-							(click)="publish()"
+							fill="clear"
+							color="dark"
+							class="menu-button"
+							aria-label="Další akce alba"
+							(click)="albumMenu.open($event)"
 						>
-							Publikovat
+							<ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
 						</ion-button>
+						<bo-dropdown-menu
+							#albumMenu
+							header="Album"
+							[options]="menuOptions"
+							(select)="removeAlbum()"
+						></bo-dropdown-menu>
 					}
 				</div>
 			</div>
-
-			@if (canEditEvent()) {
-				<div class="unlink">
-					<button type="button" [disabled]="busy()" (click)="removeAlbum()">
-						<ion-icon name="close-outline"></ion-icon>
-						Odpojit album od akce
-					</button>
-				</div>
-			}
-		} @else {
+		</bo-card-content>
+	</bo-card>
+} @else {
+	<bo-card>
+		<bo-card-content>
 			<div class="bo-empty-state">
 				<ion-icon name="images-outline"></ion-icon>
 				<strong>Fotogalerie zatím není</strong>
@@ -156,6 +102,6 @@
 					</ion-button>
 				</div>
 			</div>
-		}
-	</bo-card-content>
-</bo-card>
+		</bo-card-content>
+	</bo-card>
+}

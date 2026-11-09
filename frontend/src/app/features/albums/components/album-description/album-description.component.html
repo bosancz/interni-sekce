@@ -1,0 +1,94 @@
+<div class="section-header">
+	<h2>Popisek</h2>
+	@if (album() && !empty()) {
+		<div class="actions">
+			@if (canEdit()) {
+				<ion-button fill="clear" (click)="editDescription()">
+					<ion-icon slot="start" name="create-outline"></ion-icon>
+					<span class="d-none d-lg-inline">{{
+						album()?.description ? "Upravit popisek" : "Napsat popisek"
+					}}</span>
+				</ion-button>
+			}
+			@if (album()?._links?.uploadAlbumChronicle?.applicable && canUploadChronicle()) {
+				<ion-button fill="clear" [disabled]="busy()" (click)="chronicleInput.click()">
+					<ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+					<span class="d-none d-lg-inline">Nahrát kroniku</span>
+				</ion-button>
+			}
+		</div>
+	}
+</div>
+
+@if (!album()) {
+	<p><ion-skeleton-text animated></ion-skeleton-text></p>
+} @else if (empty()) {
+	<div class="bo-empty-state">
+		<ion-icon name="document-text-outline"></ion-icon>
+		<strong>Popisek zatím není vyplněn</strong>
+		<p>Krátce napiš, jak akce proběhla, nebo nahraj kroniku v PDF. Ukáže se u alba na bosan.cz.</p>
+		<div class="empty-actions">
+			<ion-button
+				fill="solid"
+				color="warning"
+				[disabled]="!canEdit()"
+				[boTooltip]="canEdit() ? null : noPermissionText"
+				(click)="editDescription()"
+			>
+				<ion-icon name="create-outline" slot="start"></ion-icon>
+				Napsat popisek
+			</ion-button>
+			<ion-button
+				fill="outline"
+				color="warning"
+				[disabled]="!canUploadChronicle() || busy()"
+				[boTooltip]="canUploadChronicle() ? null : noPermissionText"
+				(click)="chronicleInput.click()"
+			>
+				<ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+				Nahrát kroniku
+			</ion-button>
+		</div>
+	</div>
+} @else {
+	<div class="content">
+		@if (album()?.description; as description) {
+			<div class="description-text bo-markdown" [innerHTML]="description | markdown"></div>
+		}
+
+		@if (album()?.chronicleFileName; as fileName) {
+			<div class="chronicle">
+				<ion-icon name="document-text-outline"></ion-icon>
+				<span class="chronicle-text">
+					<a href="#" (click)="openChronicle($event)">{{ fileName }}</a>
+					<span class="muted">
+						· {{ album()?.chronicleSize ?? 0 | prettyBytes: { locale: "cs" } }} · nahráno
+						{{ album()?.chronicleUpdatedAt | date: "d. M. y" }}</span
+					>
+				</span>
+				@if (album()?._links?.deleteAlbumChronicle?.applicable) {
+					<ion-button
+						fill="clear"
+						color="dark"
+						size="small"
+						[disabled]="!album()?._links?.deleteAlbumChronicle?.allowed || busy()"
+						boTooltip="Odebrat kroniku"
+						(click)="deleteChronicle()"
+					>
+						<ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+					</ion-button>
+				}
+			</div>
+		} @else if (uploading()) {
+			<p class="muted">Nahrávám kroniku…</p>
+		}
+	</div>
+}
+
+<input
+	class="d-none"
+	type="file"
+	accept="application/pdf,.pdf"
+	#chronicleInput
+	(change)="uploadChronicle(chronicleInput)"
+/>

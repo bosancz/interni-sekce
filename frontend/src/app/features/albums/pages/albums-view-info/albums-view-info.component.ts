@@ -11,7 +11,7 @@ import {
 } from "@angular/core";
 import { DatePipe } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ActionSheetController, ViewWillLeave } from "@ionic/angular/standalone";
+import { ActionSheetController, IonButton, IonIcon, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
@@ -20,8 +20,10 @@ import {
 	eyeOffOutline,
 	eyeOutline,
 	openOutline,
+	starOutline,
 	textOutline,
 	trash,
+	warningOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -36,8 +38,10 @@ import { AlbumPipe } from "src/app/shared/pipes/album.pipe";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { Config } from "src/config";
 import { SDK } from "src/sdk";
+import { AlbumDescriptionComponent } from "../../components/album-description/album-description.component";
 import { AlbumGalleryComponent } from "../../components/album-gallery/album-gallery.component";
 import { AlbumInfoComponent } from "../../components/album-info/album-info.component";
+import { AlbumTitlePhotoModalComponent } from "../../components/album-title-photo-modal/album-title-photo-modal.component";
 import { PhotosEditComponent } from "../../components/photos-edit/photos-edit.component";
 import { PhotosUploadComponent } from "../../components/photos-upload/photos-upload.component";
 
@@ -58,6 +62,9 @@ const TITLE_PHOTO_ASPECT_RATIO = 7 / 5;
 		AlbumPipe,
 		DatePipe,
 		TooltipDirective,
+		IonButton,
+		IonIcon,
+		AlbumDescriptionComponent,
 	],
 })
 export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy, ViewWillLeave {
@@ -84,10 +91,9 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		);
 	});
 
-	titlePhoto = computed(() => {
-		const photos = this.photos();
-		return photos?.find((photo) => photo.titlePhoto) ?? photos?.[0];
-	});
+	titlePhoto = computed(() => this.photos()?.find((photo) => photo.titlePhoto));
+
+	titlePhotoMissing = computed(() => !!this.photos()?.length && !this.titlePhoto());
 
 	titlePhotoWidth = computed(() => {
 		const height = this.albumInfoHeight();
@@ -130,6 +136,8 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 			trash,
 			calendarOutline,
 			textOutline,
+			starOutline,
+			warningOutline,
 		});
 	}
 
@@ -175,6 +183,29 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		}
 
 		await this.loadAlbum(album.id);
+	}
+
+	async selectTitlePhoto() {
+		const album = this.album();
+		const photos = this.photos();
+		if (!album || !photos?.length) return;
+
+		const photo = await this.modalService.componentModal(
+			AlbumTitlePhotoModalComponent,
+			{ photos, selectedId: this.titlePhoto()?.id },
+			{ cssClass: "dialog-picker" },
+		);
+		if (!photo) return;
+
+		try {
+			await this.api.PhotoGalleryApi.setAlbumTitlePhoto(album.id, { photoId: photo.id });
+			this.toastService.toast("Nastaveno jako titulní fotka.");
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit titulní fotku.", { color: "warning" });
+			return;
+		}
+
+		this.photos.update((items) => items?.map((item) => ({ ...item, titlePhoto: item.id === photo.id })));
 	}
 
 	async loadAlbum(albumId: number) {
