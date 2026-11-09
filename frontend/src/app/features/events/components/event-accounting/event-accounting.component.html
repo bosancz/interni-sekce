@@ -1,73 +1,112 @@
 <div class="row">
-	<div class="order-2 order-lg-1 col-12 col-xl-8">
+	<div class="col-12">
 		<div class="list-header">
 			<h3>Účtenky</h3>
+
+			@if (expenses().length > 0) {
+				<ion-button fill="clear" size="small" color="primary" aria-label="Statistiky" (click)="openStats()">
+					<ion-icon name="pie-chart-outline" slot="start"></ion-icon>
+					<span class="button-label">Statistiky</span>
+				</ion-button>
+			}
 		</div>
 
-		<ion-list>
-			@for (expense of expenses(); track expense.id) {
-				<bo-item (click)="editExpense(expense)">
-					<div class="expense-grid">
-						<span class="id-cell">{{ expense.receiptNumber }}</span>
+		@if (expenses().length > 0 || event()?._links?.getEventAccounting?.allowed) {
+			<div class="accounting-bar" [class.accounting-warning]="!event()?.accountingSentAt">
+				<div class="accounting-text">
+					@if (expenses().length > 0) {
+						Celkem <strong>{{ total() | number: "1.0-0" }} Kč</strong>, na osobu a den
+						<strong>{{ total() / personDays() | number: "1.2-2" }} Kč</strong>.
+					} @else {
+						Zatím žádné účtenky.
+					}
+					@if (event()?.accountingSentAt; as sentAt) {
+						Účtování odesláno {{ sentAt | date: "d. M. y" }}.
+					} @else {
+						<strong>Účtování zatím nebylo odesláno.</strong>
+					}
+				</div>
 
-						<div class="badge-cell">
-							<ion-badge mode="ios" [style.background-color]="expense | eventExpense: 'color'">
-								{{ expense | eventExpense: "type" }}
-							</ion-badge>
-						</div>
+				<div class="accounting-buttons">
+					@if (showAccountingSent()) {
+						<ion-button
+							size="small"
+							[fill]="accountingSent() ? 'solid' : 'outline'"
+							[color]="accountingSent() ? 'success' : 'primary'"
+							[disabled]="!canToggleAccountingSent()"
+							[boTooltip]="canToggleAccountingSent() ? null : noPermissionText"
+							(click)="toggleAccountingSent()"
+						>
+							<ion-icon name="checkmark-outline" slot="start"></ion-icon>
+							{{ accountingSent() ? "Odesláno" : "Označit jako odeslané" }}
+						</ion-button>
+					}
 
-						<div class="amount-cell">
-							<span>{{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč</span>
-							<small class="per-person-day"
-								>{{ perPersonDay(expense) | number: "1.2-2" : "cs" }}&nbsp;Kč/os./den</small
-							>
-						</div>
+					@if (event()?._links?.getEventAccounting?.allowed) {
+						<ion-button size="small" color="primary" (click)="getAccounting(event()!)">
+							<ion-icon name="download-outline" slot="start"></ion-icon>
+							Stáhnout účtování
+						</ion-button>
+					}
+				</div>
+			</div>
+		}
 
-						<div class="action-cell">
-							<bo-delete-button
-								(click)="$event.stopPropagation(); removeExpense(expense)"
-							></bo-delete-button>
-						</div>
+		<admin-table
+			class="expenses-table"
+			[rows]="sortedExpenses()"
+			[sort]="sort().sort"
+			[order]="sort().order"
+			(sortChange)="sort.set($event)"
+			[actions]="expenseActions"
+			(rowClick)="editExpense($event)"
+		>
+			@if (isDesktop()) {
+				<admin-table-column header="Číslo" sort="receiptNumber" [primary]="true">
+					<ng-container *adminCell="let expense">{{ expense.receiptNumber }}</ng-container>
+				</admin-table-column>
 
-						<p class="desc-cell">{{ expense.description }}</p>
+				<admin-table-column header="Popis" sort="description" cellClass="expense-description">
+					<ng-container *adminCell="let expense">{{ expense.description }}</ng-container>
+				</admin-table-column>
+			} @else {
+				<admin-table-column [primary]="true">
+					<ng-container *adminCell="let expense">{{ expenseTitle(expense) }}</ng-container>
+				</admin-table-column>
+			}
+
+			<admin-table-column header="Typ" sort="type" [hideMobileLabel]="true">
+				<ng-container *adminCell="let expense">
+					<span class="expense-type" [style.background-color]="expense | eventExpense: 'color'">
+						{{ expense | eventExpense: "type" }}
+					</span>
+				</ng-container>
+			</admin-table-column>
+
+			<admin-table-column
+				header="Částka"
+				sort="amount"
+				[right]="true"
+				headerClass="text-end"
+				cellClass="text-end"
+			>
+				<ng-container *adminCell="let expense">
+					<div class="amount">
+						<span>{{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč</span>
+						<small class="per-person-day"
+							>{{ perPersonDay(expense) | number: "1.2-2" : "cs" }}&nbsp;Kč/os./den</small
+						>
 					</div>
-				</bo-item>
-			}
+				</ng-container>
+			</admin-table-column>
+		</admin-table>
 
-			@if (expenses().length === 0) {
-				<bo-item>
-					<p class="text-muted"><em>Žádné účtenky</em></p>
-				</bo-item>
-			}
-		</ion-list>
+		@if (expenses().length === 0) {
+			<p class="text-muted"><em>Žádné účtenky</em></p>
+		}
 
 		<div *ngIf="event()?._links?.addEventExpense?.allowed" class="text-center">
 			<bo-add-button (click)="addExpense()">Přidat účtenku</bo-add-button>
 		</div>
-	</div>
-	<div class="order-1 order-lg-2 col-12 col-xl-4">
-		@if (expenses().length > 0) {
-			<div class="d-none d-lg-block">
-				<bo-card class="mb-3">
-					<bo-card-header>
-						<bo-card-title>Výdaje podle typu</bo-card-title>
-					</bo-card-header>
-					<bo-card-content>
-						<bo-event-expenses-chart
-							[expenses]="expenses()"
-							[personDays]="personDays()"
-						></bo-event-expenses-chart>
-					</bo-card-content>
-				</bo-card>
-			</div>
-		}
-
-		@if (event() && event()!._links.getEventAccounting.allowed) {
-			<div class="text-center">
-				<ion-button (click)="getAccounting(event()!)" expand="block" fill="outline">
-					Stáhnout účtování
-				</ion-button>
-			</div>
-		}
 	</div>
 </div>

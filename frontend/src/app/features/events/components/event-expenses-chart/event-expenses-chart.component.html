@@ -1,18 +1,40 @@
 <div class="row">
 	<div class="col-12 mb-4">
-		@if (chartData()) {
-			<div class="chart-wrap">
-				<canvas baseChart type="doughnut" [data]="chartData()!" [options]="chartOptions"></canvas>
-			</div>
-		}
+		<table class="categories">
+			<thead>
+				<tr>
+					<th class="label">Typ</th>
+					<th class="amount">Celkem</th>
+					<th class="amount">Os./den</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (slice of slices(); track slice.title) {
+					<tr>
+						<td class="label">{{ slice.title }}</td>
+						<td class="amount">{{ slice.total | number: "1.0-0" : "cs" }}&nbsp;Kč</td>
+						<td class="amount">{{ slice.total / personDays() | number: "1.2-2" : "cs" }}&nbsp;Kč</td>
+					</tr>
+					<tr class="bar-row">
+						<td colspan="3">
+							<div
+								class="bar"
+								[style.width.%]="slice.ratio * 100"
+								[style.background-color]="slice.color"
+							></div>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
 	</div>
 	<div class="col-12">
 		<div class="stats">
 			<div>
-				<span>Celkem: </span><span>{{ total() | number: "1.2-2" : "cs" }}&nbsp;Kč</span>
+				<span>Celkem</span><span>{{ total() | number: "1.2-2" : "cs" }}&nbsp;Kč</span>
 			</div>
 			<div>
-				<span>Osoba/den: </span><span>{{ total() / personDays() | number: "1.2-2" : "cs" }}&nbsp;Kč</span>
+				<span>Osoba/den</span><span>{{ total() / personDays() | number: "1.2-2" : "cs" }}&nbsp;Kč</span>
 			</div>
 		</div>
 	</div>

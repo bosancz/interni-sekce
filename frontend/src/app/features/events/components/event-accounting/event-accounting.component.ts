@@ -1,24 +1,28 @@
 import { CommonModule } from "@angular/common";
-import { Component, computed, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
-import { IonBadge, IonButton, IonList } from "@ionic/angular/standalone";
+import { Component, computed, effect, inject, input, OnDestroy, OnInit, output, signal } from "@angular/core";
+import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { checkmarkOutline, downloadOutline, pieChartOutline, trashOutline } from "ionicons/icons";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { PlatformService } from "src/app/core/services/platform.service";
+import { AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
+import { EventExpenseTypes } from "src/app/core/config/event-expense-types";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { EventExpenseModalComponent } from "src/app/features/events/components/event-expense-modal/event-expense-modal.component";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
+import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
+import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { AddButtonComponent } from "src/app/shared/components/add-button/add-button.component";
-import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
-import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
-import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
-import { CardComponent } from "src/app/shared/components/card/card.component";
-import { DeleteButtonComponent } from "src/app/shared/components/delete-button/delete-button.component";
-import { ItemComponent } from "src/app/shared/components/item/item.component";
 import { EventExpensePipe } from "src/app/shared/pipes/event-expense.pipe";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { getEventDays, getExpenseAmount } from "../../helpers/event-person-days";
 import { EventExpenseTypesInfoComponent } from "../event-expense-types-info/event-expense-types-info.component";
-import { EventExpensesChartComponent } from "../event-expenses-chart/event-expenses-chart.component";
+import { EventExpensesStatsModalComponent } from "../event-expenses-stats-modal/event-expenses-stats-modal.component";
 
 @UntilDestroy()
 @Component({
@@ -28,33 +32,79 @@ import { EventExpensesChartComponent } from "../event-expenses-chart/event-expen
 
 	imports: [
 		CommonModule,
-		IonList,
-		IonBadge,
 		IonButton,
-		ItemComponent,
-		DeleteButtonComponent,
+		IonIcon,
+		AdminTableComponent,
+		AdminTableColumnComponent,
+		AdminTableCellDirective,
 		AddButtonComponent,
 		EventExpensePipe,
-		EventExpensesChartComponent,
 		EventExpenseTypesInfoComponent,
-		CardComponent,
-		CardHeaderComponent,
-		CardTitleComponent,
-		CardContentComponent,
+		TooltipDirective,
 	],
 })
 export class EventAccountingComponent implements OnInit, OnDestroy {
 	event = input<SDK.EventResponseWithLinks | undefined>();
 	count = output<number>();
+	change = output<void>();
+	readonly noPermissionText = "K této akci nemáš oprávnění.";
+
+	accountingSent = computed(() => !!this.event()?.accountingSentAt);
+	canToggleAccountingSent = computed(() => {
+		const event = this.event();
+		if (!event) return false;
+		return event.accountingSentAt
+			? event._links.unmarkAccountingSent.allowed
+			: event._links.markAccountingSent.applicable && event._links.markAccountingSent.allowed;
+	});
+	showAccountingSent = computed(() => !!this.event()?._links.markAccountingSent.applicable || this.accountingSent());
 
 	expenses = signal<SDK.EventExpenseResponseWithLinks[]>([]);
 	persons = signal(1);
+	sort = signal<AdminTableSort>({ sort: "receiptNumber", order: "ASC" });
+	private platformService = inject(PlatformService);
+	isDesktop = toSignal(this.platformService.isLg, { initialValue: this.platformService.isLg.value });
+
+	sortedExpenses = computed(() => {
+		const { sort, order } = this.sort();
+		const direction = order === "ASC" ? 1 : -1;
+		const collator = new Intl.Collator("cs", { numeric: true });
+		const key = (expense: SDK.EventExpenseResponseWithLinks) => {
+			switch (sort) {
+				case "description":
+					return expense.description ?? "";
+				case "type":
+					return expense.type ? (EventExpenseTypes[expense.type]?.title ?? expense.type) : "";
+				case "amount":
+					return getExpenseAmount(expense);
+				default:
+					return expense.receiptNumber ?? "";
+			}
+		};
+		return [...this.expenses()].sort((a, b) => {
+			const ka = key(a);
+			const kb = key(b);
+			const result =
+				typeof ka === "number" && typeof kb === "number" ? ka - kb : collator.compare(String(ka), String(kb));
+			return result * direction;
+		});
+	});
+	total = computed(() => this.expenses().reduce((sum, expense) => sum + getExpenseAmount(expense), 0));
 	personDays = computed(() => {
 		const event = this.event();
 		return event ? this.persons() * getEventDays(event) : 1;
 	});
 
-	actions: Action[] = [];
+	expenseActions = (expense: SDK.EventExpenseResponseWithLinks): Action[] => [
+		{
+			text: "Smazat",
+			role: "destructive",
+			color: "danger",
+			icon: trashOutline,
+			hidden: !expense._links.deleteEventExpense.allowed,
+			handler: () => this.removeExpense(expense),
+		},
+	];
 
 	modal?: HTMLIonModalElement;
 
@@ -63,6 +113,8 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 		private api: ApiService,
 		private modalService: ModalService,
 	) {
+		addIcons({ checkmarkOutline, downloadOutline, pieChartOutline });
+
 		effect(() => {
 			const event = this.event();
 			if (event) {
@@ -109,6 +161,18 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 
 	perPersonDay(expense: SDK.EventExpenseResponseWithLinks) {
 		return getExpenseAmount(expense) / this.personDays();
+	}
+
+	expenseTitle(expense: SDK.EventExpenseResponseWithLinks) {
+		return [expense.receiptNumber, expense.description].filter((part) => !!part).join(" – ");
+	}
+
+	openStats() {
+		this.modalService.componentModal(
+			EventExpensesStatsModalComponent,
+			{ expenses: this.expenses(), personDays: this.personDays() },
+			{ cssClass: "dialog-brand" },
+		);
 	}
 
 	async addExpense() {
@@ -179,6 +243,30 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 				this.expenses.set(oldExpenses);
 				this.toastService.toast("Nepodařilo se smazat", { color: "danger" });
 			}
+		}
+	}
+
+	async toggleAccountingSent() {
+		const event = this.event();
+		if (!event || !this.canToggleAccountingSent()) return;
+
+		if (event.accountingSentAt) {
+			const confirmed = await this.modalService.confirmationModal(
+				"Opravdu zrušit označení účtování jako odeslaného?",
+				{
+					buttonText: "Zrušit odeslání",
+				},
+			);
+			if (!confirmed) return;
+		}
+
+		try {
+			if (event.accountingSentAt) await this.api.EventsApi.unmarkAccountingSent(event.id);
+			else await this.api.EventsApi.markAccountingSent(event.id);
+			this.toastService.toast("Uloženo.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit změnu.", { color: "danger" });
 		}
 	}
 

@@ -2,50 +2,75 @@
 	display: block;
 }
 
-.chart-wrap {
-	position: relative;
+.categories {
 	width: 100%;
-	height: 220px;
-	margin: 0 auto;
+	font-size: 0.85em;
+
+	th {
+		color: var(--bo-muted);
+		font-weight: 600;
+		font-size: 0.85em;
+	}
+
+	td,
+	th {
+		padding: 4px 0;
+	}
+
+	.label {
+		text-align: start;
+		white-space: normal;
+		padding-top: 10px;
+	}
+
+	.amount {
+		padding-top: 10px;
+	}
+
+	.bar-row td {
+		padding: 2px 0 4px;
+	}
+
+	.bar {
+		height: 6px;
+		min-width: 6px;
+		border-radius: var(--bo-radius-pill);
+	}
+
+	.amount {
+		text-align: right;
+		white-space: nowrap;
+		padding-left: 8px;
+	}
 }
 
 .stats {
-	font-size: 1.5em;
-	display: flex;
-	align-items: center;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
 
-	div span:last-child {
-		color: var(--bo-heading);
-		font-weight: 800;
-		font-family: var(--font-san);
+	> div {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4px;
+		padding: 12px 8px;
+		border: 1px solid var(--bo-line);
+		border-radius: var(--bo-radius-card);
+		text-align: center;
 	}
 
-	div span:first-child {
-		font-size: 0.65em;
+	span:first-child {
+		font-size: 0.85em;
 		color: var(--bo-muted);
 		font-weight: 600;
 	}
-}
 
-@media (max-width: 1200px) {
-	.stats {
-		flex-direction: row;
-		justify-content: space-evenly;
-	}
-	div {
-		text-align: center;
-	}
-}
-
-// above xl the card sits in the narrow sidebar column, where the two totals do not
-// fit next to each other — stack them instead
-@media (min-width: 1200px) {
-	.stats {
-		flex-direction: column;
-		justify-content: space-evenly;
-		span {
-			display: block;
-			text-align: center;
-		}
+	span:last-child {
+		font-size: 1.35em;
+		color: var(--bo-heading);
+		font-weight: 800;
+		font-family: var(--font-san);
+		white-space: nowrap;
 	}
 }
