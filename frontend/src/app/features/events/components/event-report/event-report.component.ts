@@ -11,14 +11,11 @@ import { CardContentComponent } from "src/app/shared/components/card-content/car
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
-import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
-import { EditButtonNumberComponent } from "src/app/shared/components/edit-button-number/edit-button-number.component";
 import { MarkdownEditorModalComponent } from "src/app/shared/components/markdown-editor-modal/markdown-editor-modal.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
-import { RiverSelectModalComponent } from "../river-select-modal/river-select-modal.component";
 
 const REVIZOR_REPORT_TEMPLATE = "**Komplikace:**\n\n**Pochvaly:**\n\n**Stížnosti:**\n";
 
@@ -34,9 +31,7 @@ const REVIZOR_REPORT_TEMPLATE = "**Komplikace:**\n\n**Pochvaly:**\n\n**Stížnos
 		CardContentComponent,
 		CardHeaderComponent,
 		CardTitleComponent,
-		EditButtonComponent,
 		EditButtonMarkdownComponent,
-		EditButtonNumberComponent,
 		MarkdownPipe,
 		IonButton,
 		IonIcon,
@@ -133,15 +128,6 @@ export class EventReportComponent {
 		} finally {
 			this.publishing.set(false);
 		}
-	}
-
-	async editRiver() {
-		const result = await this.modalService.componentModal(
-			RiverSelectModalComponent,
-			{ value: this.event()?.river ?? null },
-			{ cssClass: "dialog-picker" },
-		);
-		if (result) await this.saveReportData({ river: result.river });
 	}
 
 	async saveReportData(data: SDK.EventReportUpdateBody) {

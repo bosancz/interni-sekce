@@ -82,9 +82,7 @@ export class EventsReportsController {
 
 		EventReportEditPermission.canOrThrow(req, event);
 
-		const { report, river, waterKm } = body;
-
-		await this.events.updateEvent(eventId, { report: emptyToNull(report), river, waterKm });
+		await this.events.updateEvent(eventId, { report: emptyToNull(body.report) });
 	}
 
 	@Post(":eventId/report/publish")

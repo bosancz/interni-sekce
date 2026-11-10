@@ -2502,22 +2502,10 @@ export namespace SDK {
     export interface EventReportUpdateBody {
         /**
          * 
-         * @type {number}
-         * @memberof EventReportUpdateBody
-         */
-        'waterKm'?: number | null;
-        /**
-         * 
          * @type {string}
          * @memberof EventReportUpdateBody
          */
         'report'?: string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof EventReportUpdateBody
-         */
-        'river'?: string | null;
     }
     
         /**
@@ -3275,6 +3263,12 @@ export namespace SDK {
          * @memberof EventUpdateBody
          */
         'place'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventUpdateBody
+         */
+        'river'?: string | null;
         /**
          * 
          * @type {EventUpdateBodyPlaceCoordinates}
@@ -8005,150 +7999,6 @@ export namespace SDK {
         /**
      * 
      * @export
-     * @interface PaddlerResponse
-     */
-    export interface PaddlerResponse {
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlerResponse
-         */
-        'memberId': number;
-        /**
-         * 
-         * @type {string}
-         * @memberof PaddlerResponse
-         */
-        'nickname': string;
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlerResponse
-         */
-        'groupId': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlerResponse
-         */
-        'waterKm': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlerResponse
-         */
-        'eventsCount': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlerResponse
-         */
-        'riversCount': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlerResponse
-         */
-        'rank': number;
-        /**
-         * 
-         * @type {string}
-         * @memberof PaddlerResponse
-         */
-        'firstName'?: string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof PaddlerResponse
-         */
-        'lastName'?: string | null;
-    }
-    
-        /**
-     * 
-     * @export
-     * @interface PaddlersRankingResponse
-     */
-    export interface PaddlersRankingResponse {
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlersRankingResponse
-         */
-        'year': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlersRankingResponse
-         */
-        'firstYear': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlersRankingResponse
-         */
-        'lastYear': number;
-        /**
-         * 
-         * @type {Array<PaddlerResponse>}
-         * @memberof PaddlersRankingResponse
-         */
-        'children': Array<PaddlerResponse>;
-        /**
-         * 
-         * @type {Array<PaddlerResponse>}
-         * @memberof PaddlersRankingResponse
-         */
-        'leaders': Array<PaddlerResponse>;
-    }
-    
-        /**
-     * 
-     * @export
-     * @interface PaddlersSummaryResponse
-     */
-    export interface PaddlersSummaryResponse {
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlersSummaryResponse
-         */
-        'year': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlersSummaryResponse
-         */
-        'riversCount': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlersSummaryResponse
-         */
-        'eventsCount': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlersSummaryResponse
-         */
-        'waterKm': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlersSummaryResponse
-         */
-        'firstYear': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof PaddlersSummaryResponse
-         */
-        'lastYear': number;
-    }
-    
-        /**
-     * 
-     * @export
      * @interface PaymentSettingsResponseWithLinks
      */
     export interface PaymentSettingsResponseWithLinks {
@@ -10057,18 +9907,6 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getTopLeaders': AcLink;
-        /**
-         * 
-         * @type {AcLink}
-         * @memberof RootResponseLinks
-         */
-        'getPaddlersSummary': AcLink;
-        /**
-         * 
-         * @type {AcLink}
-         * @memberof RootResponseLinks
-         */
-        'getPaddlersRanking': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -22415,44 +22253,6 @@ export namespace SDK {
     
     
     /**
-     * Query parameters for getPaddlersRanking operation in StatisticsApi.
-     * @export
-     * @interface StatisticsApiGetPaddlersRankingQueryParams
-     */
-    export interface StatisticsApiGetPaddlersRankingQueryParams {
-        //year
-        /**
-         * Defaults to the current year.
-         * @type {number}
-         * @memberof StatisticsApiGetPaddlersRanking
-         */
-        year?: number
-    }
-    
-    
-    
-    
-    
-    /**
-     * Query parameters for getPaddlersSummary operation in StatisticsApi.
-     * @export
-     * @interface StatisticsApiGetPaddlersSummaryQueryParams
-     */
-    export interface StatisticsApiGetPaddlersSummaryQueryParams {
-        //year
-        /**
-         * Defaults to the current year.
-         * @type {number}
-         * @memberof StatisticsApiGetPaddlersSummary
-         */
-        year?: number
-    }
-    
-    
-    
-    
-    
-    /**
      * Query parameters for getSummary operation in StatisticsApi.
      * @export
      * @interface StatisticsApiGetSummaryQueryParams
@@ -22851,94 +22651,6 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<MembersReportResponse>(axiosRequestConfig);
-        }
-    
-        /**
-         * 
-    
-         * @param {StatisticsApiGetPaddlersRankingQueryParams} queryParams Query parameters.
-         * @param {AxiosRequestConfig} [options] Override http request option.
-         * @throws {RequiredError}
-         * @memberof StatisticsApi
-         */
-        
-        public async getPaddlersRanking(
-            queryParams: StatisticsApiGetPaddlersRankingQueryParams = {},
-            options: AxiosRequestConfig = {}
-        ) {
-    
-            const localVarPath = `/api/statistics/paddlers/ranking`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (this.configuration) {
-                baseOptions = this.configuration.baseOptions;
-            }
-    
-            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
-            const requestHeaderParameter = {} as any;
-            const requestQueryParameter = {} as any;
-    
-            // authentication cookieAuth required
-    
-            if (queryParams.year !== undefined) {
-                requestQueryParameter['year'] = queryParams.year;
-            }
-    
-    
-    
-            setSearchParams(requestUrlObj, requestQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-    
-            axiosRequestConfig["url"] = toPathString(requestUrlObj);
-            axiosRequestConfig["baseURL"] = this.configuration.basePath;
-            
-            return this.axios.request<PaddlersRankingResponse>(axiosRequestConfig);
-        }
-    
-        /**
-         * 
-    
-         * @param {StatisticsApiGetPaddlersSummaryQueryParams} queryParams Query parameters.
-         * @param {AxiosRequestConfig} [options] Override http request option.
-         * @throws {RequiredError}
-         * @memberof StatisticsApi
-         */
-        
-        public async getPaddlersSummary(
-            queryParams: StatisticsApiGetPaddlersSummaryQueryParams = {},
-            options: AxiosRequestConfig = {}
-        ) {
-    
-            const localVarPath = `/api/statistics/paddlers/summary`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (this.configuration) {
-                baseOptions = this.configuration.baseOptions;
-            }
-    
-            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
-            const requestHeaderParameter = {} as any;
-            const requestQueryParameter = {} as any;
-    
-            // authentication cookieAuth required
-    
-            if (queryParams.year !== undefined) {
-                requestQueryParameter['year'] = queryParams.year;
-            }
-    
-    
-    
-            setSearchParams(requestUrlObj, requestQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-    
-            axiosRequestConfig["url"] = toPathString(requestUrlObj);
-            axiosRequestConfig["baseURL"] = this.configuration.basePath;
-            
-            return this.axios.request<PaddlersSummaryResponse>(axiosRequestConfig);
         }
     
         /**

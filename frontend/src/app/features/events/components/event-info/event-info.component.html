@@ -44,6 +44,12 @@
 							/>
 						}
 					</bo-item>
+					<bo-item label="Řeka" [loading]="!event()">
+						<p>{{ event()?.river || "-" }}</p>
+						@if (canEdit()) {
+							<bo-edit-button slot="end" label="Řeka" (click)="editRiver()" />
+						}
+					</bo-item>
 					<bo-item label="Typ" [loading]="!event()">
 						<bo-event-type-selector
 							[disabled]="!canEdit()"
