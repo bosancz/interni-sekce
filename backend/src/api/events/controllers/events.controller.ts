@@ -181,16 +181,17 @@ export class EventsController {
 
 		const { placeCoordinates, ...eventData } = body;
 
-		const placeGeometry: EventPlaceGeometry | null = placeCoordinates
-			? { type: "Point", coordinates: [placeCoordinates.lng, placeCoordinates.lat] }
-			: null;
+		const placeGeometry: EventPlaceGeometry | null | undefined =
+			placeCoordinates === undefined
+				? undefined
+				: placeCoordinates
+					? { type: "Point", coordinates: [placeCoordinates.lng, placeCoordinates.lat] }
+					: null;
 
-		const updateData = {
-			...eventData,
-			placeGeometry,
-		};
-
-		await this.events.updateEvent(eventId, updateData);
+		await this.events.updateEvent(
+			eventId,
+			placeGeometry === undefined ? eventData : { ...eventData, placeGeometry },
+		);
 	}
 
 	@Delete(":eventId")
