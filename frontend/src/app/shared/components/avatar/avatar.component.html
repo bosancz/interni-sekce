@@ -1,5 +1,7 @@
 @if (photoUrl()) {
 	<img [src]="photoUrl()" alt="" />
 } @else if (initials()) {
-	<h3 [style.color]="color()">{{ initials() }}</h3>
+	<h3 [style.color]="color()">
+		<span class="bo-initial">{{ initials() }}</span>
+	</h3>
 }
