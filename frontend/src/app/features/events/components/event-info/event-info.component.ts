@@ -1,16 +1,18 @@
 import { CommonModule } from "@angular/common";
-import { Component, computed, input, output } from "@angular/core";
+import { Component, computed, inject, input, output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { IonButton, IonIcon, IonList } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { add } from "ionicons/icons";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { ModalService } from "src/app/core/services/modal.service";
 import { EventTypeSelectorComponent } from "src/app/features/events/components/event-type-selector/event-type-selector.component";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardFooterComponent } from "src/app/shared/components/card-footer/card-footer.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
+import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
 import { EditButtonDateRangeComponent } from "src/app/shared/components/edit-button-date-range/edit-button-date-range.component";
 import { EditButtonLocationComponent } from "src/app/shared/components/edit-button-location/edit-button-location.component";
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
@@ -26,6 +28,7 @@ import { MarkdownInlinePipe, MarkdownPipe } from "../../../../shared/pipes/markd
 import { TypographyPipe } from "../../../../shared/pipes/typography.pipe";
 import { EventLeadersComponent } from "../event-leaders/event-leaders.component";
 import { EventRegistrationComponent } from "../event-registration/event-registration.component";
+import { RiverSelectModalComponent } from "../river-select-modal/river-select-modal.component";
 
 @UntilDestroy()
 @Component({
@@ -45,6 +48,7 @@ import { EventRegistrationComponent } from "../event-registration/event-registra
 		CardTitleComponent,
 		CardContentComponent,
 		CardFooterComponent,
+		EditButtonComponent,
 		EditButtonTextComponent,
 		EventLeadersComponent,
 		EditButtonNumberComponent,
@@ -67,6 +71,8 @@ export class EventInfoComponent {
 	update = output<SDK.EventUpdateBody>();
 	change = output<void>();
 
+	private readonly modalService = inject(ModalService);
+
 	constructor() {
 		addIcons({ add });
 	}
@@ -78,4 +84,13 @@ export class EventInfoComponent {
 		if (!geom) return null;
 		return { lat: geom.coordinates[1], lng: geom.coordinates[0] };
 	});
+
+	async editRiver() {
+		const result = await this.modalService.componentModal(
+			RiverSelectModalComponent,
+			{ value: this.event()?.river ?? null },
+			{ cssClass: "dialog-picker" },
+		);
+		if (result) this.update.emit({ river: result.river });
+	}
 }

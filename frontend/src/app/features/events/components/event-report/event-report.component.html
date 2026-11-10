@@ -50,35 +50,6 @@
 					</div>
 				}
 			}
-
-			<div class="water-section">
-				<bo-card-title>
-					<span class="section-label heading">Vodák roku</span>
-				</bo-card-title>
-				<div class="water">
-					<span class="section-label">
-						<span>Řeka</span>
-						<span class="value">{{ event()?.river ?? "-" }}</span>
-						@if (canEditReport()) {
-							<bo-edit-button (click)="editRiver()" />
-						}
-					</span>
-					<span class="section-label">
-						<span>Kilometry na vodě</span>
-						<span class="value">{{
-							event()?.waterKm != null ? (event()?.waterKm | number: "1.0-1") + " km" : "-"
-						}}</span>
-						@if (canEditReport()) {
-							<bo-edit-button-number
-								label="Kilometry na vodě"
-								placeholder="42"
-								[value]="event()?.waterKm"
-								(update)="saveReportData({ waterKm: $event })"
-							/>
-						}
-					</span>
-				</div>
-			</div>
 		} @else {
 			<p><ion-skeleton-text animated></ion-skeleton-text></p>
 		}

@@ -124,6 +124,7 @@ export class EventUpdateBody {
 	@IsOptional() @Trim() @IsString() itemList?: string | null;
 	@IsOptional() @Trim() @IsString() statusNote?: string | null;
 	@IsOptional() @Trim() @IsString() place?: string | null;
+	@IsOptional() @Trim() @IsString() river?: string | null;
 	@IsOptional() placeCoordinates?: { lat: number; lng: number } | null;
 	@IsOptional() @Trim() @IsString() timeFrom?: string | null;
 	@IsOptional() @Trim() @IsString() timeTill?: string | null;
@@ -133,8 +134,6 @@ export class EventUpdateBody {
 
 export class EventReportUpdateBody {
 	@IsOptional() @Trim() @IsString() report?: string | null;
-	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsNumber() @Min(0) waterKm?: number | null;
-	@IsOptional() @Trim() @IsString() river?: string | null;
 }
 
 export class EventStatusChangeBody {

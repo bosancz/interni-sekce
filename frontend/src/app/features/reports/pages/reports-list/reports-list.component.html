@@ -52,12 +52,8 @@
 								@for (groupId of report.groupsIds; track groupId) {
 									<bo-group-badge [groupId]="groupId" [short]="true" />
 								}
-								@if (report.waterKm) {
-									<span class="water">
-										{{ report.waterKm | number: "1.0-1" }} km{{
-											report.river ? " · " + report.river : ""
-										}}
-									</span>
+								@if (report.river) {
+									<span class="water">{{ report.river }}</span>
 								}
 							</div>
 
