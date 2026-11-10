@@ -1,3 +1,9 @@
+:host {
+	display: flex;
+	flex: 1 1 0;
+	min-width: 0;
+}
+
 ion-label {
 	font-family: var(--font-san);
 }
@@ -26,14 +32,20 @@ ion-badge {
 }
 
 ion-tab-button {
+	flex: 1 1 0;
+	min-width: 0;
+	max-width: none;
 	--color: var(--bo-muted);
 	--color-selected: var(--bo-nav-active-fg);
 	--background: transparent;
-	--padding-start: 4px;
-	--padding-end: 4px;
+	--padding-start: 2px;
+	--padding-end: 2px;
 
 	&::part(native) {
-		margin: 6px;
+		margin: 4px 2px;
+		width: calc(100% - 4px);
+		height: calc(100% - 8px);
+		overflow: visible;
 		border-radius: var(--bo-radius-pill);
 		transition:
 			background-color 0.18s ease,
