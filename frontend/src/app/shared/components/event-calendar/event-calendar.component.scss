@@ -65,7 +65,8 @@ $eventHeight: 20px;
 	height: 100%;
 	border-style: solid;
 	border-width: 0 1px 0 0;
-	border-color: var(--ion-color-light);
+	border-color: var(--bo-line);
+	background-color: var(--bo-white);
 }
 .day:first-child {
 	border-width: 0 1px 0 1px;
@@ -87,8 +88,8 @@ $eventHeight: 20px;
 		font-size: 0.8em;
 		width: 100%;
 		padding: 0 2px;
-		border-top: 1px solid var(--ion-color-light);
-		border-bottom: 1px solid var(--ion-color-light);
+		border-top: 1px solid var(--bo-card-line);
+		border-bottom: 1px solid var(--bo-card-line);
 	}
 	.date.selectedRange {
 		background-color: yellow;

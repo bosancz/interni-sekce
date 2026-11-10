@@ -12,8 +12,7 @@ bo-page-content {
 	align-items: center;
 	gap: 4px;
 	padding: 4px 8px;
-	background-color: var(--bo-white);
-	border-top: 1px solid var(--ion-color-light);
+	background-color: var(--bo-yellow-tint);
 }
 
 .month-nav-button,
@@ -62,7 +61,8 @@ bo-page-content {
 	height: 36px;
 	margin-inline-start: 4px;
 	padding: 0 14px;
-	border: 1.5px solid var(--ion-color-light-shade, #c9cee3);
+	border: 1.5px solid var(--bo-yellow);
+	background-color: var(--bo-white);
 	border-radius: 18px;
 	font-size: 14px;
 	font-weight: 800;
@@ -79,7 +79,7 @@ bo-page-content {
 	grid-template-columns: repeat(7, minmax(0, 1fr));
 	padding: 4px 0;
 	background-color: var(--bo-white);
-	border-bottom: 1px solid var(--ion-color-light);
+	border-bottom: 2px solid var(--bo-yellow);
 	font-size: 11px;
 	font-weight: 800;
 	letter-spacing: 0.04em;
@@ -89,5 +89,15 @@ bo-page-content {
 
 	.weekend {
 		color: var(--bo-blue-mid);
+	}
+}
+
+@media (min-width: 992px) {
+	bo-page-header {
+		order: -2;
+	}
+
+	.month-bar {
+		order: -1;
 	}
 }

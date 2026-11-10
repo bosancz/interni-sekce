@@ -26,7 +26,6 @@
 					[class.current]="option.current"
 					[attr.aria-pressed]="option.selected"
 					(click)="pick(option)"
-					(dblclick)="confirm()"
 				>
 					<span class="mp-month-name">{{ option.name }}</span>
 					<span class="mp-month-count" [class.empty]="option.count === 0">
@@ -37,10 +36,5 @@
 				</button>
 			}
 		</div>
-	</div>
-
-	<div slot="buttons" class="bm-buttons mp-buttons">
-		<button type="button" class="bm-btn-ghost" (click)="today()">Dnes</button>
-		<button type="button" class="bm-btn-primary" (click)="confirm()">{{ selectedLabel() }}</button>
 	</div>
 </bo-modal-layout>
