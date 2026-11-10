@@ -6,8 +6,10 @@ import { tmpdir } from "os";
 import * as path from "path";
 import * as puppeteer from "puppeteer";
 import { pathToFileURL } from "url";
+import xlsxPopulate from "xlsx-populate";
 import { resolveChromiumPath } from "src/helpers/chromium";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
+import { renderProgramDocx } from "../helpers/program-docx";
 
 const TEMPLATE_FILE = path.resolve("assets/program-template/template.html");
 const FONTS_DIR = path.resolve("assets/fonts");
@@ -15,7 +17,7 @@ const LOGO_FILE = path.resolve("assets/img/sanlogo-07.svg");
 
 const ZONE = "Europe/Prague";
 
-const STATUS_LABELS: Record<string, string> = {
+export const PROGRAM_STATUS_LABELS: Record<string, string> = {
 	[EventStates.draft]: "Připravovaná",
 	[EventStates.pending]: "Čeká na schválení",
 	[EventStates.rejected]: "Vrácená k úpravám",
@@ -23,7 +25,19 @@ const STATUS_LABELS: Record<string, string> = {
 	[EventStates.cancelled]: "Zrušená",
 };
 
-export interface ProgramPdfFilter {
+export enum ProgramExportFormats {
+	pdf = "pdf",
+	docx = "docx",
+	xlsx = "xlsx",
+}
+
+const CONTENT_TYPES: Record<ProgramExportFormats, string> = {
+	[ProgramExportFormats.pdf]: "application/pdf",
+	[ProgramExportFormats.docx]: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+	[ProgramExportFormats.xlsx]: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+};
+
+export interface ProgramExportFilter {
 	year?: number[];
 	dateFrom?: string;
 	dateTill?: string;
@@ -33,13 +47,65 @@ export interface ProgramPdfFilter {
 	noleader?: boolean;
 }
 
+export interface ProgramExportFile {
+	buffer: Buffer;
+	contentType: string;
+	fileName: string;
+}
+
+export interface ProgramEventContext {
+	name: string;
+	dateLabel: string;
+	weekdayLabel: string;
+	place?: string | null;
+	leaders: string[];
+	groups: { shortName: string; color: string }[];
+	status: string | null;
+	statusClass: string;
+	cancelled: boolean;
+}
+
+export interface ProgramContext {
+	subtitle: string;
+	generatedAt: string;
+	countLabel: string;
+	months: { label: string; events: ProgramEventContext[] }[];
+}
+
 @Injectable()
-export class EventsProgramPdfService {
+export class EventsProgramExportService {
 	private template?: HandlebarsTemplateDelegate;
 
-	async renderProgram(events: Event[], filter: ProgramPdfFilter): Promise<Buffer> {
+	async renderProgram(
+		events: Event[],
+		filter: ProgramExportFilter,
+		format: ProgramExportFormats,
+	): Promise<ProgramExportFile> {
+		const buffer = await this.render(events, filter, format);
+		return { buffer, contentType: CONTENT_TYPES[format], fileName: `program.${format}` };
+	}
+
+	private render(events: Event[], filter: ProgramExportFilter, format: ProgramExportFormats) {
+		switch (format) {
+			case ProgramExportFormats.docx:
+				return renderProgramDocx(this.buildContext(events, filter), {
+					fontsDir: path.join(FONTS_DIR, "docx"),
+					logoFile: LOGO_FILE,
+				});
+			case ProgramExportFormats.xlsx:
+				return this.renderXlsx(events);
+			default:
+				return this.renderPdf(events, filter);
+		}
+	}
+
+	private async renderPdf(events: Event[], filter: ProgramExportFilter): Promise<Buffer> {
 		const template = await this.getTemplate();
-		const html = template(this.buildContext(events, filter));
+		const html = template({
+			...this.buildContext(events, filter),
+			fontsUrl: pathToFileURL(FONTS_DIR).href,
+			logoUrl: pathToFileURL(LOGO_FILE).href,
+		});
 
 		const tempFile = path.join(tmpdir(), `program-${Date.now()}-${Math.random().toString(36).slice(2)}.html`);
 		let browser: puppeteer.Browser | undefined;
@@ -71,6 +137,28 @@ export class EventsProgramPdfService {
 		}
 	}
 
+	private async renderXlsx(events: Event[]): Promise<Buffer> {
+		const workbook = await xlsxPopulate.fromBlankAsync();
+		const sheet = workbook.sheet(0).name("Program");
+
+		const header = ["Název", "Datum", "Stav", "Vedoucí"];
+		const rows = events.map((event) => [
+			event.name,
+			this.tableDateLabel(event.dateFrom, event.dateTill),
+			PROGRAM_STATUS_LABELS[event.status] ?? event.status,
+			this.leaderNames(event).join(", "),
+		]);
+
+		sheet.range(1, 1, rows.length + 1, header.length).value([header, ...rows]);
+		sheet.range(1, 1, 1, header.length).style({ bold: true, fill: "e4e7ef", border: { bottom: true } });
+		if (rows.length) sheet.range(1, 1, rows.length + 1, header.length).autoFilter();
+		sheet.freezePanes(0, 1);
+
+		[48, 28, 20, 40].forEach((width, index) => sheet.column(index + 1).width(width));
+
+		return workbook.outputAsync() as Promise<Buffer>;
+	}
+
 	private async getTemplate() {
 		if (!this.template) this.template = Handlebars.compile(await readFile(TEMPLATE_FILE, "utf-8"));
 		return this.template;
@@ -82,12 +170,12 @@ export class EventsProgramPdfService {
 		return `<div style="${style}"><span>Interní sekce ŠÁN · Program akcí</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>`;
 	}
 
-	private buildContext(events: Event[], filter: ProgramPdfFilter) {
+	private buildContext(events: Event[], filter: ProgramExportFilter): ProgramContext {
 		const sorted = [...events].sort(
 			(a, b) => a.dateFrom.localeCompare(b.dateFrom) || a.dateTill.localeCompare(b.dateTill) || a.id - b.id,
 		);
 
-		const months: { label: string; events: ReturnType<EventsProgramPdfService["eventContext"]>[] }[] = [];
+		const months: ProgramContext["months"] = [];
 		for (const event of sorted) {
 			const label = this.capitalize(this.date(event.dateFrom).toFormat("LLLL yyyy"));
 			let month = months[months.length - 1];
@@ -99,8 +187,6 @@ export class EventsProgramPdfService {
 		}
 
 		return {
-			fontsUrl: pathToFileURL(FONTS_DIR).href,
-			logoUrl: pathToFileURL(LOGO_FILE).href,
 			subtitle: this.describeFilter(filter),
 			generatedAt: DateTime.now().setZone(ZONE).toFormat("d. M. yyyy"),
 			countLabel: `${events.length} ${this.pluralEvents(events.length)}`,
@@ -108,14 +194,15 @@ export class EventsProgramPdfService {
 		};
 	}
 
-	private eventContext(event: Event) {
-		const status = event.status !== EventStates.public ? (STATUS_LABELS[event.status] ?? event.status) : null;
+	private eventContext(event: Event): ProgramEventContext {
+		const status =
+			event.status !== EventStates.public ? (PROGRAM_STATUS_LABELS[event.status] ?? event.status) : null;
 
 		return {
 			name: event.name,
 			...this.dateLabels(event.dateFrom, event.dateTill),
 			place: event.place,
-			leaders: (event.leaders ?? []).map((leader) => leader.nickname || leader.firstName).filter(Boolean),
+			leaders: this.leaderNames(event),
 			groups: (event.groups ?? [])
 				.map((group) => ({ shortName: group.shortName, color: group.color || "#6b7185" }))
 				.sort((a, b) => a.shortName.localeCompare(b.shortName, "cs")),
@@ -123,6 +210,14 @@ export class EventsProgramPdfService {
 			statusClass: event.status,
 			cancelled: event.status === EventStates.cancelled,
 		};
+	}
+
+	private leaderNames(event: Event): string[] {
+		return (event.leaders ?? []).map((leader) => leader.nickname || leader.firstName).filter(Boolean) as string[];
+	}
+
+	private tableDateLabel(dateFrom: string, dateTill: string) {
+		return `${this.date(dateFrom).toFormat("ccc d. M.")} – ${this.date(dateTill).toFormat("ccc d. M. yyyy")}`;
 	}
 
 	private dateLabels(dateFrom: string, dateTill: string) {
@@ -141,7 +236,7 @@ export class EventsProgramPdfService {
 		return { dateLabel: `${from.toFormat("d. M. yyyy")} – ${till.toFormat("d. M. yyyy")}`, weekdayLabel };
 	}
 
-	private describeFilter(filter: ProgramPdfFilter): string {
+	private describeFilter(filter: ProgramExportFilter): string {
 		const parts: string[] = [];
 
 		const years = [...(filter.year ?? [])].sort((a, b) => a - b);
@@ -158,7 +253,7 @@ export class EventsProgramPdfService {
 		if (!years.length && !filter.dateFrom && !filter.dateTill) parts.push("Všechny akce");
 
 		if (filter.status?.length)
-			parts.push(filter.status.map((status) => STATUS_LABELS[status] ?? status).join(", "));
+			parts.push(filter.status.map((status) => PROGRAM_STATUS_LABELS[status] ?? status).join(", "));
 		if (filter.my) parts.push("Moje akce");
 		if (filter.noleader) parts.push("Bez vedoucího");
 		if (filter.search?.trim()) parts.push(`„${filter.search.trim()}“`);

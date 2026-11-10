@@ -9488,6 +9488,21 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @enum {string}
+     */
+    
+    export const ProgramExportFormats = {
+        Pdf: 'pdf',
+        Docx: 'docx',
+        Xlsx: 'xlsx'
+    } as const;
+    
+    export type ProgramExportFormats = typeof ProgramExportFormats[keyof typeof ProgramExportFormats];
+    
+    
+        /**
+     * 
+     * @export
      * @interface RegistrationPreviewResponse
      */
     export interface RegistrationPreviewResponse {
@@ -9726,7 +9741,7 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
-        'exportEventsPdf': AcLink;
+        'exportEventsProgram': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -11640,24 +11655,24 @@ export namespace SDK {
     /**
      * @export
      */
-    export const ExportEventsPdfOrderEnum = {
+    export const ExportEventsProgramOrderEnum = {
         Asc: 'ASC',
         Desc: 'DESC'
     } as const;
-    export type ExportEventsPdfOrderEnum = typeof ExportEventsPdfOrderEnum[keyof typeof ExportEventsPdfOrderEnum];
+    export type ExportEventsProgramOrderEnum = typeof ExportEventsProgramOrderEnum[keyof typeof ExportEventsProgramOrderEnum];
     
     
     /**
-     * Query parameters for exportEventsPdf operation in EventsApi.
+     * Query parameters for exportEventsProgram operation in EventsApi.
      * @export
-     * @interface EventsApiExportEventsPdfQueryParams
+     * @interface EventsApiExportEventsProgramQueryParams
      */
-    export interface EventsApiExportEventsPdfQueryParams {
+    export interface EventsApiExportEventsProgramQueryParams {
         //limit
         /**
          * 
          * @type {number}
-         * @memberof EventsApiExportEventsPdf
+         * @memberof EventsApiExportEventsProgram
          */
         limit?: number
     
@@ -11665,7 +11680,7 @@ export namespace SDK {
         /**
          * 
          * @type {number}
-         * @memberof EventsApiExportEventsPdf
+         * @memberof EventsApiExportEventsProgram
          */
         offset?: number
     
@@ -11673,7 +11688,7 @@ export namespace SDK {
         /**
          * 
          * @type {string}
-         * @memberof EventsApiExportEventsPdf
+         * @memberof EventsApiExportEventsProgram
          */
         sort?: string
     
@@ -11681,15 +11696,23 @@ export namespace SDK {
         /**
          * 
          * @type {'ASC' | 'DESC'}
-         * @memberof EventsApiExportEventsPdf
+         * @memberof EventsApiExportEventsProgram
          */
-        order?: ExportEventsPdfOrderEnum
+        order?: ExportEventsProgramOrderEnum
+    
+        //format
+        /**
+         * 
+         * @type {ProgramExportFormats}
+         * @memberof EventsApiExportEventsProgram
+         */
+        format: ProgramExportFormats
     
         //year
         /**
          * 
          * @type {Array<number>}
-         * @memberof EventsApiExportEventsPdf
+         * @memberof EventsApiExportEventsProgram
          */
         year?: Array<number>
     
@@ -11697,7 +11720,7 @@ export namespace SDK {
         /**
          * 
          * @type {string}
-         * @memberof EventsApiExportEventsPdf
+         * @memberof EventsApiExportEventsProgram
          */
         dateFrom?: string
     
@@ -11705,7 +11728,7 @@ export namespace SDK {
         /**
          * 
          * @type {string}
-         * @memberof EventsApiExportEventsPdf
+         * @memberof EventsApiExportEventsProgram
          */
         dateTill?: string
     
@@ -11713,7 +11736,7 @@ export namespace SDK {
         /**
          * 
          * @type {Array<string>}
-         * @memberof EventsApiExportEventsPdf
+         * @memberof EventsApiExportEventsProgram
          */
         status?: Array<string>
     
@@ -11721,7 +11744,7 @@ export namespace SDK {
         /**
          * 
          * @type {string}
-         * @memberof EventsApiExportEventsPdf
+         * @memberof EventsApiExportEventsProgram
          */
         search?: string
     
@@ -11729,7 +11752,7 @@ export namespace SDK {
         /**
          * 
          * @type {boolean}
-         * @memberof EventsApiExportEventsPdf
+         * @memberof EventsApiExportEventsProgram
          */
         my?: boolean
     
@@ -11737,7 +11760,7 @@ export namespace SDK {
         /**
          * 
          * @type {boolean}
-         * @memberof EventsApiExportEventsPdf
+         * @memberof EventsApiExportEventsProgram
          */
         noleader?: boolean
     
@@ -11745,7 +11768,7 @@ export namespace SDK {
         /**
          * 
          * @type {boolean}
-         * @memberof EventsApiExportEventsPdf
+         * @memberof EventsApiExportEventsProgram
          */
         deleted?: boolean
     }
@@ -12639,18 +12662,21 @@ export namespace SDK {
         /**
          * 
     
-         * @param {EventsApiExportEventsPdfQueryParams} queryParams Query parameters.
+         * @param {EventsApiExportEventsProgramQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
-        public async exportEventsPdf(
-            queryParams: EventsApiExportEventsPdfQueryParams = {},
+        public async exportEventsProgram(
+            queryParams: EventsApiExportEventsProgramQueryParams,
             options: AxiosRequestConfig = {}
         ) {
     
-            const localVarPath = `/api/events/program-pdf`;
+            // verify required parameter 'format' is not null or undefined
+            assertParamExists('exportEventsProgram', 'format', queryParams.format)
+            
+            const localVarPath = `/api/events/program-export`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -12678,6 +12704,10 @@ export namespace SDK {
     
             if (queryParams.order !== undefined) {
                 requestQueryParameter['order'] = queryParams.order;
+            }
+    
+            if (queryParams.format !== undefined) {
+                requestQueryParameter['format'] = queryParams.format;
             }
     
             if (queryParams.year) {
