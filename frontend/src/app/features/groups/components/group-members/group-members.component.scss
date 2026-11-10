@@ -1,3 +1,15 @@
+bo-people-filter,
+bo-people-table {
+	display: block;
+	margin-inline: -16px;
+}
+
+@media (max-width: 991.98px) {
+	bo-people-filter {
+		margin-top: -16px;
+	}
+}
+
 .members-mail-button ion-icon {
 	font-size: 20px;
 }
