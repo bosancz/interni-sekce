@@ -334,3 +334,7 @@ cd backend && npm ci && npm run migrations:run
 ## Screenshoty aplikace
 
 - `assets/img/app-screenshots/{desktop,mobile}.webp` ukazuje karta Aplikace v Nastavení (`bo-account-app`) a nese je i `screenshots` v `manifest.json` (instalační dialog Chromu). Nafocené Playwrightem na seedu (`bilbo`, 1280×800 a 390×776 @2x; mobil pak `sharp` doplní na 390×844 o stavový řádek 44 px v barvě hlavičky a 24 px s indikátorem, aby rohy rámečku telefonu nesahaly na logo a avatar): Chromium neumí emulovat `display-mode`, takže se v odpovědích dev serveru přepisuje `display-mode: …` na `min-width: 0px` (WCO navíc `env(titlebar-area-width, 100vw)` na `calc(100vw - 138px)` a ovládací prvky okna jako SVG v `body::after`), `matchMedia` se přebije init skriptem a štítek `.environment` se skryje.
+
+## Kalendář
+
+- **Mobilní kalendář (`bo-home-calendar`, `/?tab=calendar`) má dole nad záložkami (na dosah palce) lištu ‹ měsíc › + Dnes** (#740): klik na název otevře `MonthPickerModalComponent` (`features/home/components`, rok + 12 měsíců s počtem akcí; sdílí ho i karta kalendáře na desktopové homepagi). Skok načte cílový měsíc −1 až +3 a odscrolluje na jeho oddělovač (`bo-event-calendar [monthLabels]`, `.month-label[data-month]`), dál se dotahuje `ion-infinite-scroll` nahoru (s kotvou) i dolů; název v liště se řídí posledním oddělovačem nad horním okrajem. Řádky a oddělovače hledej na hostiteli komponenty, ne ve scroll elementu `ion-content` — ten je ve shadow DOM a obsah v něm `querySelector` nenajde. Skok mimo dnešek jde do URL jako `?mesic=yyyy-MM`.

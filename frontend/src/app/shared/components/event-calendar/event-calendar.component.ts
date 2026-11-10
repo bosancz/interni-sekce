@@ -4,27 +4,14 @@ import { IonBadge } from "@ionic/angular/standalone";
 import { CzechHolidays } from "czech-holidays";
 import { DateTime } from "luxon";
 import { ApiService } from "src/app/core/services/api.service";
+import { MONTH_NAMES } from "src/app/core/config/months";
 import { SDK } from "src/sdk";
 import { TooltipDirective } from "../../directives/tooltip.directive";
 import { EventStatusPipe } from "../../pipes/event-status.pipe";
 
-const months = [
-	"Leden",
-	"Únor",
-	"Březen",
-	"Duben",
-	"Květen",
-	"Červen",
-	"Červenec",
-	"Srpen",
-	"Září",
-	"Říjen",
-	"Listopad",
-	"Prosinec",
-];
-
 class CalendarRow {
 	days: CalendarDay[] = [];
+	monthStart?: DateTime;
 
 	blocks = {
 		own: new CalendarRowBlock<SDK.EventResponseWithLinks>(),
@@ -48,6 +35,7 @@ interface CalendarDayProperties {
 	weekend?: boolean;
 	oddMonth: boolean;
 	today?: boolean;
+	firstOfMonth?: boolean;
 }
 class CalendarDay {
 	eventCount: number = 0;
@@ -96,6 +84,7 @@ export class EventCalendarComponent implements OnInit {
 	cpv = input<boolean>(false);
 	selection = input<boolean>(false);
 	headingLevel = input<number>(3);
+	monthLabels = input<boolean>(false);
 
 	select = output<[DateTime, DateTime]>();
 
@@ -164,7 +153,10 @@ export class EventCalendarComponent implements OnInit {
 				weekend: this.isWeekend(currentDate),
 				oddMonth: (currentDate.month - this.dateFrom.month) % 2 === 0,
 				today: this.isToday(currentDate),
+				firstOfMonth: currentDate.day === 1,
 			};
+
+			if (dayInfo.firstOfMonth && !dayInfo.empty) row.monthStart = currentDate;
 
 			row.days.push(new CalendarDay(currentDate, dayInfo));
 
@@ -272,6 +264,10 @@ export class EventCalendarComponent implements OnInit {
 
 	emitSelected() {
 		if (!this.selection) return;
+	}
+
+	monthLabel(date: DateTime) {
+		return `${MONTH_NAMES[date.month - 1]} ${date.year}`;
 	}
 
 	getEventLeft(event: CalendarEvent<SDK.CPVEventResponseWithLinks | SDK.EventResponseWithLinks>, row: CalendarRow) {

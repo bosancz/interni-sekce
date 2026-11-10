@@ -1,0 +1,113 @@
+@use "./../../../../../styles/brand-modal" as *;
+
+.mp-year {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+}
+
+.mp-year-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 1.5px solid var(--bm-border);
+	border-radius: 50%;
+	background: transparent;
+	color: var(--bo-heading);
+	font-size: 20px;
+	cursor: pointer;
+
+	&:hover {
+		background: var(--bm-surface-hover);
+	}
+}
+
+.mp-year-label {
+	position: relative;
+	min-width: 80px;
+	text-align: center;
+	font-family: var(--font-san);
+	font-size: 24px;
+	font-weight: 700;
+	color: var(--bo-heading);
+}
+
+.mp-loading {
+	position: absolute;
+	top: 50%;
+	right: -24px;
+	width: 16px;
+	height: 16px;
+	transform: translateY(-50%);
+	color: var(--bm-muted);
+}
+
+.mp-months {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 8px;
+}
+
+.mp-month {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 2px;
+	height: 64px;
+	border: 1.5px solid var(--bm-border);
+	border-radius: 12px;
+	background: transparent;
+	color: var(--bm-text);
+	font-family: inherit;
+	cursor: pointer;
+
+	&:hover {
+		background: var(--bm-surface-hover);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--bm-blue);
+		outline-offset: 2px;
+	}
+
+	&.current {
+		border-color: var(--bm-yellow);
+		background: var(--bo-yellow-tint);
+	}
+
+	&.selected {
+		border-color: var(--bm-blue);
+		background: var(--bm-blue);
+		color: #fff;
+
+		.mp-month-count {
+			color: #dfe3f5;
+		}
+	}
+}
+
+.mp-month-name {
+	font-size: 15px;
+	font-weight: 800;
+}
+
+.mp-month-count {
+	min-height: 16px;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--bm-muted);
+
+	&.empty {
+		color: var(--bm-muted-2);
+	}
+}
+
+.mp-buttons {
+	justify-content: space-between;
+	width: 100%;
+}

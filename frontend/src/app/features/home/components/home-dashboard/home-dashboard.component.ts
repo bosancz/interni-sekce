@@ -13,25 +13,13 @@ import { ButtonSquareComponent } from "src/app/shared/components/button-square/b
 import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
+import { MONTH_NAMES } from "src/app/core/config/months";
+import { ModalService } from "src/app/core/services/modal.service";
+import { MonthPickerModalComponent } from "../month-picker-modal/month-picker-modal.component";
 import { SDK } from "src/sdk";
 import { HomeCardMyEventsComponent } from "../home-card-my-events/home-card-my-events.component";
 import { HomeCardPhotoOfDayComponent } from "../home-card-photo-of-day/home-card-photo-of-day.component";
 import { HomeCardNoleaderEventsComponent } from "../home-card-noleader-events/home-card-noleader-events.component";
-
-const months = [
-	"Leden",
-	"Únor",
-	"Březen",
-	"Duben",
-	"Květen",
-	"Červen",
-	"Červenec",
-	"Srpen",
-	"Září",
-	"Říjen",
-	"Listopad",
-	"Prosinec",
-];
 
 @UntilDestroy()
 @Component({
@@ -55,12 +43,14 @@ const months = [
 export class HomeDashboardComponent {
 	view = signal("home");
 
-	currentMonth = signal(DateTime.local().startOf("month"));
+	currentMonth = signal<DateTime>(DateTime.local().startOf("month"));
 
 	dateFrom = computed(() => this.currentMonth().startOf("month"));
 	dateTill = computed(() => this.currentMonth().endOf("month"));
 
-	monthTitle = computed(() => `${months[this.currentMonth().month - 1]} ${this.currentMonth().year}`);
+	isCurrentMonth = computed(() => this.currentMonth().hasSame(DateTime.local(), "month"));
+
+	monthTitle = computed(() => `${MONTH_NAMES[this.currentMonth().month - 1]} ${this.currentMonth().year}`);
 
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 	loading = signal(false);
@@ -80,6 +70,7 @@ export class HomeDashboardComponent {
 		private userService: UserService,
 		public popoverController: PopoverController,
 		private offlineDataService: OfflineDataService,
+		private modalService: ModalService,
 	) {
 		addIcons({ chevronBackOutline, chevronForwardOutline, cloudOfflineOutline });
 
@@ -96,6 +87,19 @@ export class HomeDashboardComponent {
 
 	nextMonth() {
 		this.currentMonth.update((month) => month.plus({ months: 1 }));
+	}
+
+	goToToday() {
+		this.currentMonth.set(DateTime.local().startOf("month"));
+	}
+
+	async openMonthPicker() {
+		const month = await this.modalService.componentModal(
+			MonthPickerModalComponent,
+			{ month: this.currentMonth().toFormat("yyyy-MM") },
+			{ cssClass: "dialog-brand" },
+		);
+		if (month) this.currentMonth.set(DateTime.fromFormat(month, "yyyy-MM"));
 	}
 
 	private calendarRequest = 0;

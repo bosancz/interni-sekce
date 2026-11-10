@@ -101,3 +101,27 @@ $eventHeight: 20px;
 		color: #fff;
 	}
 }
+
+.day .date.first-of-month {
+	font-weight: 800;
+	color: var(--bo-heading);
+}
+
+.month-label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 4px 6px;
+	font-family: var(--font-san);
+	font-size: 1.05rem;
+	font-weight: 700;
+	color: var(--bo-heading);
+
+	&::after {
+		content: "";
+		flex: 1;
+		height: 2px;
+		border-radius: 2px;
+		background-color: var(--bo-yellow);
+	}
+}

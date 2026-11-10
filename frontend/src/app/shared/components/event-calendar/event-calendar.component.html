@@ -1,6 +1,11 @@
 <div class="calendar" (contextmenu)="clearSelection($event)">
 	@for (row of calendar(); track row.from) {
-		<div class="calendar-row">
+		@if (monthLabels() && row.monthStart) {
+			<div class="month-label" [attr.data-month]="row.monthStart.toFormat('yyyy-MM')">
+				{{ monthLabel(row.monthStart) }}
+			</div>
+		}
+		<div class="calendar-row" [attr.data-week]="row.from.toISODate()">
 			<div class="days clearfix">
 				@for (day of row.days; track day.date; let i = $index) {
 					<div
@@ -20,6 +25,7 @@
 							"
 							[class.selectedRange]="isSelectedRange(day)"
 							[class.empty]="day.properties.empty"
+							[class.first-of-month]="monthLabels() && day.properties.firstOfMonth"
 						>
 							@if (!day.properties.today) {
 								{{ day.date.day }}. {{ day.date.month }}.
