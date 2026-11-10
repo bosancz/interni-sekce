@@ -21,11 +21,33 @@
 
 	&.has-value {
 		background: var(--bo-blue-tint);
-		border-color: var(--bo-blue);
-		color: var(--bo-blue);
+		border-color: var(--bo-heading);
+		color: var(--bo-heading);
 
 		ion-icon {
-			color: var(--bo-blue);
+			color: var(--bo-heading);
 		}
+	}
+}
+
+.filter-pill-icon-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: none;
+	color: var(--bo-heading);
+	cursor: pointer;
+
+	ion-icon {
+		font-size: 24px;
+	}
+
+	&:hover {
+		background: var(--bo-blue-tint);
 	}
 }

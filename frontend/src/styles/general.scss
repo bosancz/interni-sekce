@@ -542,3 +542,7 @@ ion-select.filter-pill {
 		background: var(--bo-white);
 	}
 }
+
+body.dark bo-avatar:not(.empty) {
+	box-shadow: 0 0 0 2px #fff;
+}
