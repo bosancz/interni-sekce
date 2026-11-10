@@ -5,8 +5,8 @@
 			fill="clear"
 			(click)="registrationInput.click()"
 		>
-			<ion-icon class="ion-hide-md-up" name="cloud-upload-outline"></ion-icon>
-			<span class="ion-hide-md-down">Nahrát</span>
+			<ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+			<span>Nahrát</span>
 		</ion-button>
 	}
 	@if (event()?._links?.generateEventRegistration?.applicable) {
@@ -16,8 +16,8 @@
 			fill="clear"
 			(click)="generateRegistration()"
 		>
-			<ion-icon class="ion-hide-md-up" name="color-wand-outline"></ion-icon>
-			<span class="ion-hide-md-down">Generovat</span>
+			<ion-icon slot="start" name="color-wand-outline"></ion-icon>
+			<span>Generovat</span>
 		</ion-button>
 	}
 	@if (event()?._links?.getEventRegistration?.applicable) {
@@ -27,8 +27,8 @@
 			fill="clear"
 			(click)="getRegistration()"
 		>
-			<ion-icon class="ion-hide-md-up" name="eye-outline"></ion-icon>
-			<span class="ion-hide-md-down">Zobrazit</span>
+			<ion-icon slot="start" name="eye-outline"></ion-icon>
+			<span>Zobrazit</span>
 		</ion-button>
 	}
 	@if (event()?._links?.deleteEventRegistration?.applicable) {
@@ -39,8 +39,8 @@
 			color="danger"
 			(click)="deleteRegistration()"
 		>
-			<ion-icon class="ion-hide-md-up" name="trash-outline"></ion-icon>
-			<span class="ion-hide-md-down">Smazat</span>
+			<ion-icon slot="start" name="trash-outline"></ion-icon>
+			<span>Smazat</span>
 		</ion-button>
 	}
 </div>
