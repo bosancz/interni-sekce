@@ -11,7 +11,7 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline, arrowUndoOutline, downloadOutline, schoolOutline, trashOutline } from "ionicons/icons";
+import { addOutline, downloadOutline, schoolOutline, trashOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -115,27 +115,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		"member-instruktor": member.role === "instruktor",
 	});
 
-	rowActionsHeader = (member: SDK.MemberResponseWithLinks) => member.nickname || member.firstName;
-
-	memberActions = (member: SDK.MemberResponseWithLinks): Action[] => [
-		{
-			text: "Smazat",
-			role: "destructive",
-			color: "danger",
-			icon: trashOutline,
-			hidden: !member._links.deleteMember.allowed,
-			handler: () => this.deleteMember(member),
-		},
-		{
-			text: "Obnovit",
-			role: "destructive",
-			color: "success",
-			icon: arrowUndoOutline,
-			hidden: !member._links.restoreMember.allowed,
-			handler: () => this.restoreMember(member),
-		},
-	];
-
 	actions = signal<Action[]>([
 		{
 			text: "Nový člen",
@@ -181,7 +160,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	) {
 		addIcons({
 			addOutline,
-			arrowUndoOutline,
 			downloadOutline,
 			schoolOutline,
 			trashOutline,
@@ -373,23 +351,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			(a.name ?? a.shortName).localeCompare(b.name ?? b.shortName, undefined, { numeric: true }),
 		);
 		this.groups.set(groups);
-	}
-
-	private async deleteMember(member: SDK.MemberResponseWithLinks) {
-		const confirmation = await this.modalService.deleteConfirmationModal(
-			`Opravdu chcete smazat člena ${member.nickname}?`,
-		);
-		if (!confirmation) return;
-
-		await this.api.MembersApi.deleteMember(member.id);
-		this.toasts.toast("Člen smazán.");
-		this.loadMembers(this.filter);
-	}
-
-	private async restoreMember(member: SDK.MemberResponseWithLinks) {
-		await this.api.MembersApi.restoreMember(member.id);
-		this.toasts.toast("Člen obnoven.");
-		this.loadMembers(this.filter);
 	}
 
 	async create() {

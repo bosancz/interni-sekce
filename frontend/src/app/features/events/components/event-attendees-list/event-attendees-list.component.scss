@@ -19,10 +19,6 @@
 	}
 }
 
-:host ::ng-deep admin-table ion-list {
-	padding: 0;
-}
-
 :host ::ng-deep ion-item.attendee-festive {
 	--background: var(--bo-yellow-tint);
 }

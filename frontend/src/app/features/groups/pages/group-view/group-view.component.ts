@@ -89,9 +89,8 @@ export class GroupViewComponent implements OnInit {
 
 		const actions: Action[] = [
 			{
-				text: "Upravit",
+				text: "Upravit oddíl",
 				icon: "create",
-				pinned: true,
 				hidden: !links?.updateGroup.applicable || !links?.updateGroup.allowed,
 				handler: () => this.editGroup(),
 			},

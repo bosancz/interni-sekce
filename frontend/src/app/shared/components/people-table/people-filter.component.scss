@@ -2,6 +2,12 @@
 	display: block;
 }
 
+@media (max-width: 991.98px) {
+	bo-filter {
+		margin-bottom: 0;
+	}
+}
+
 .people-filter-actions {
 	display: flex;
 	flex-wrap: wrap;

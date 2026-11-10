@@ -40,12 +40,15 @@
 	}
 }
 
-:host ::ng-deep admin-table ion-item .admin-table-start {
-	align-self: flex-start;
-	margin-top: 16px;
-}
+:host ::ng-deep admin-table {
+	ion-list {
+		padding: 0;
+	}
 
-:host ::ng-deep admin-table ion-item .admin-table-end {
-	align-self: flex-start;
-	margin-top: 16px;
+	ion-item .admin-table-start,
+	ion-item .admin-table-end {
+		align-self: flex-start;
+		height: 47px;
+		margin-top: 10px;
+	}
 }
