@@ -44,11 +44,8 @@
 }
 
 :host ::ng-deep admin-table ion-list {
+	margin-inline: -16px;
 	padding: 0;
-	overflow: hidden;
-	background-color: var(--bo-white);
-	border-radius: var(--bo-radius-card);
-	box-shadow: var(--bo-shadow-card);
 }
 
 :host ::ng-deep ion-item.attendee-festive {
@@ -124,10 +121,6 @@
 .note-low {
 	background-color: var(--bo-green-tint);
 	color: var(--bo-green);
-}
-
-:host ::ng-deep .admin-table-line:has(.notes:not(:has(.note))) {
-	display: none;
 }
 
 :host ::ng-deep admin-table ion-item .admin-table-start {

@@ -92,8 +92,22 @@ table.table {
 			background-color: var(--bo-table-row-bg, transparent);
 		}
 
-		tbody tr:nth-child(even) {
+		tbody tr.admin-table-row-even {
 			background-color: var(--bo-table-row-bg, var(--bo-paper));
+		}
+
+		tbody tr.admin-table-below:not(:has(td.admin-table-value-filled)) {
+			display: none;
+		}
+
+		tbody tr:has(+ tr.admin-table-below td.admin-table-value-filled) td {
+			border-bottom: none;
+			padding-bottom: 0.35rem;
+		}
+
+		tbody tr.admin-table-below td {
+			padding-top: 0;
+			white-space: normal;
 		}
 
 		tbody tr[tabindex],
@@ -101,7 +115,7 @@ table.table {
 			cursor: pointer;
 		}
 
-		tbody tr:last-child td {
+		tbody tr.admin-table-row-last:not(:has(+ tr.admin-table-below td.admin-table-value-filled)) td {
 			border-bottom: none;
 
 			&:first-child {

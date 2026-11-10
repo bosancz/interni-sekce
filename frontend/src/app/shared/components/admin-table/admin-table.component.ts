@@ -85,11 +85,15 @@ export class AdminTableComponent {
 	readonly lineColumns = computed(() => this.columns().filter((column) => !column.right() && !column.start()));
 	readonly primaryColumns = computed(() => this.lineColumns().filter((column) => column.primary()));
 	readonly valueColumns = computed(() =>
-		this.lineColumns().filter((column) => !column.primary() && !column.hideMobileLabel()),
+		this.lineColumns().filter((column) => !column.primary() && !column.hideMobileLabel() && !column.below()),
 	);
 	readonly blockColumns = computed(() =>
-		this.lineColumns().filter((column) => !column.primary() && column.hideMobileLabel()),
+		this.lineColumns().filter((column) => !column.primary() && (column.hideMobileLabel() || column.below())),
 	);
+	readonly tableColumns = computed(() => this.columns().filter((column) => !column.below()));
+	readonly belowColumns = computed(() => this.columns().filter((column) => column.below()));
+	readonly belowIndent = computed(() => (this.tableColumns()[0]?.start() ? 1 : 0));
+	readonly belowColspan = computed(() => this.tableColumns().length - this.belowIndent() + (this.actions() ? 1 : 0));
 	readonly startColumn = computed(() => this.columns().find((column) => column.start()) ?? null);
 	readonly rightColumn = computed(() => this.columns().find((column) => column.right()) ?? null);
 

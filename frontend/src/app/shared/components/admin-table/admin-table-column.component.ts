@@ -18,6 +18,8 @@ export class AdminTableColumnComponent {
 
 	mobileJoin = input<boolean>(false);
 
+	below = input<boolean>(false);
+
 	cellClass = input<string>("");
 
 	headerClass = input<string>("");

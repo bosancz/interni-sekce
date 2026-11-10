@@ -137,12 +137,7 @@
 		}
 
 		@if (columns()["notes"]) {
-			<admin-table-column
-				header="Poznámky"
-				[hideMobileLabel]="true"
-				headerClass="align-middle attendees-notes-column"
-				cellClass="align-middle attendees-wrap"
-			>
+			<admin-table-column header="Poznámky" [below]="true">
 				<ng-container *adminCell="let attendee">
 					<span class="notes">
 						@for (note of notes().get(attendee.memberId) ?? []; track $index) {
