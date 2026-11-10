@@ -58,7 +58,7 @@
 									@if (leader | memberProfilePhotoUrl; as photoUrl) {
 										<img [src]="photoUrl" alt="" />
 									} @else {
-										{{ (leader | member: "nickname")?.charAt(0) }}
+										<span class="bo-initial">{{ (leader | member: "nickname")?.charAt(0) }}</span>
 									}</span
 								><strong>{{ leader | member: "nickname" }}</strong></a
 							></span

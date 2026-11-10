@@ -184,6 +184,11 @@ ion-item ion-label h3 {
 
 	::ng-deep .bo-pill {
 		padding-block: 0.15em 0.05em;
+
+		@supports (text-box: trim-both cap alphabetic) {
+			padding-block: 0.45em;
+			text-box: trim-both cap alphabetic;
+		}
 	}
 }
 
