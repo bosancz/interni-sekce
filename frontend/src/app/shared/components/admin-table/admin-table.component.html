@@ -100,27 +100,37 @@
 							</div>
 						}
 						<ion-label>
-							@for (column of lineColumns(); track column) {
-								@if (column.primary()) {
-									<h3>
-										<ng-container
-											[ngTemplateOutlet]="column.cellTemplate()"
-											[ngTemplateOutletContext]="{ $implicit: row }"
-										></ng-container>
-									</h3>
-								} @else {
-									<p class="admin-table-line">
-										@if (column.header() && !column.hideMobileLabel()) {
-											<span class="admin-table-line-label">{{ column.header() }}:</span>
-										}
-										<span class="admin-table-line-value">
+							@for (column of primaryColumns(); track column) {
+								<h3>
+									<ng-container
+										[ngTemplateOutlet]="column.cellTemplate()"
+										[ngTemplateOutletContext]="{ $implicit: row }"
+									></ng-container>
+								</h3>
+							}
+							@if (valueColumns().length) {
+								<p class="admin-table-values">
+									@for (column of valueColumns(); track column) {
+										<span
+											class="admin-table-value"
+											[class.admin-table-value-join]="column.mobileJoin()"
+											adminTableValue
+										>
 											<ng-container
 												[ngTemplateOutlet]="column.cellTemplate()"
 												[ngTemplateOutletContext]="{ $implicit: row }"
 											></ng-container>
 										</span>
-									</p>
-								}
+									}
+								</p>
+							}
+							@for (column of blockColumns(); track column) {
+								<div class="admin-table-value admin-table-block" adminTableValue>
+									<ng-container
+										[ngTemplateOutlet]="column.cellTemplate()"
+										[ngTemplateOutletContext]="{ $implicit: row }"
+									></ng-container>
+								</div>
 							}
 						</ion-label>
 

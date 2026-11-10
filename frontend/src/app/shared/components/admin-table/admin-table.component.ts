@@ -9,6 +9,7 @@ import { PlatformService } from "src/app/core/services/platform.service";
 import { Action } from "../action-buttons/action-buttons.component";
 import { AdminTableActionsComponent } from "./admin-table-actions.component";
 import { AdminTableColumnComponent } from "./admin-table-column.component";
+import { AdminTableValueDirective } from "./admin-table-value.directive";
 
 export type AdminTableDisplay = "auto" | "table" | "list";
 export type AdminTableSortOrder = "ASC" | "DESC";
@@ -33,6 +34,7 @@ type RowFn<T> = ((row: any) => T) | null;
 		IonIcon,
 		IonSkeletonText,
 		AdminTableActionsComponent,
+		AdminTableValueDirective,
 	],
 })
 export class AdminTableComponent {
@@ -81,6 +83,13 @@ export class AdminTableComponent {
 	});
 
 	readonly lineColumns = computed(() => this.columns().filter((column) => !column.right() && !column.start()));
+	readonly primaryColumns = computed(() => this.lineColumns().filter((column) => column.primary()));
+	readonly valueColumns = computed(() =>
+		this.lineColumns().filter((column) => !column.primary() && !column.hideMobileLabel()),
+	);
+	readonly blockColumns = computed(() =>
+		this.lineColumns().filter((column) => !column.primary() && column.hideMobileLabel()),
+	);
 	readonly startColumn = computed(() => this.columns().find((column) => column.start()) ?? null);
 	readonly rightColumn = computed(() => this.columns().find((column) => column.right()) ?? null);
 

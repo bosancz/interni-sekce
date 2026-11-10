@@ -138,19 +138,44 @@ ion-item ion-label h3 {
 	margin-inline-end: 12px;
 }
 
-// A line of the mobile item: "label: value". Centred, so a value that is taller than its label —
-// a group badge, a pill — sits on the label's line rather than below it. A value too long to fit
-// wraps onto a line of its own, where the label is above it and the centring does not show.
-.admin-table-line {
+.admin-table-values {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 0.35em;
+	white-space: normal;
+	line-height: 1.6;
 }
 
-.admin-table-line-label {
-	color: var(--bo-muted);
-	font-weight: 600;
+.admin-table-value {
+	display: none;
+	align-items: center;
+	gap: 0.3em;
+
+	&.admin-table-value-filled {
+		display: inline-flex;
+	}
+
+	&.admin-table-value-filled:not(.admin-table-block):has(~ .admin-table-value-filled)::after {
+		content: ",";
+		margin-inline-start: -0.3em;
+		margin-inline-end: 0.3em;
+		color: var(--bo-muted);
+	}
+}
+
+.admin-table-value-join {
+	margin-inline-start: 0.3em;
+}
+
+.admin-table-value.admin-table-value-filled:not(.admin-table-block):has(
+		+ .admin-table-value-join.admin-table-value-filled
+	)::after {
+	content: none;
+}
+
+.admin-table-block.admin-table-value-filled {
+	display: block;
+	margin-top: 2px;
 }
 
 .admin-table-end {
