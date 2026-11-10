@@ -1,0 +1,46 @@
+<bo-modal-layout>
+	<h4 slot="title">Přejít na měsíc</h4>
+
+	<div class="bm-body">
+		<div class="mp-year">
+			<button type="button" class="mp-year-button" aria-label="Předchozí rok" (click)="changeYear(-1)">
+				<ion-icon name="chevron-back-outline"></ion-icon>
+			</button>
+			<span class="mp-year-label">
+				{{ year() }}
+				@if (loading()) {
+					<ion-spinner name="crescent" class="mp-loading" aria-label="Načítám akce"></ion-spinner>
+				}
+			</span>
+			<button type="button" class="mp-year-button" aria-label="Další rok" (click)="changeYear(1)">
+				<ion-icon name="chevron-forward-outline"></ion-icon>
+			</button>
+		</div>
+
+		<div class="mp-months">
+			@for (option of months(); track option.month) {
+				<button
+					type="button"
+					class="mp-month"
+					[class.selected]="option.selected"
+					[class.current]="option.current"
+					[attr.aria-pressed]="option.selected"
+					(click)="pick(option)"
+					(dblclick)="confirm()"
+				>
+					<span class="mp-month-name">{{ option.name }}</span>
+					<span class="mp-month-count" [class.empty]="option.count === 0">
+						@if (option.count !== undefined) {
+							{{ countLabel(option.count) }}
+						}
+					</span>
+				</button>
+			}
+		</div>
+	</div>
+
+	<div slot="buttons" class="bm-buttons mp-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="today()">Dnes</button>
+		<button type="button" class="bm-btn-primary" (click)="confirm()">{{ selectedLabel() }}</button>
+	</div>
+</bo-modal-layout>

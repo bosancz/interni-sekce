@@ -1,15 +1,15 @@
 <bo-page-header title="Kalendář" [actions]="actions()" />
 
-<bo-page-content>
-	<ion-refresher slot="fixed" (ionRefresh)="loadMorePrevious($event)">
-		<ion-refresher-content></ion-refresher-content>
-	</ion-refresher>
-
-	@if (platformService.isLandscape | async) {
-		<div class="p-3 text-center load-previous-link">
-			<a class="clickable" (click)="loadMorePrevious()">Načíst předchozí měsíc</a>
-		</div>
+<div class="weekdays" aria-hidden="true">
+	@for (day of weekdays; track day; let i = $index) {
+		<span [class.weekend]="i >= 5">{{ day }}</span>
 	}
+</div>
+
+<bo-page-content>
+	<ion-infinite-scroll position="top" [disabled]="!scrollReady()" (ionInfinite)="loadMorePrevious($event)">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
 
 	<bo-event-calendar
 		[dateFrom]="dateFrom()"
@@ -17,11 +17,25 @@
 		[events]="events()"
 		[cpv]="true"
 		[headingLevel]="3"
+		[monthLabels]="true"
 		[selection]="addEventEnabled()"
 		(select)="createEvent($event)"
 	></bo-event-calendar>
 
-	<ion-infinite-scroll (ionInfinite)="loadMoreFuture($event)">
+	<ion-infinite-scroll [disabled]="!scrollReady()" (ionInfinite)="loadMoreFuture($event)">
 		<ion-infinite-scroll-content></ion-infinite-scroll-content>
 	</ion-infinite-scroll>
 </bo-page-content>
+
+<div class="month-bar">
+	<button type="button" class="month-nav-button" aria-label="Předchozí měsíc" (click)="previousMonth()">
+		<ion-icon name="chevron-back-outline"></ion-icon>
+	</button>
+	<button type="button" class="month-title" aria-label="Přejít na měsíc" (click)="openMonthPicker()">
+		<span>{{ visibleMonthLabel() }}</span>
+	</button>
+	<button type="button" class="month-nav-button" aria-label="Další měsíc" (click)="nextMonth()">
+		<ion-icon name="chevron-forward-outline"></ion-icon>
+	</button>
+	<button type="button" class="today-button" [class.away]="!isCurrentMonth()" (click)="goToToday()">Dnes</button>
+</div>

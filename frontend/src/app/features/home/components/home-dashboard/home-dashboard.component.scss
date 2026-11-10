@@ -39,7 +39,45 @@
 
 .calendar-nav-buttons {
 	display: flex;
+	align-items: center;
 	gap: 0.25rem;
+}
+
+.calendar-month-button {
+	display: inline-flex;
+	white-space: nowrap;
+	align-items: center;
+	gap: 0.35rem;
+	margin-inline-start: -0.5rem;
+	padding: 0 0.5rem;
+	border: none;
+	border-radius: var(--bo-radius-btn);
+	background-color: transparent;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+
+	&:hover {
+		background-color: var(--bo-light);
+	}
+
+	ion-icon {
+		font-size: 0.9rem;
+	}
+}
+
+.calendar-today-button {
+	height: 2rem;
+	margin-inline-end: 0.25rem;
+	padding: 0 0.75rem;
+	border: 1.5px solid var(--bo-yellow);
+	border-radius: 1rem;
+	background-color: var(--bo-yellow);
+	color: #1f2430;
+	font-family: inherit;
+	font-size: 0.85rem;
+	font-weight: 800;
+	cursor: pointer;
 }
 
 .calendar-nav-button {

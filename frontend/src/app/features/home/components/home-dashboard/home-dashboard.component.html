@@ -157,7 +157,14 @@
 					<div class="calendar-card">
 						<div class="calendar-nav">
 							<h3 class="calendar-nav-title mb-0">
-								{{ monthTitle() }}
+								<button
+									type="button"
+									class="calendar-month-button"
+									aria-label="Přejít na měsíc"
+									(click)="openMonthPicker()"
+								>
+									{{ monthTitle() }}
+								</button>
 								@if (loading()) {
 									<ion-spinner
 										name="crescent"
@@ -167,6 +174,11 @@
 								}
 							</h3>
 							<div class="calendar-nav-buttons">
+								@if (!isCurrentMonth()) {
+									<button type="button" class="calendar-today-button" (click)="goToToday()">
+										Dnes
+									</button>
+								}
 								<button
 									type="button"
 									class="calendar-nav-button"
