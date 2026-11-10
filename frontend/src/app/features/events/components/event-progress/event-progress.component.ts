@@ -1,21 +1,18 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, input } from "@angular/core";
 import { Router } from "@angular/router";
 import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { DateTime } from "luxon";
 import { chatbubbleEllipsesOutline } from "ionicons/icons";
-import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
-import { ToastService } from "src/app/core/services/toast.service";
 import { EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
+import { EventTypes } from "src/app/core/config/event-types";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
-import { EventAnnouncementModalComponent } from "../event-announcement-modal/event-announcement-modal.component";
-import { EventAccountingModalComponent } from "../event-accounting-modal/event-accounting-modal.component";
-import { EventClosureItem, EventClosureModalComponent } from "../event-closure-modal/event-closure-modal.component";
+import { EventClosureModalComponent } from "../event-closure-modal/event-closure-modal.component";
 
 export interface EventProgressStep {
-	key: "draft" | "public" | "announcement" | "closure";
+	key: "draft" | "public" | "announcement" | "event" | "closure";
 	label: string;
 	reached: boolean;
 	active: boolean;
@@ -24,6 +21,7 @@ export interface EventProgressStep {
 	note: boolean;
 	accent: string;
 	accentOut: string;
+	image?: string;
 }
 
 const STEPS: { key: EventProgressStep["key"]; statuses: EventStatusID[] }[] = [
@@ -58,8 +56,6 @@ const CLOSURE_ITEMS = 3;
 export class EventProgressComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>(undefined);
 
-	change = output<void>();
-
 	statusNote = computed(() => this.event()?.statusNote || undefined);
 
 	private status = computed(() => this.event()?.status as EventStatusID | undefined);
@@ -75,6 +71,17 @@ export class EventProgressComponent {
 	private statusIndex = computed(() => {
 		const status = this.status();
 		return status ? STEPS.findIndex((step) => step.statuses.includes(status)) : -1;
+	});
+
+	private typeImage = computed(() => {
+		const type = this.event()?.type;
+		return type && type in EventTypes ? EventTypes[type as keyof typeof EventTypes].image : undefined;
+	});
+
+	private eventStarted = computed(() => {
+		const dateFrom = this.event()?.dateFrom;
+		if (!dateFrom) return false;
+		return DateTime.fromISO(dateFrom).startOf("day") <= DateTime.now();
 	});
 
 	private eventEnded = computed(() => {
@@ -93,7 +100,8 @@ export class EventProgressComponent {
 
 	private activeIndex = computed(() => {
 		if (!this.announcementSent()) return this.statusIndex();
-		return this.closureReached() ? STEPS.length + 1 : STEPS.length;
+		if (this.closureReached()) return STEPS.length + 2;
+		return this.eventStarted() ? STEPS.length + 1 : STEPS.length;
 	});
 
 	steps = computed<EventProgressStep[]>(() => {
@@ -119,9 +127,18 @@ export class EventProgressComponent {
 				key: "announcement" as const,
 				label: "Ohláška",
 				reached: activeIndex >= STEPS.length,
-				clickable: !!event && (this.announcementSent() || event._links.markAnnouncementSent.applicable),
+				clickable: !!event,
 				note: false,
 				accent: this.accentColor(),
+			},
+			{
+				key: "event" as const,
+				label: "Akce",
+				image: this.typeImage(),
+				reached: this.eventStarted(),
+				clickable: false,
+				note: false,
+				accent: !this.eventStarted() ? NEUTRAL_COLOR : this.eventEnded() ? DONE_COLOR : IN_PROGRESS_COLOR,
 			},
 			{
 				key: "closure" as const,
@@ -153,10 +170,8 @@ export class EventProgressComponent {
 	});
 
 	constructor(
-		private readonly api: ApiService,
 		private readonly router: Router,
 		private readonly modalService: ModalService,
-		private readonly toastService: ToastService,
 	) {
 		addIcons({ chatbubbleEllipsesOutline });
 	}
@@ -166,18 +181,7 @@ export class EventProgressComponent {
 		if (!step.clickable || !event) return;
 
 		if (step.key === "announcement") {
-			const result = await this.modalService.componentModal(
-				EventAnnouncementModalComponent,
-				{ event },
-				{ cssClass: "dialog-brand" },
-			);
-			if (!result || result.sent === !!event.announcementSentAt) return;
-
-			await this.callApi((id) =>
-				result.sent
-					? this.api.EventsApi.markAnnouncementSent(id)
-					: this.api.EventsApi.unmarkAnnouncementSent(id),
-			);
+			this.openTab("attendees");
 		}
 
 		if (step.key === "closure") {
@@ -186,41 +190,11 @@ export class EventProgressComponent {
 				{ event },
 				{ cssClass: "dialog-brand" },
 			);
-			if (item) await this.openClosureItem(item);
+			if (item) this.openTab(item);
 		}
 	}
 
-	private async openClosureItem(item: EventClosureItem) {
-		const event = this.event();
-		if (!event) return;
-
-		if (item === "accounting") {
-			const result = await this.modalService.componentModal(
-				EventAccountingModalComponent,
-				{ event },
-				{ cssClass: "dialog-brand" },
-			);
-			if (!result || result.sent === !!event.accountingSentAt) return;
-
-			await this.callApi((id) =>
-				result.sent ? this.api.EventsApi.markAccountingSent(id) : this.api.EventsApi.unmarkAccountingSent(id),
-			);
-			return;
-		}
-
-		this.router.navigate([], { queryParams: { tab: item }, queryParamsHandling: "merge" });
-	}
-
-	private async callApi(action: (eventId: number) => Promise<unknown>) {
-		const event = this.event();
-		if (!event) return;
-
-		try {
-			await action(event.id);
-			this.toastService.toast("Uloženo.");
-			this.change.emit();
-		} catch (e) {
-			this.toastService.toast("Nepodařilo se uložit změnu.", { color: "danger" });
-		}
+	private openTab(tab: string) {
+		this.router.navigate([], { queryParams: { tab }, queryParamsHandling: "merge" });
 	}
 }

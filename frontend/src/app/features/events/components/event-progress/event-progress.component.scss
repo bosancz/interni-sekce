@@ -38,6 +38,7 @@
 .rail {
 	display: flex;
 	align-items: center;
+	min-height: 1.75rem;
 }
 
 .track {
@@ -86,6 +87,37 @@
 		background: var(--bo-ink);
 		transform: translate(-50%, -50%) scale(0);
 		transition: transform 150ms;
+	}
+}
+
+.dot.type-icon {
+	width: 1.75rem;
+	height: 1.75rem;
+	padding: 2px;
+	background: var(--bo-line);
+
+	img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		filter: grayscale(1);
+		opacity: 0.45;
+		transition:
+			filter 300ms,
+			opacity 300ms;
+	}
+
+	&.filled {
+		background: var(--accent);
+
+		img {
+			filter: none;
+			opacity: 1;
+		}
+	}
+
+	&::after {
+		display: none;
 	}
 }
 
