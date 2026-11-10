@@ -21,6 +21,8 @@ type Attendee = SDK.EventAttendeeResponseWithLinks;
 
 const ROLE_ORDER = Object.keys(MemberRoles) as SDK.MemberRolesEnum[];
 
+const ROLE_SORT_ORDER = [...ROLE_ORDER].reverse();
+
 const collator = new Intl.Collator("cs");
 
 @Component({
@@ -47,7 +49,7 @@ export class EventAttendeesListComponent {
 	roleChange = output<{ attendee: Attendee; role: SDK.MemberRolesEnum }>();
 	leadChange = output<{ attendee: Attendee; lead: boolean }>();
 
-	sort = signal<string | null>("nickname");
+	sort = signal<string | null>("role");
 	order = signal<"ASC" | "DESC">("ASC");
 
 	private readonly groups = toSignal(this.groupsService.groups);
@@ -136,7 +138,7 @@ export class EventAttendeesListComponent {
 		const role = await this.modalService.selectModal<SDK.MemberRolesEnum>({
 			header: "Role na akci",
 			message: this.nickname(attendee),
-			values: [...ROLE_ORDER].reverse().map((value) => ({ value, label: MemberRoles[value].title })),
+			values: ROLE_SORT_ORDER.map((value) => ({ value, label: MemberRoles[value].title })),
 			value: attendee.role,
 			buttonText: "Uložit",
 		});
@@ -156,7 +158,7 @@ export class EventAttendeesListComponent {
 					return birthday ? -DateTime.fromISO(birthday).toMillis() : null;
 				};
 			case "role":
-				return (a) => (a.role ? ROLE_ORDER.indexOf(a.role) : null);
+				return (a) => (a.role ? ROLE_SORT_ORDER.indexOf(a.role) : null);
 			default:
 				return (a) => this.nickname(a) || null;
 		}
