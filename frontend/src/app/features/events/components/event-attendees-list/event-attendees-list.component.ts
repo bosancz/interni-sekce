@@ -1,29 +1,26 @@
 import { Component, computed, input, output, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { PlatformService } from "src/app/core/services/platform.service";
 import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { flag, flagOutline, swapHorizontalOutline, trashOutline } from "ionicons/icons";
 import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { GroupsService } from "src/app/core/services/groups.service";
-import { UserSettingsService } from "src/app/core/services/user-settings.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
-import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
-import { ColumnsSelectComponent } from "src/app/shared/components/columns-select/columns-select.component";
-import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
-import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
-import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
-import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
-import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
-import { GroupPipe } from "src/app/shared/pipes/group.pipe";
-import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
+import { AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
+import { FilterData } from "src/app/shared/components/filter/filter.component";
+import { PeopleColumns } from "src/app/shared/components/people-table/people-columns";
+import { PeopleFilterComponent } from "src/app/shared/components/people-table/people-filter.component";
+import {
+	PeopleNicknameSuffixDirective,
+	PeopleTableComponent,
+} from "src/app/shared/components/people-table/people-table.component";
+import { SortOption } from "src/app/shared/components/sort-select/sort-select.component";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
-import { MemberPipe } from "../../../../shared/pipes/member.pipe";
-import { RolePipe } from "../../../../shared/pipes/role.pipe";
 import { AttendeeNote } from "./attendee-note";
 
 type Attendee = SDK.EventAttendeeResponseWithLinks;
@@ -34,15 +31,24 @@ const ROLE_SORT_ORDER = [...ROLE_ORDER].reverse();
 
 const collator = new Intl.Collator("cs");
 
-const ATTENDEES_COLUMNS: FilterPillOption[] = [
-	{ value: "photo", label: "Fotka" },
-	{ value: "firstName", label: "Jméno" },
-	{ value: "lastName", label: "Příjmení" },
-	{ value: "group", label: "Oddíl" },
-	{ value: "role", label: "Role" },
-	{ value: "age", label: "Věk" },
-	{ value: "notes", label: "Poznámky" },
+const ATTENDEES_COLUMNS = [
+	"photo",
+	"nickname",
+	"firstName",
+	"lastName",
+	"group",
+	"role",
+	"age",
+	"birthday",
+	"addressCity",
+	"addressStreet",
+	"firstTelephone",
+	"firstEmail",
+	"status",
+	"notes",
 ];
+
+const ATTENDEES_DEFAULT_COLUMNS = ["photo", "nickname", "firstName", "lastName", "group", "role", "age", "notes"];
 
 const SORT_OPTIONS: SortOption[] = [
 	{ key: "nickname", label: "Přezdívka" },
@@ -51,6 +57,10 @@ const SORT_OPTIONS: SortOption[] = [
 	{ key: "group", label: "Oddíl" },
 	{ key: "role", label: "Role" },
 	{ key: "age", label: "Věk" },
+	{ key: "birthday", label: "Datum narození" },
+	{ key: "city", label: "Město" },
+	{ key: "street", label: "Ulice" },
+	{ key: "status", label: "Stav" },
 ];
 
 const normalize = (value: string) =>
@@ -66,19 +76,12 @@ const normalize = (value: string) =>
 
 	imports: [
 		IonIcon,
-		AdminTableComponent,
 		AdminTableColumnComponent,
 		AdminTableCellDirective,
-		AvatarComponent,
-		ColumnsSelectComponent,
-		FilterComponent,
-		FilterPillComponent,
-		SortSelectComponent,
-		GroupBadgeComponent,
-		GroupPipe,
-		MemberPipe,
-		MemberProfilePhotoUrlPipe,
-		RolePipe,
+		PeopleFilterComponent,
+		PeopleTableComponent,
+		PeopleNicknameSuffixDirective,
+		TooltipDirective,
 	],
 })
 export class EventAttendeesListComponent {
@@ -90,26 +93,24 @@ export class EventAttendeesListComponent {
 	roleChange = output<{ attendee: Attendee; role: SDK.MemberRolesEnum }>();
 	leadChange = output<{ attendee: Attendee; lead: boolean }>();
 
-	private readonly savedColumns = this.userSettings.watch("eventAttendeesColumns");
-
-	readonly columnOptions = ATTENDEES_COLUMNS;
-
-	columns = computed(() => {
-		const saved = this.savedColumns();
-		return Object.fromEntries(ATTENDEES_COLUMNS.map(({ value }) => [value, saved?.[value] ?? true]));
+	readonly columns = new PeopleColumns({
+		settingsKey: "eventAttendeesColumns",
+		columns: ATTENDEES_COLUMNS,
+		defaults: ATTENDEES_DEFAULT_COLUMNS,
+		labels: { notes: "Poznámky" },
 	});
 
-	selectedColumns = computed(() =>
-		Object.entries(this.columns())
-			.filter(([, visible]) => visible)
-			.map(([key]) => key),
-	);
+	readonly columnOrder = ATTENDEES_COLUMNS;
+
+	readonly sortableKeys = SORT_OPTIONS.map((option) => option.key);
+
+	memberOf = (attendee: Attendee) => attendee.member;
+
+	roleOf = (attendee: Attendee) => attendee.role;
 
 	readonly sortOptions = SORT_OPTIONS;
 
 	search = signal<string>("");
-
-	isDesktop = toSignal(this.platformService.isLg, { initialValue: true });
 
 	sort = signal<string | null>("role");
 	order = signal<"ASC" | "DESC">("ASC");
@@ -198,22 +199,12 @@ export class EventAttendeesListComponent {
 	constructor(
 		private readonly groupsService: GroupsService,
 		private readonly modalService: ModalService,
-		private readonly userSettings: UserSettingsService,
-		private readonly platformService: PlatformService,
 	) {
 		addIcons({ flag });
 	}
 
 	onFilterChange(filter: FilterData) {
 		this.search.set(String(filter["search"] ?? ""));
-	}
-
-	setColumns(keys: string[]) {
-		const selected = new Set(keys);
-		this.userSettings.set(
-			"eventAttendeesColumns",
-			Object.fromEntries(ATTENDEES_COLUMNS.map(({ value }) => [value, selected.has(value)])),
-		);
 	}
 
 	setSort(sort: AdminTableSort) {
@@ -234,10 +225,6 @@ export class EventAttendeesListComponent {
 
 	private sortKey(sort: string): (attendee: Attendee) => string | number | null {
 		switch (sort) {
-			case "firstName":
-				return (a) => [a.member?.firstName, a.member?.lastName].filter(Boolean).join(" ") || null;
-			case "lastName":
-				return (a) => [a.member?.lastName, a.member?.firstName].filter(Boolean).join(" ") || null;
 			case "group":
 				return (a) => {
 					const groupId = a.member?.groupId;
@@ -248,8 +235,23 @@ export class EventAttendeesListComponent {
 					const birthday = a.member?.birthday;
 					return birthday ? -DateTime.fromISO(birthday).toMillis() : null;
 				};
+			case "birthday":
+				return (a) => {
+					const birthday = a.member?.birthday;
+					return birthday ? DateTime.fromISO(birthday).toMillis() : null;
+				};
 			case "role":
 				return (a) => (a.role ? ROLE_SORT_ORDER.indexOf(a.role) : null);
+			case "firstName":
+				return (a) => [a.member?.firstName, a.member?.lastName].filter(Boolean).join(" ") || null;
+			case "lastName":
+				return (a) => [a.member?.lastName, a.member?.firstName].filter(Boolean).join(" ") || null;
+			case "city":
+				return (a) => a.member?.addressCity || null;
+			case "street":
+				return (a) => a.member?.addressStreet || null;
+			case "status":
+				return (a) => (a.member ? (a.member.active ? 0 : 1) : null);
 			default:
 				return (a) => this.nickname(a) || null;
 		}

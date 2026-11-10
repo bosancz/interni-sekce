@@ -1,66 +1,4 @@
-:host ::ng-deep .members-table {
-	table-layout: fixed;
-	width: 100%;
-
-	.members-achievements-column {
-		width: 84px;
-		vertical-align: middle;
-	}
-
-	.members-badges-column {
-		width: 128px;
-		vertical-align: middle;
-	}
-
-	.members-photo-column {
-		width: 56px;
-		vertical-align: middle;
-	}
-}
-
-.members-photo {
-	font-size: 2rem;
-}
-
-ion-select::part(text) {
-	font-weight: normal;
-}
-
-.members-filter-actions {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 4px;
-
-	ion-button ion-icon {
-		font-size: 28px;
-	}
-}
-
-.members-filter-modal {
-	.members-filter-modal-pills {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		padding: 8px 12px 4px;
-
-		bo-filter-pill {
-			display: block;
-		}
-
-		::ng-deep .filter-pill-button {
-			width: 100%;
-			margin-inline: 0;
-			justify-content: space-between;
-		}
-	}
-
-	ion-list:not(:first-child) {
-		margin-top: 8px;
-	}
-}
-
-.members-filter-actions .members-mail-button ion-icon {
+.members-mail-button ion-icon {
 	font-size: 20px;
 }
 
@@ -69,7 +7,7 @@ ion-select::part(text) {
 		display: none;
 	}
 
-	.members-filter-actions .members-mail-button {
+	.members-mail-button {
 		--padding-start: 0.5rem;
 		--padding-end: 0.5rem;
 

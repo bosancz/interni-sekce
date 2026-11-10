@@ -1,117 +1,48 @@
 <bo-page-header title="Databáze" [actions]="actions()" />
 
-<bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
-	@if (isDesktop()) {
-		<div toolbar-actions slot="end" class="members-filter-actions">
-			<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
-
-			<bo-columns-select
-				[options]="columnOptions()"
-				[selected]="selectedColumns()"
-				(selectedChange)="setColumnSelection($event)"
-			/>
-
-			<ion-button fill="clear" size="small" id="inactive-popover-trigger" boTooltip="Zobrazení">
-				<ion-icon slot="icon-only" name="eye-outline"></ion-icon>
-			</ion-button>
-		</div>
-	} @else {
-		<div class="members-filter-modal">
-			<ion-list lines="full">
-				<ion-item-divider>Filtry</ion-item-divider>
-				<div class="members-filter-modal-pills">
-					<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
-				</div>
-			</ion-list>
-
-			<bo-sort-select
-				[options]="sortOptions"
-				[sort]="sortColumn()"
-				[order]="sortOrder()"
-				(sortChange)="onSortChange($event)"
-			/>
-
-			<ion-list lines="full">
-				<ion-item-divider>Sloupce</ion-item-divider>
-				<div class="members-filter-modal-pills">
-					<bo-filter-pill
-						label="Vybrat sloupce"
-						[options]="columnOptions()"
-						[selected]="selectedColumns()"
-						[columns]="2"
-						(selectedChange)="setColumnSelection($event)"
-					/>
-				</div>
-			</ion-list>
-
-			<ion-list lines="full">
-				<ng-container [ngTemplateOutlet]="viewOptionsList"></ng-container>
-			</ion-list>
-		</div>
-	}
-</bo-filter>
-
-<ng-template #filterPills>
-	<bo-filter-pill
-		label="Oddíl"
-		[multiple]="false"
-		[options]="groupOptions()"
-		[selected]="selectedGroups()"
-		(selectedChange)="setFilterParam('groups', $event)"
-	/>
-	<bo-filter-pill
-		label="Role"
-		[options]="roleOptions"
-		[selected]="selectedRoles()"
-		(selectedChange)="setFilterParam('roles', $event)"
-	/>
-	<bo-filter-pill
-		label="Členství"
-		[options]="membershipOptions"
-		[selected]="selectedMembership()"
-		(selectedChange)="setFilterParam('membership', $event)"
-	/>
-	<bo-filter-pill
-		label="Ocenění"
-		[options]="achievementOptions"
-		[selected]="selectedAchievements()"
-		(selectedChange)="setFilterParam('achievements', $event)"
-	/>
-</ng-template>
-
-<ng-template #viewOptionsList>
-	<ion-item-divider>Zobrazení</ion-item-divider>
-	<ion-item lines="none">
-		<ion-toggle
-			[checked]="showInactive()"
-			(ionChange)="setFilterParam('active', $event.detail.checked ? 'all' : null)"
-			justify="space-between"
-		>
-			Zobrazit i neaktivní
-		</ion-toggle>
-	</ion-item>
-</ng-template>
-
-<ion-popover
-	trigger="inactive-popover-trigger"
-	triggerAction="click"
-	cssClass="view-options-popover"
-	[dismissOnSelect]="false"
+<bo-people-filter
+	[columns]="columns"
+	[sortOptions]="sortOptions"
+	[sort]="sortColumn()"
+	[order]="sortOrder()"
+	[showInactive]="showInactive()"
+	(sortChange)="onSortChange($event)"
+	(showInactiveChange)="setFilterParam('active', $event ? 'all' : null)"
 >
-	<ng-template>
-		<ion-content>
-			<ion-list lines="full">
-				<ng-container [ngTemplateOutlet]="viewOptionsList"></ng-container>
-			</ion-list>
-		</ion-content>
+	<ng-template boPeopleFilterPills>
+		<bo-filter-pill
+			label="Oddíl"
+			[multiple]="false"
+			[options]="groupOptions()"
+			[selected]="selectedGroups()"
+			(selectedChange)="setFilterParam('groups', $event)"
+		/>
+		<bo-filter-pill
+			label="Role"
+			[options]="roleOptions"
+			[selected]="selectedRoles()"
+			(selectedChange)="setFilterParam('roles', $event)"
+		/>
+		<bo-filter-pill
+			label="Členství"
+			[options]="membershipOptions"
+			[selected]="selectedMembership()"
+			(selectedChange)="setFilterParam('membership', $event)"
+		/>
+		<bo-filter-pill
+			label="Ocenění"
+			[options]="achievementOptions"
+			[selected]="selectedAchievements()"
+			(selectedChange)="setFilterParam('achievements', $event)"
+		/>
 	</ng-template>
-</ion-popover>
+</bo-people-filter>
 
 <ion-content>
-	<admin-table
-		[class]="'members-table'"
+	<bo-people-table
 		[rows]="members()"
 		[loading]="members() === undefined"
+		[visible]="columns.visible()"
 		[rowLink]="rowLink"
 		[rowClass]="rowClass"
 		[actions]="memberActions"
@@ -119,181 +50,7 @@
 		[sort]="sortColumn()"
 		[order]="sortOrder()"
 		(sortChange)="onSortChange($event)"
-	>
-		@if (viewSelections().photo) {
-			<admin-table-column [start]="true" headerClass="members-photo-column" cellClass="members-photo-column">
-				<ng-container *adminCell="let member">
-					@let photoUrl = member | memberProfilePhotoUrl;
-					<bo-avatar class="members-photo" [photoUrl]="photoUrl" [color]="member.groupId | group: 'color'" />
-				</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().nickname) {
-			<admin-table-column
-				header="Přezdívka"
-				sort="nickname"
-				[primary]="true"
-				headerClass="align-middle members-nickname-column"
-			>
-				<ng-container *adminCell="let member">{{ member.nickname || member.firstName }}</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().firstName) {
-			<admin-table-column header="Jméno" sort="firstName" headerClass="align-middle members-name-column">
-				<ng-container *adminCell="let member">{{ member.firstName }}</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().lastName) {
-			<admin-table-column
-				header="Příjmení"
-				sort="lastName"
-				[mobileJoin]="true"
-				headerClass="align-middle members-name-column"
-			>
-				<ng-container *adminCell="let member">{{ member.lastName }}</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().group) {
-			<admin-table-column header="Oddíl" sort="group" headerClass="align-middle" [right]="true">
-				<ng-container *adminCell="let member">
-					<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
-				</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().role) {
-			<admin-table-column header="Role" sort="role" headerClass="align-middle">
-				<ng-container *adminCell="let member">{{ member | member: "role" }}</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().age) {
-			<admin-table-column header="Věk" sort="age" headerClass="align-middle">
-				<ng-container *adminCell="let member">
-					@if (member | member: "age"; as age) {
-						{{ age }} let
-					}
-				</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().membership) {
-			<admin-table-column header="Členství" sort="membership">
-				<ng-container *adminCell="let member">{{ member | member: "membership" }}</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().birthday) {
-			<admin-table-column header="Datum narození" sort="birthday" headerClass="align-middle">
-				<ng-container *adminCell="let member">{{
-					member.birthday ? (member.birthday | date: "d. M. y") : ""
-				}}</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().addressCity) {
-			<admin-table-column header="Město" sort="city" headerClass="align-middle">
-				<ng-container *adminCell="let member">{{ member.addressCity }}</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().addressStreet) {
-			<admin-table-column header="Ulice" sort="street" headerClass="align-middle">
-				<ng-container *adminCell="let member">{{ member.addressStreet }}</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().firstTelephone) {
-			<admin-table-column header="Telefon" headerClass="align-middle">
-				<ng-container *adminCell="let member">
-					@if (member.contacts | defaultContact; as contact) {
-						@for (value of contact.mobile; track $index) {
-							<div>
-								@if ($first) {
-									<strong>{{ contact.relationship }}</strong>
-								}
-								{{ value }}
-							</div>
-						}
-					}
-				</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().firstEmail) {
-			<admin-table-column header="E-mail" headerClass="align-middle">
-				<ng-container *adminCell="let member">
-					@if (member.contacts | defaultContact; as contact) {
-						@for (value of contact.email; track $index) {
-							<div>
-								@if ($first) {
-									<strong>{{ contact.relationship }}</strong>
-								}
-								{{ value }}
-							</div>
-						}
-					}
-				</ng-container>
-			</admin-table-column>
-		}
-
-		@if (isDesktop()) {
-			@if (viewSelections().achievements) {
-				<admin-table-column
-					header="Ocenění"
-					headerClass="align-middle members-achievements-column"
-					cellClass="members-achievements-column"
-				>
-					<ng-container *adminCell="let member">
-						<bo-member-badges-inline [member]="member" [achievements]="true" />
-					</ng-container>
-				</admin-table-column>
-			}
-			@if (viewSelections().trainings) {
-				<admin-table-column
-					header="Školení"
-					headerClass="align-middle members-badges-column"
-					cellClass="members-badges-column"
-				>
-					<ng-container *adminCell="let member">
-						<bo-member-badges-inline [member]="member" [trainings]="true" />
-					</ng-container>
-				</admin-table-column>
-			}
-		} @else if (needsBadges()) {
-			<admin-table-column header="Nášivky" [hideMobileLabel]="true">
-				<ng-container *adminCell="let member">
-					<bo-member-badges-inline
-						[member]="member"
-						[achievements]="!!viewSelections().achievements"
-						[trainings]="!!viewSelections().trainings"
-					/>
-				</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().status) {
-			<admin-table-column
-				header="Stav"
-				sort="status"
-				[right]="true"
-				cellClass="members-status-column"
-				headerClass="align-middle members-status-column"
-			>
-				<ng-container *adminCell="let member">
-					@if (member.active) {
-						<span class="bo-pill bo-pill-green">AKTIVNÍ</span>
-					} @else {
-						<span class="bo-pill">NEAKTIVNÍ</span>
-					}
-				</ng-container>
-			</admin-table-column>
-		}
-	</admin-table>
+	/>
 
 	@if (members()?.length) {
 		<p class="ion-padding members-active-toggle">

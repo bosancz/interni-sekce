@@ -6,6 +6,8 @@ import { AdminTableCellDirective } from "./admin-table-cell.directive";
 	template: "",
 })
 export class AdminTableColumnComponent {
+	key = input<string>("");
+
 	header = input<string>("");
 
 	right = input<boolean>(false);

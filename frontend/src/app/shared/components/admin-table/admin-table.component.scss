@@ -128,6 +128,29 @@ table.table {
 	}
 }
 
+ion-item:has(+ .admin-table-below-item .admin-table-value-filled) {
+	--border-width: 0;
+	--inner-border-width: 0;
+}
+
+.admin-table-below-item {
+	display: flow-root;
+	padding: 0 16px 10px;
+	border-bottom: 1px solid var(--bo-line);
+
+	&:not(:has(.admin-table-value-filled)) {
+		display: none;
+	}
+
+	&:last-child {
+		border-bottom: none;
+	}
+
+	&.clickable {
+		cursor: pointer;
+	}
+}
+
 ion-item.clickable {
 	cursor: pointer;
 }

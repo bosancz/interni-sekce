@@ -70,7 +70,11 @@ export class AdminTableComponent {
 
 	sortChange = output<AdminTableSort>();
 
-	readonly columns = contentChildren(AdminTableColumnComponent);
+	columnDefs = input<readonly AdminTableColumnComponent[] | null>(null);
+
+	private readonly contentColumns = contentChildren(AdminTableColumnComponent);
+
+	readonly columns = computed(() => this.columnDefs() ?? this.contentColumns());
 
 	readonly tableClass = computed(() => this.defaultTableClass + (this.class() ? " " + this.class() : ""));
 
@@ -88,7 +92,7 @@ export class AdminTableComponent {
 		this.lineColumns().filter((column) => !column.primary() && !column.hideMobileLabel() && !column.below()),
 	);
 	readonly blockColumns = computed(() =>
-		this.lineColumns().filter((column) => !column.primary() && (column.hideMobileLabel() || column.below())),
+		this.lineColumns().filter((column) => !column.primary() && column.hideMobileLabel() && !column.below()),
 	);
 	readonly tableColumns = computed(() => this.columns().filter((column) => !column.below()));
 	readonly belowColumns = computed(() => this.columns().filter((column) => column.below()));

@@ -4,25 +4,9 @@
 	display: block;
 }
 
-.attendees-photo {
-	font-size: 2rem;
-}
-
-.attendees-filter {
+.attendees-filter,
+.attendees-table {
 	margin-inline: -16px;
-}
-
-.attendees-filter-section {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	padding: 8px 16px;
-}
-
-.attendees-filter-label {
-	color: var(--bo-muted);
-	font-size: 0.8125rem;
-	font-weight: 700;
 }
 
 .attendees-empty {
@@ -30,21 +14,12 @@
 }
 
 :host ::ng-deep .attendees-table {
-	td.attendees-wrap {
-		white-space: normal;
-	}
-
-	.attendees-photo-column {
-		width: 1%;
-	}
-
 	tr.attendee-festive {
 		--bo-table-row-bg: var(--bo-yellow-tint);
 	}
 }
 
 :host ::ng-deep admin-table ion-list {
-	margin-inline: -16px;
 	padding: 0;
 }
 
@@ -52,28 +27,17 @@
 	--background: var(--bo-yellow-tint);
 }
 
-.nickname-cell {
-	display: inline-flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 0.5rem;
+:host ::ng-deep .admin-table-below-item.attendee-festive {
+	background: var(--bo-yellow-tint);
 }
 
 .lead-tag {
 	display: inline-flex;
 	align-items: center;
-	gap: 4px;
-	padding: 3px 8px;
-	border-radius: var(--bo-radius-pill);
-	background-color: var(--bo-yellow-tint);
 	color: var(--bo-yellow-deep);
-	font-size: 12px;
-	font-weight: 800;
-	line-height: 1.2;
-	white-space: nowrap;
 
 	ion-icon {
-		font-size: 12px;
+		font-size: 16px;
 	}
 }
 
@@ -121,9 +85,4 @@
 .note-low {
 	background-color: var(--bo-green-tint);
 	color: var(--bo-green);
-}
-
-:host ::ng-deep admin-table ion-item .admin-table-start {
-	align-self: flex-start;
-	margin-top: 16px;
 }

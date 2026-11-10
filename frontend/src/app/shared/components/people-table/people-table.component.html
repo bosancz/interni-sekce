@@ -1,0 +1,199 @@
+<admin-table-column key="photo" [start]="true" headerClass="people-photo-column" cellClass="people-photo-column">
+	<ng-container *adminCell="let row">
+		@let member = memberOf(row);
+		<bo-avatar
+			class="people-photo"
+			[photoUrl]="member | memberProfilePhotoUrl"
+			[color]="member?.groupId | group: 'color'"
+		/>
+	</ng-container>
+</admin-table-column>
+
+<admin-table-column
+	key="nickname"
+	header="Přezdívka"
+	[sort]="sortKey('nickname')"
+	[primary]="true"
+	headerClass="align-middle people-nickname-column"
+	cellClass="align-middle people-wrap"
+>
+	<ng-container *adminCell="let row">
+		@let member = memberOf(row);
+		@if (nicknameSuffix(); as suffix) {
+			<span class="people-nickname">
+				<span>{{ member?.nickname || member?.firstName }}</span>
+				<ng-container [ngTemplateOutlet]="suffix.template" [ngTemplateOutletContext]="{ $implicit: row }" />
+			</span>
+		} @else {
+			{{ member?.nickname || member?.firstName }}
+		}
+	</ng-container>
+</admin-table-column>
+
+<admin-table-column key="firstName" header="Jméno" [sort]="sortKey('firstName')" headerClass="align-middle">
+	<ng-container *adminCell="let row">{{ memberOf(row)?.firstName }}</ng-container>
+</admin-table-column>
+
+<admin-table-column
+	key="lastName"
+	header="Příjmení"
+	[sort]="sortKey('lastName')"
+	[mobileJoin]="true"
+	headerClass="align-middle"
+>
+	<ng-container *adminCell="let row">{{ memberOf(row)?.lastName }}</ng-container>
+</admin-table-column>
+
+<admin-table-column
+	key="group"
+	header="Oddíl"
+	[sort]="sortKey('group')"
+	[right]="rightColumn() === 'group'"
+	headerClass="align-middle"
+	cellClass="align-middle"
+>
+	<ng-container *adminCell="let row">
+		@if (memberOf(row); as member) {
+			<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
+		}
+	</ng-container>
+</admin-table-column>
+
+<admin-table-column
+	key="role"
+	header="Role"
+	[sort]="sortKey('role')"
+	headerClass="align-middle"
+	cellClass="align-middle"
+>
+	<ng-container *adminCell="let row">{{ roleOf(row) | role: "title" }}</ng-container>
+</admin-table-column>
+
+<admin-table-column key="age" header="Věk" [sort]="sortKey('age')" headerClass="align-middle" cellClass="align-middle">
+	<ng-container *adminCell="let row">
+		@if (memberOf(row) | member: "age" : ageAt(); as age) {
+			{{ age }} let
+		}
+	</ng-container>
+</admin-table-column>
+
+<admin-table-column key="membership" header="Členství" [sort]="sortKey('membership')" headerClass="align-middle">
+	<ng-container *adminCell="let row">{{ memberOf(row) | member: "membership" }}</ng-container>
+</admin-table-column>
+
+<admin-table-column key="birthday" header="Datum narození" [sort]="sortKey('birthday')" headerClass="align-middle">
+	<ng-container *adminCell="let row">
+		@if (memberOf(row)?.birthday; as birthday) {
+			{{ birthday | date: "d. M. y" }}
+		}
+	</ng-container>
+</admin-table-column>
+
+<admin-table-column key="addressCity" header="Město" [sort]="sortKey('addressCity')" headerClass="align-middle">
+	<ng-container *adminCell="let row">{{ memberOf(row)?.addressCity }}</ng-container>
+</admin-table-column>
+
+<admin-table-column key="addressStreet" header="Ulice" [sort]="sortKey('addressStreet')" headerClass="align-middle">
+	<ng-container *adminCell="let row">{{ memberOf(row)?.addressStreet }}</ng-container>
+</admin-table-column>
+
+<admin-table-column key="firstTelephone" header="Telefon" headerClass="align-middle">
+	<ng-container *adminCell="let row">
+		@if (memberOf(row)?.contacts | defaultContact; as contact) {
+			@for (value of contact.mobile; track $index) {
+				<div>
+					@if ($first) {
+						<strong>{{ contact.relationship }}</strong>
+					}
+					{{ value }}
+				</div>
+			}
+		}
+	</ng-container>
+</admin-table-column>
+
+<admin-table-column key="firstEmail" header="E-mail" headerClass="align-middle">
+	<ng-container *adminCell="let row">
+		@if (memberOf(row)?.contacts | defaultContact; as contact) {
+			@for (value of contact.email; track $index) {
+				<div>
+					@if ($first) {
+						<strong>{{ contact.relationship }}</strong>
+					}
+					{{ value }}
+				</div>
+			}
+		}
+	</ng-container>
+</admin-table-column>
+
+<admin-table-column
+	key="achievements"
+	header="Ocenění"
+	headerClass="align-middle people-achievements-column"
+	cellClass="people-achievements-column"
+>
+	<ng-container *adminCell="let row">
+		@if (memberOf(row); as member) {
+			<bo-member-badges-inline [member]="member" [achievements]="true" />
+		}
+	</ng-container>
+</admin-table-column>
+
+<admin-table-column
+	key="trainings"
+	header="Školení"
+	headerClass="align-middle people-trainings-column"
+	cellClass="people-trainings-column"
+>
+	<ng-container *adminCell="let row">
+		@if (memberOf(row); as member) {
+			<bo-member-badges-inline [member]="member" [trainings]="true" />
+		}
+	</ng-container>
+</admin-table-column>
+
+<admin-table-column key="badges" header="Nášivky" [hideMobileLabel]="true">
+	<ng-container *adminCell="let row">
+		@if (memberOf(row); as member) {
+			<bo-member-badges-inline
+				[member]="member"
+				[achievements]="!!visible()['achievements']"
+				[trainings]="!!visible()['trainings']"
+			/>
+		}
+	</ng-container>
+</admin-table-column>
+
+<admin-table-column
+	key="status"
+	header="Stav"
+	[sort]="sortKey('status')"
+	[right]="rightColumn() === 'status'"
+	headerClass="align-middle people-status-column"
+	cellClass="people-status-column"
+>
+	<ng-container *adminCell="let row">
+		@if (memberOf(row)?.active) {
+			<span class="bo-pill bo-pill-green">AKTIVNÍ</span>
+		} @else {
+			<span class="bo-pill">NEAKTIVNÍ</span>
+		}
+	</ng-container>
+</admin-table-column>
+
+<admin-table
+	[class]="'people-table'"
+	[columnDefs]="columns()"
+	[rows]="rows()"
+	[loading]="loading()"
+	[skeletonRows]="skeletonRows()"
+	[rowLink]="rowLink()"
+	[rowClass]="rowClass()"
+	[trackBy]="trackBy()"
+	[actions]="actions()"
+	[actionsHeader]="actionsHeader()"
+	[sort]="sort()"
+	[order]="order()"
+	(sortChange)="sortChange.emit($event)"
+/>

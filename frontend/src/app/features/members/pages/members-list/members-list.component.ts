@@ -1,75 +1,40 @@
 import { MEMBER_ACHIEVEMENT_FILTER_OPTIONS } from "src/app/core/config/member-achievements";
-import { DatePipe, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, effect, inject, OnInit, signal, untracked } from "@angular/core";
-import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
-	IonButton,
 	IonContent,
-	IonIcon,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
-	IonItem,
-	IonItemDivider,
-	IonList,
-	IonPopover,
-	IonToggle,
 	ViewWillEnter,
 	ViewWillLeave,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline, arrowUndoOutline, downloadOutline, eyeOutline, schoolOutline, trashOutline } from "ionicons/icons";
+import { addOutline, arrowUndoOutline, downloadOutline, schoolOutline, trashOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
-import { UserSettingsService } from "src/app/core/services/user-settings.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
-import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
-import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
-import { ColumnsSelectComponent } from "src/app/shared/components/columns-select/columns-select.component";
+import { AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
+import { FilterData } from "src/app/shared/components/filter/filter.component";
+import { PeopleColumns } from "src/app/shared/components/people-table/people-columns";
+import {
+	PeopleFilterComponent,
+	PeopleFilterPillsDirective,
+} from "src/app/shared/components/people-table/people-filter.component";
+import { PeopleTableComponent } from "src/app/shared/components/people-table/people-table.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
-import { MemberBadgesInlineComponent } from "src/app/shared/components/member-badges-inline/member-badges-inline.component";
-import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
-import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
+import { SortOption } from "src/app/shared/components/sort-select/sort-select.component";
 import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
-import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
-import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
-import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
-import { MemberPipe } from "src/app/shared/pipes/member.pipe";
-import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
-import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
 import { SDK } from "src/sdk";
 import { MembershipPaymentStates } from "../../../../core/config/membership";
 import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
 import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loading";
-
-const MEMBERS_LIST_COLUMNS: { [key: string]: boolean } = {
-	photo: true,
-	nickname: true,
-	firstName: true,
-	lastName: true,
-	group: true,
-	role: true,
-	age: true,
-	membership: false,
-	birthday: false,
-	addressCity: false,
-	addressStreet: false,
-	firstTelephone: false,
-	firstEmail: false,
-	status: false,
-	achievements: false,
-	trainings: false,
-};
-
-const BADGE_COLUMNS = ["achievements", "trainings"];
 
 @UntilDestroy()
 @Component({
@@ -79,43 +44,20 @@ const BADGE_COLUMNS = ["achievements", "trainings"];
 
 	imports: [
 		PageHeaderComponent,
-		MemberBadgesInlineComponent,
-		FilterComponent,
+		PeopleFilterComponent,
+		PeopleFilterPillsDirective,
+		PeopleTableComponent,
+		FilterPillComponent,
 		IonContent,
-		IonList,
-		IonItem,
-		IonItemDivider,
-		IonButton,
-		IonPopover,
-		IonToggle,
-		IonIcon,
-		AdminTableComponent,
-		AdminTableColumnComponent,
-		AdminTableCellDirective,
-		FormsModule,
-		MemberPipe,
-		MemberProfilePhotoUrlPipe,
-		AvatarComponent,
-		GroupPipe,
-		DefaultContactPipe,
-		GroupBadgeComponent,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
-		DatePipe,
-		ColumnsSelectComponent,
-		FilterPillComponent,
-		SortSelectComponent,
-		NgTemplateOutlet,
-		TooltipDirective,
 	],
 	providers: [FilterModel],
 })
 export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeave {
 	private model = inject(FilterModel);
 
-	private userSettings = inject(UserSettingsService);
-
-	private savedColumns = this.userSettings.watch("membersListColumns");
+	readonly columns = new PeopleColumns({ settingsKey: "membersListColumns" });
 
 	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
 	groups = signal<SDK.GroupResponseWithLinks[]>([]);
@@ -228,8 +170,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 	private latestLoadId = 0;
 
-	viewSelections = signal<{ [key: string]: boolean }>(this.mergeColumns(this.savedColumns()));
-
 	constructor(
 		private api: ApiService,
 		private route: ActivatedRoute,
@@ -243,15 +183,15 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			addOutline,
 			arrowUndoOutline,
 			downloadOutline,
-			eyeOutline,
 			schoolOutline,
 			trashOutline,
 		});
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 
 		effect(() => {
-			const saved = this.savedColumns();
-			untracked(() => this.applySavedColumns(saved));
+			const needsContacts = this.columns.needsContacts();
+			const needsBadges = this.columns.needsBadges();
+			untracked(() => this.reloadForColumns(needsContacts, needsBadges));
 		});
 	}
 
@@ -394,8 +334,8 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			limit: this.pageSize,
 			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
 			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,
-			contacts: this.needsContacts() || undefined,
-			badges: this.needsBadges() || undefined,
+			contacts: this.columns.needsContacts() || undefined,
+			badges: this.columns.needsBadges() || undefined,
 			sort: (filter["sort"] as string) || undefined,
 			order: (filter["order"] as SDK.ListMembersOrderEnum) || undefined,
 		};
@@ -415,16 +355,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 		const members = pages.flat();
 		this.members.set(mode === "more" ? [...(this.members() ?? []), ...members] : members);
-	}
-
-	private needsContacts(): boolean {
-		const selections = this.viewSelections();
-		return !!selections["firstTelephone"] || !!selections["firstEmail"];
-	}
-
-	needsBadges(): boolean {
-		const selections = this.viewSelections();
-		return BADGE_COLUMNS.some((key) => !!selections[key]);
 	}
 
 	private normalizeFilterValueToArray(value: unknown): string[] {
@@ -472,64 +402,11 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		this.router.navigate([member.id], { relativeTo: this.route });
 	}
 
-	setColumnSelection(keys: string[]) {
-		const selected = new Set(keys);
-		this.userSettings.set(
-			"membersListColumns",
-			Object.fromEntries(Object.keys(this.viewSelections()).map((key) => [key, selected.has(key)])),
-		);
-	}
-
-	private mergeColumns(saved: { [key: string]: boolean } | undefined): { [key: string]: boolean } {
-		return Object.fromEntries(
-			Object.entries(MEMBERS_LIST_COLUMNS).map(([key, visible]) => [key, saved?.[key] ?? visible]),
-		);
-	}
-
-	private applySavedColumns(saved: { [key: string]: boolean } | undefined) {
-		const previous = this.viewSelections();
-		const selections = this.mergeColumns(saved);
-
-		this.viewSelections.set(selections);
-
-		const contactColumnAdded = ["firstTelephone", "firstEmail"].some((key) => selections[key] && !previous[key]);
-		const badgeColumnAdded = BADGE_COLUMNS.some((key) => selections[key] && !previous[key]);
+	private reloadForColumns(needsContacts: boolean, needsBadges: boolean) {
 		const members = this.members();
-		const contactsMissing = contactColumnAdded && !members?.some((member) => member.contacts !== undefined);
-		const badgesMissing = badgeColumnAdded && !members?.some((member) => member.achievements !== undefined);
+		if (!members?.length) return;
+		const contactsMissing = needsContacts && !members.some((member) => member.contacts !== undefined);
+		const badgesMissing = needsBadges && !members.some((member) => member.achievements !== undefined);
 		if (contactsMissing || badgesMissing) this.loadMembers(this.filter);
-	}
-
-	columnOptions = computed<FilterPillOption[]>(() =>
-		Object.keys(this.viewSelections()).map((key) => ({ value: key, label: this.getViewSelectionLabel(key) })),
-	);
-
-	selectedColumns = computed(() =>
-		Object.entries(this.viewSelections())
-			.filter(([, visible]) => visible)
-			.map(([key]) => key),
-	);
-
-	public getViewSelectionLabel(key: string): string {
-		const labels: { [key: string]: string } = {
-			photo: "Fotka",
-			nickname: "Přezdívka",
-			firstName: "Jméno",
-			lastName: "Příjmení",
-			group: "Oddíl",
-			role: "Role",
-			age: "Věk",
-			membership: "Členství",
-			birthday: "Narozeniny",
-			addressCity: "Město",
-			addressStreet: "Ulice",
-			firstTelephone: "Telefon na rodiče",
-			firstEmail: "Email na rodiče",
-			status: "Stav",
-			achievements: "Ocenění",
-			trainings: "Školení",
-		};
-
-		return labels[key] || key;
 	}
 }

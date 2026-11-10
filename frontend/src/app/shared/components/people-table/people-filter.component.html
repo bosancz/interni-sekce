@@ -1,0 +1,98 @@
+<bo-filter
+	[search]="true"
+	[showButtonMobileOnly]="true"
+	[immediateFilter]="true"
+	[autofocus]="autofocus()"
+	(change)="change.emit($event)"
+>
+	<div toolbar-actions slot="end" class="people-filter-actions">
+		@if (isDesktop()) {
+			@if (pills(); as pills) {
+				<ng-container [ngTemplateOutlet]="pills.template"></ng-container>
+			}
+
+			<bo-columns-select
+				[options]="columns().options()"
+				[selected]="columns().selected()"
+				(selectedChange)="columns().set($event)"
+			/>
+
+			@if (showInactive() !== null) {
+				<ion-button fill="clear" size="small" [id]="viewTriggerId" boTooltip="Zobrazení">
+					<ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+				</ion-button>
+			}
+		}
+
+		<ng-content select="[people-filter-actions]"></ng-content>
+	</div>
+
+	@if (!isDesktop()) {
+		<div class="people-filter-modal">
+			@if (pills(); as pills) {
+				<ion-list lines="full">
+					<ion-item-divider>Filtry</ion-item-divider>
+					<div class="people-filter-modal-pills">
+						<ng-container [ngTemplateOutlet]="pills.template"></ng-container>
+					</div>
+				</ion-list>
+			}
+
+			<bo-sort-select
+				[options]="sortOptions()"
+				[sort]="sort()"
+				[order]="order()"
+				(sortChange)="sortChange.emit($event)"
+			/>
+
+			<ion-list lines="full">
+				<ion-item-divider>Sloupce</ion-item-divider>
+				<div class="people-filter-modal-pills">
+					<bo-filter-pill
+						label="Vybrat sloupce"
+						[options]="columns().options()"
+						[selected]="columns().selected()"
+						[columns]="2"
+						(selectedChange)="columns().set($event)"
+					/>
+				</div>
+			</ion-list>
+
+			@if (showInactive() !== null) {
+				<ion-list lines="full">
+					<ng-container [ngTemplateOutlet]="viewOptions"></ng-container>
+				</ion-list>
+			}
+		</div>
+	}
+</bo-filter>
+
+<ng-template #viewOptions>
+	<ion-item-divider>Zobrazení</ion-item-divider>
+	<ion-item lines="none">
+		<ion-toggle
+			[checked]="!!showInactive()"
+			(ionChange)="showInactiveChange.emit($event.detail.checked)"
+			justify="space-between"
+		>
+			Zobrazit i neaktivní
+		</ion-toggle>
+	</ion-item>
+</ng-template>
+
+@if (isDesktop() && showInactive() !== null) {
+	<ion-popover
+		[trigger]="viewTriggerId"
+		triggerAction="click"
+		cssClass="view-options-popover"
+		[dismissOnSelect]="false"
+	>
+		<ng-template>
+			<ion-content>
+				<ion-list lines="full">
+					<ng-container [ngTemplateOutlet]="viewOptions"></ng-container>
+				</ion-list>
+			</ion-content>
+		</ng-template>
+	</ion-popover>
+}

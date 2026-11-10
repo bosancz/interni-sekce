@@ -1,10 +1,6 @@
 // Row-state styling (`member-inactive`, `member-vedouci`, …) is global — see
 // src/styles/member-rows.scss — so every member list renders it identically.
 
-:host ::ng-deep .treasurer-table {
-	width: 100%;
-}
-
 // The fee column keeps its width whatever the label says, so the toggles line up.
 ::ng-deep .treasurer-membership-column {
 	width: 1%;
@@ -252,41 +248,5 @@
 		ion-toggle {
 			width: 100%;
 		}
-	}
-}
-
-// Desktop: year, filters, columns and view options laid out inline in the filter toolbar.
-.treasurer-filter-actions {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 4px;
-
-	ion-button ion-icon {
-		font-size: 28px;
-	}
-}
-
-// Mobile: the same controls collected inside the filter modal.
-.treasurer-filter-modal {
-	.treasurer-filter-modal-pills {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		padding: 8px 12px 4px;
-
-		bo-filter-pill {
-			display: block;
-		}
-
-		::ng-deep .filter-pill-button {
-			width: 100%;
-			margin-inline: 0;
-			justify-content: space-between;
-		}
-	}
-
-	ion-list:not(:first-child) {
-		margin-top: 8px;
 	}
 }

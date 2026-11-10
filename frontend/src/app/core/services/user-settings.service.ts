@@ -8,6 +8,8 @@ export interface UserSettings {
 	albumsListView?: "table" | "grid";
 	membersListColumns?: { [key: string]: boolean };
 	eventAttendeesColumns?: { [key: string]: boolean };
+	groupMembersColumns?: { [key: string]: boolean };
+	treasurerListColumns?: { [key: string]: boolean };
 	photoFacesVisible?: boolean;
 	photoInfoVisible?: boolean;
 }
