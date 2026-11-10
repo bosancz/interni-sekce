@@ -1,5 +1,5 @@
-import { DatePipe, DecimalPipe, NgTemplateOutlet } from "@angular/common";
-import { AfterViewInit, Component, computed, inject, OnInit, signal } from "@angular/core";
+import { DatePipe, DecimalPipe } from "@angular/common";
+import { Component, computed, effect, inject, OnInit, signal, untracked } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
@@ -8,10 +8,6 @@ import {
 	IonIcon,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
-	IonItem,
-	IonItemDivider,
-	IonList,
-	IonPopover,
 	IonSkeletonText,
 	IonToggle,
 	ViewWillEnter,
@@ -19,14 +15,7 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import {
-	cardOutline,
-	chevronBackOutline,
-	chevronForwardOutline,
-	createOutline,
-	downloadOutline,
-	eyeOutline,
-} from "ionicons/icons";
+import { cardOutline, chevronBackOutline, chevronForwardOutline, createOutline, downloadOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipPaymentStates } from "src/app/core/config/membership";
 import { currentMembershipYear, isMembershipPaid, membershipPaymentOf } from "src/app/core/helpers/membership";
@@ -38,18 +27,20 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
+import { AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
+import { FilterData } from "src/app/shared/components/filter/filter.component";
+import { PEOPLE_COLUMNS, PeopleColumns } from "src/app/shared/components/people-table/people-columns";
+import {
+	PeopleFilterComponent,
+	PeopleFilterPillsDirective,
+} from "src/app/shared/components/people-table/people-filter.component";
+import { PeopleTableComponent } from "src/app/shared/components/people-table/people-table.component";
 import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
-import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
-import { ColumnsSelectComponent } from "src/app/shared/components/columns-select/columns-select.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
-import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
-import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
+import { SortOption } from "src/app/shared/components/sort-select/sort-select.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
-import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
-import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loading";
 
@@ -58,6 +49,32 @@ import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loa
  * click apart — and they match what the API accepts for `membershipYear`.
  */
 const FIRST_YEAR = 1900;
+
+const TREASURER_COLUMNS = [
+	"photo",
+	"variableSymbol",
+	"nickname",
+	"firstName",
+	"lastName",
+	"group",
+	"amount",
+	"paidOn",
+	"note",
+	...PEOPLE_COLUMNS.filter(
+		(key) => !["photo", "nickname", "firstName", "lastName", "group", "membership"].includes(key),
+	),
+];
+
+const TREASURER_DEFAULT_COLUMNS = [
+	"photo",
+	"variableSymbol",
+	"firstName",
+	"lastName",
+	"group",
+	"amount",
+	"paidOn",
+	"note",
+];
 const LAST_YEAR = 2200;
 
 /**
@@ -79,35 +96,26 @@ const LAST_YEAR = 2200;
 
 	imports: [
 		PageHeaderComponent,
-		FilterComponent,
+		PeopleFilterComponent,
+		PeopleFilterPillsDirective,
+		PeopleTableComponent,
+		FilterPillComponent,
+		AdminTableColumnComponent,
+		AdminTableCellDirective,
 		IonContent,
-		IonList,
-		IonItem,
-		IonItemDivider,
 		IonButton,
-		IonPopover,
 		IonToggle,
 		IonIcon,
 		IonSkeletonText,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
-		AdminTableComponent,
-		AdminTableColumnComponent,
-		AdminTableCellDirective,
-		ColumnsSelectComponent,
-		FilterPillComponent,
-		SortSelectComponent,
-		GroupBadgeComponent,
 		DatePipe,
 		DecimalPipe,
-		MemberPipe,
-		DefaultContactPipe,
-		NgTemplateOutlet,
 		TooltipDirective,
 	],
 	providers: [FilterModel],
 })
-export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEnter, ViewWillLeave {
+export class TreasurerListComponent implements OnInit, ViewWillEnter, ViewWillLeave {
 	private model = inject(FilterModel);
 
 	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
@@ -228,10 +236,16 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	private latestLoadId = 0;
 	private latestSummaryId = 0;
 
-	viewSelections = signal<{ [key: string]: boolean }>({});
+	readonly columns = new PeopleColumns({
+		settingsKey: "treasurerListColumns",
+		columns: TREASURER_COLUMNS,
+		defaults: TREASURER_DEFAULT_COLUMNS,
+		labels: { variableSymbol: "VS", amount: "Částka", paidOn: "Datum platby", note: "Poznámka" },
+	});
 
-	// True when the viewport is at least the lg breakpoint (992px) — filters inline vs. in the modal.
-	isDesktop = signal(true);
+	readonly columnOrder = [...TREASURER_COLUMNS, "fee"];
+
+	visibleColumns = computed(() => ({ ...this.columns.visible(), fee: true }));
 
 	// True when inactive members (and groups) are currently shown (filter "active" === "all").
 	showInactive = computed(() => ((this.model.value("active") as string) || "active") === "all");
@@ -251,18 +265,24 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			chevronForwardOutline,
 			createOutline,
 			downloadOutline,
-			eyeOutline,
 		});
-		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
+
+		effect(() => {
+			const needsContacts = this.columns.needsContacts();
+			const needsBadges = this.columns.needsBadges();
+			untracked(() => {
+				const members = this.members();
+				if (!members?.length) return;
+				const contactsMissing = needsContacts && !members.some((member) => member.contacts !== undefined);
+				const badgesMissing = needsBadges && !members.some((member) => member.achievements !== undefined);
+				if (contactsMissing || badgesMissing) this.loadMembers(this.filter);
+			});
+		});
 	}
 
 	ngOnInit() {
 		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onParams(params));
 		this.model.apply$.pipe(untilDestroyed(this)).subscribe((filter) => this.applyFilter(filter));
-	}
-
-	ngAfterViewInit(): void {
-		this.loadViewSelections();
 	}
 
 	ionViewWillEnter() {
@@ -786,7 +806,8 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		const params: SDK.MembersApiListMembersQueryParams = {
 			...this.filterParams(filter),
 			limit: this.pageSize,
-			contacts: this.needsContacts() || undefined,
+			contacts: this.columns.needsContacts() || undefined,
+			badges: this.columns.needsBadges() || undefined,
 		};
 
 		const pages = await Promise.all(
@@ -851,12 +872,6 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		};
 	}
 
-	// Contacts are only needed when the phone/email columns are shown.
-	private needsContacts(): boolean {
-		const selections = this.viewSelections();
-		return !!selections["firstTelephone"] || !!selections["firstEmail"];
-	}
-
 	private normalizeFilterValueToArray(value: unknown): string[] {
 		if (Array.isArray(value)) return value.filter((item) => !!item).map((item) => String(item));
 		if (!value) return [];
@@ -873,83 +888,5 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			(a.name ?? a.shortName).localeCompare(b.name ?? b.shortName, undefined, { numeric: true }),
 		);
 		this.groups.set(groups);
-	}
-
-	// The fee column is the point of the page, so it is always on and is not offered here.
-	private loadViewSelections() {
-		this.viewSelections.set({
-			variableSymbol: true,
-			nickname: false,
-			firstName: true,
-			lastName: true,
-			group: true,
-			amount: true,
-			paidOn: true,
-			note: true,
-			role: false,
-			age: false,
-			birthday: false,
-			addressCity: false,
-			addressStreet: false,
-			firstTelephone: false,
-			firstEmail: false,
-			status: false,
-		});
-	}
-
-	// Mobile renders the column picker as a multiselect pill, which emits the full list of
-	// visible columns rather than a single toggle.
-	setColumnSelection(keys: string[]) {
-		const selected = new Set(keys);
-		this.applyViewSelections(
-			Object.fromEntries(Object.keys(this.viewSelections()).map((key) => [key, selected.has(key)])),
-		);
-	}
-
-	private applyViewSelections(selections: { [key: string]: boolean }) {
-		const previous = this.viewSelections();
-		this.viewSelections.set(selections);
-
-		// Enabling a contact column after the list was already loaded without contacts:
-		// re-fetch so the newly visible column has data (still a single request).
-		const contactColumnAdded = ["firstTelephone", "firstEmail"].some((key) => selections[key] && !previous[key]);
-		if (contactColumnAdded) {
-			const members = this.members();
-			const contactsLoaded = !!members?.some((member) => member.contacts !== undefined);
-			if (!contactsLoaded) this.loadMembers(this.filter);
-		}
-	}
-
-	columnOptions = computed<FilterPillOption[]>(() =>
-		Object.keys(this.viewSelections()).map((key) => ({ value: key, label: this.getViewSelectionLabel(key) })),
-	);
-
-	selectedColumns = computed(() =>
-		Object.entries(this.viewSelections())
-			.filter(([, visible]) => visible)
-			.map(([key]) => key),
-	);
-
-	public getViewSelectionLabel(key: string): string {
-		const labels: { [key: string]: string } = {
-			variableSymbol: "VS",
-			nickname: "Přezdívka",
-			firstName: "Jméno",
-			lastName: "Příjmení",
-			group: "Oddíl",
-			amount: "Částka",
-			paidOn: "Datum platby",
-			note: "Poznámka",
-			role: "Role",
-			age: "Věk",
-			birthday: "Narozeniny",
-			addressCity: "Město",
-			addressStreet: "Ulice",
-			firstTelephone: "Telefon na rodiče",
-			firstEmail: "Email na rodiče",
-			status: "Stav",
-		};
-
-		return labels[key] || key;
 	}
 }

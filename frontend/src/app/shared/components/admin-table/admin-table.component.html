@@ -180,6 +180,24 @@
 							</div>
 						}
 					</ion-item>
+					@if (belowColumns().length) {
+						<div
+							class="admin-table-below-item"
+							[ngClass]="resolveClass(row)"
+							[class.clickable]="!!rowLink()"
+							[routerLink]="resolveLink(row)"
+							(click)="onRowClick(row)"
+						>
+							@for (column of belowColumns(); track column) {
+								<div class="admin-table-value admin-table-block" adminTableValue>
+									<ng-container
+										[ngTemplateOutlet]="column.cellTemplate()"
+										[ngTemplateOutletContext]="{ $implicit: row }"
+									></ng-container>
+								</div>
+							}
+						</div>
+					}
 				}
 			}
 		</ion-list>

@@ -1,0 +1,51 @@
+:host {
+	display: block;
+}
+
+.people-photo {
+	font-size: 2rem;
+}
+
+.people-nickname {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+:host ::ng-deep .people-table {
+	width: 100%;
+
+	td.people-wrap {
+		white-space: normal;
+	}
+
+	.people-photo-column {
+		width: 1%;
+		vertical-align: middle;
+	}
+
+	.people-achievements-column {
+		width: 110px;
+		vertical-align: middle;
+	}
+
+	.people-trainings-column {
+		width: 180px;
+		vertical-align: middle;
+	}
+
+	.people-status-column {
+		white-space: nowrap;
+	}
+}
+
+:host ::ng-deep admin-table ion-item .admin-table-start {
+	align-self: flex-start;
+	margin-top: 16px;
+}
+
+:host ::ng-deep admin-table ion-item .admin-table-end {
+	align-self: flex-start;
+	margin-top: 16px;
+}

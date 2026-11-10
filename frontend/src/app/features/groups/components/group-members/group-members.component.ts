@@ -1,44 +1,28 @@
 import { MEMBER_ACHIEVEMENT_FILTER_OPTIONS } from "src/app/core/config/member-achievements";
-import { DatePipe, NgTemplateOutlet } from "@angular/common";
-import { Component, computed, inject, OnInit, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import {
-	IonButton,
-	IonContent,
-	IonIcon,
-	IonItem,
-	IonItemDivider,
-	IonList,
-	IonPopover,
-	IonToggle,
-} from "@ionic/angular/standalone";
+import { Component, computed, effect, inject, OnInit, signal, untracked } from "@angular/core";
+import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { arrowUndoOutline, eyeOutline, mailOutline, trashOutline } from "ionicons/icons";
+import { arrowUndoOutline, mailOutline, trashOutline } from "ionicons/icons";
 
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipPaymentStates } from "src/app/core/config/membership";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
-import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
-import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
-import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
-import { ColumnsSelectComponent } from "src/app/shared/components/columns-select/columns-select.component";
+import { AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
+import { PEOPLE_COLUMNS, PeopleColumns } from "src/app/shared/components/people-table/people-columns";
+import {
+	PeopleFilterComponent,
+	PeopleFilterPillsDirective,
+} from "src/app/shared/components/people-table/people-filter.component";
+import { PeopleTableComponent } from "src/app/shared/components/people-table/people-table.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
-import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
-import { FilterComponent } from "src/app/shared/components/filter/filter.component";
+import { SortOption } from "src/app/shared/components/sort-select/sort-select.component";
 import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
-import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
-import { MemberPipe } from "src/app/shared/pipes/member.pipe";
-import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
-import { GroupPipe } from "src/app/shared/pipes/group.pipe";
-import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
 import { getMemberEmails } from "src/helpers/member-contacts";
-import { MemberBadgesInlineComponent } from "src/app/shared/components/member-badges-inline/member-badges-inline.component";
 import { SDK } from "src/sdk";
 import { GroupsService } from "../../services/groups.service";
 
@@ -60,30 +44,12 @@ const mailAddresses = (emails: string[]) =>
 	templateUrl: "./group-members.component.html",
 	styleUrls: ["./group-members.component.scss"],
 	imports: [
-		MemberBadgesInlineComponent,
-		MemberProfilePhotoUrlPipe,
-		GroupPipe,
-		AvatarComponent,
-		FilterComponent,
-		ColumnsSelectComponent,
+		PeopleFilterComponent,
+		PeopleFilterPillsDirective,
+		PeopleTableComponent,
 		FilterPillComponent,
-		SortSelectComponent,
-		IonContent,
-		IonList,
-		IonItem,
-		IonItemDivider,
 		IonButton,
-		IonPopover,
-		IonToggle,
 		IonIcon,
-		AdminTableComponent,
-		AdminTableColumnComponent,
-		AdminTableCellDirective,
-		FormsModule,
-		DatePipe,
-		NgTemplateOutlet,
-		MemberPipe,
-		DefaultContactPipe,
 		TooltipDirective,
 	],
 	providers: [FilterModel],
@@ -187,27 +153,10 @@ export class GroupMembersComponent implements OnInit {
 
 	readonly achievementOptions: FilterPillOption[] = MEMBER_ACHIEVEMENT_FILTER_OPTIONS;
 
-	viewSelections = signal<{ [key: string]: boolean }>({
-		photo: true,
-		nickname: true,
-		firstName: true,
-		lastName: true,
-		role: true,
-		age: true,
-		membership: false,
-		birthday: false,
-		addressCity: false,
-		addressStreet: false,
-		firstTelephone: false,
-		firstEmail: false,
-		status: false,
-		achievements: false,
-		trainings: false,
+	readonly columns = new PeopleColumns({
+		settingsKey: "groupMembersColumns",
+		columns: PEOPLE_COLUMNS.filter((key) => key !== "group"),
 	});
-
-	needsBadges = computed(() => ["achievements", "trainings"].some((key) => !!this.viewSelections()[key]));
-
-	isDesktop = signal(true);
 
 	rowLink = (member: SDK.MemberResponseWithLinks) => ["/databaze/clenove", member.id];
 	rowClass = (member: SDK.MemberResponseWithLinks) => ({
@@ -241,12 +190,18 @@ export class GroupMembersComponent implements OnInit {
 		private groupsService: GroupsService,
 		private modalService: ModalService,
 		private toasts: ToastService,
-		private platformService: PlatformService,
 	) {
-		addIcons({ arrowUndoOutline, eyeOutline, mailOutline, trashOutline });
-		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
+		addIcons({ arrowUndoOutline, mailOutline, trashOutline });
 
 		this.model.setCommitted(this.defaultFilter);
+
+		effect(() => {
+			if (!this.columns.needsBadges()) return;
+			untracked(() => {
+				const members = this.members();
+				if (members?.length && !members.some((member) => member.achievements !== undefined)) this.loadMembers();
+			});
+		});
 	}
 
 	ngOnInit(): void {
@@ -309,7 +264,7 @@ export class GroupMembersComponent implements OnInit {
 			limit: 1000,
 			active: applied["showInactive"] ? undefined : true,
 			contacts: true,
-			badges: this.needsBadges() || undefined,
+			badges: this.columns.needsBadges() || undefined,
 			sort,
 			order: sort ? ((applied["order"] as SDK.ListMembersOrderEnum) ?? "ASC") : undefined,
 		};
@@ -371,46 +326,5 @@ export class GroupMembersComponent implements OnInit {
 		await this.api.MembersApi.restoreMember(member.id);
 		this.toasts.toast("Člen obnoven.");
 		this.loadMembers();
-	}
-
-	setColumnSelection(keys: string[]) {
-		const selected = new Set(keys);
-		const badgesLoaded = this.needsBadges();
-		this.viewSelections.update((selections) =>
-			Object.fromEntries(Object.keys(selections).map((key) => [key, selected.has(key)])),
-		);
-		if (!badgesLoaded && this.needsBadges()) this.loadMembers();
-	}
-
-	columnOptions = computed<FilterPillOption[]>(() =>
-		Object.keys(this.viewSelections()).map((key) => ({ value: key, label: this.getViewSelectionLabel(key) })),
-	);
-
-	selectedColumns = computed(() =>
-		Object.entries(this.viewSelections())
-			.filter(([, visible]) => visible)
-			.map(([key]) => key),
-	);
-
-	public getViewSelectionLabel(key: string): string {
-		const labels: { [key: string]: string } = {
-			photo: "Fotka",
-			nickname: "Přezdívka",
-			firstName: "Jméno",
-			lastName: "Příjmení",
-			role: "Role",
-			age: "Věk",
-			membership: "Členství",
-			birthday: "Narozeniny",
-			addressCity: "Město",
-			addressStreet: "Ulice",
-			firstTelephone: "Telefon na rodiče",
-			firstEmail: "Email na rodiče",
-			status: "Stav",
-			achievements: "Ocenění",
-			trainings: "Školení",
-		};
-
-		return labels[key] || key;
 	}
 }

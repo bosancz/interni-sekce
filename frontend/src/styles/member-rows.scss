@@ -27,10 +27,18 @@ ion-item.member-vedouci {
 	--background: rgba(var(--ion-color-warning-rgb), 0.1);
 }
 
+.admin-table-below-item.member-vedouci {
+	background: rgba(var(--ion-color-warning-rgb), 0.1);
+}
+
 tr.member-instruktor {
 	--bo-table-row-bg: rgba(var(--ion-color-success-rgb), 0.14);
 }
 
 ion-item.member-instruktor {
 	--background: rgba(var(--ion-color-success-rgb), 0.14);
+}
+
+.admin-table-below-item.member-instruktor {
+	background: rgba(var(--ion-color-success-rgb), 0.14);
 }
