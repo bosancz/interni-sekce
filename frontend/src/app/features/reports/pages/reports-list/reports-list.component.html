@@ -49,9 +49,7 @@
 						<div class="text">
 							<div class="meta">
 								<span>{{ [report.dateFrom, report.dateTill] | dateRange }}</span>
-								@for (groupId of report.groupsIds; track groupId) {
-									<bo-group-badge [groupId]="groupId" [short]="true" />
-								}
+								<bo-event-groups [groupsIds]="report.groupsIds" [leadersEvent]="report.leadersEvent" />
 								@if (report.river) {
 									<span class="water">{{ report.river }}</span>
 								}

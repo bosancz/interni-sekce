@@ -9,6 +9,17 @@
 			{{ group.shortName }}
 		</span>
 	}
+	@if (leadersOption()) {
+		<span
+			(click)="toggleLeaders()"
+			[class.active]="leadersEvent()"
+			[style.background-color]="leadersGroup.color"
+			[title]="leadersGroup.name"
+			class="group-badge me-2 my-2"
+		>
+			{{ leadersGroup.shortName }}
+		</span>
+	}
 </div>
 
 @if (multiple() && !readonly() && childrenGroups().length > 1) {

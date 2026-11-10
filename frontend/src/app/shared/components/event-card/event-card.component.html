@@ -23,6 +23,9 @@
 			<div class="title">
 				<span class="name">{{ e.name | typography }}</span>
 				<span class="subtitle">{{ subtitle() }}</span>
+				@if (e.groupsIds.length || e.leadersEvent) {
+					<bo-event-groups class="groups" [groupsIds]="e.groupsIds" [leadersEvent]="e.leadersEvent" />
+				}
 			</div>
 			@if (link()) {
 				<ion-icon name="chevron-forward"></ion-icon>
