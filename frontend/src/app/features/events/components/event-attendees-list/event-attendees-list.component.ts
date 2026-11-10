@@ -36,18 +36,21 @@ const collator = new Intl.Collator("cs");
 
 const ATTENDEES_COLUMNS: FilterPillOption[] = [
 	{ value: "photo", label: "Fotka" },
-	{ value: "name", label: "Jméno" },
+	{ value: "firstName", label: "Jméno" },
+	{ value: "lastName", label: "Příjmení" },
 	{ value: "group", label: "Oddíl" },
-	{ value: "age", label: "Věk" },
 	{ value: "role", label: "Role" },
+	{ value: "age", label: "Věk" },
 	{ value: "notes", label: "Poznámky" },
 ];
 
 const SORT_OPTIONS: SortOption[] = [
 	{ key: "nickname", label: "Přezdívka" },
+	{ key: "firstName", label: "Jméno" },
+	{ key: "lastName", label: "Příjmení" },
 	{ key: "group", label: "Oddíl" },
-	{ key: "age", label: "Věk" },
 	{ key: "role", label: "Role" },
+	{ key: "age", label: "Věk" },
 ];
 
 const normalize = (value: string) =>
@@ -231,6 +234,10 @@ export class EventAttendeesListComponent {
 
 	private sortKey(sort: string): (attendee: Attendee) => string | number | null {
 		switch (sort) {
+			case "firstName":
+				return (a) => [a.member?.firstName, a.member?.lastName].filter(Boolean).join(" ") || null;
+			case "lastName":
+				return (a) => [a.member?.lastName, a.member?.firstName].filter(Boolean).join(" ") || null;
 			case "group":
 				return (a) => {
 					const groupId = a.member?.groupId;

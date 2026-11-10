@@ -83,11 +83,26 @@
 						>
 					}
 				</span>
-				@if (attendee.member && columns()["name"]) {
-					<span class="member-name">{{ attendee.member.firstName }} {{ attendee.member.lastName }}</span>
-				}
 			</ng-container>
 		</admin-table-column>
+
+		@if (columns()["firstName"]) {
+			<admin-table-column header="Jméno" sort="firstName" headerClass="align-middle" cellClass="align-middle">
+				<ng-container *adminCell="let attendee">{{ attendee.member?.firstName }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (columns()["lastName"]) {
+			<admin-table-column
+				header="Příjmení"
+				sort="lastName"
+				[mobileJoin]="true"
+				headerClass="align-middle"
+				cellClass="align-middle"
+			>
+				<ng-container *adminCell="let attendee">{{ attendee.member?.lastName }}</ng-container>
+			</admin-table-column>
+		}
 
 		@if (columns()["group"]) {
 			<admin-table-column
@@ -105,6 +120,12 @@
 			</admin-table-column>
 		}
 
+		@if (columns()["role"]) {
+			<admin-table-column header="Role" sort="role" headerClass="align-middle" cellClass="align-middle">
+				<ng-container *adminCell="let attendee">{{ attendee.role | role: "title" }}</ng-container>
+			</admin-table-column>
+		}
+
 		@if (columns()["age"]) {
 			<admin-table-column header="Věk" sort="age" headerClass="align-middle" cellClass="align-middle">
 				<ng-container *adminCell="let attendee">
@@ -112,12 +133,6 @@
 						{{ age }} let
 					}
 				</ng-container>
-			</admin-table-column>
-		}
-
-		@if (columns()["role"]) {
-			<admin-table-column header="Role" sort="role" headerClass="align-middle" cellClass="align-middle">
-				<ng-container *adminCell="let attendee">{{ attendee.role | role: "title" }}</ng-container>
 			</admin-table-column>
 		}
 
