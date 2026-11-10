@@ -8,10 +8,7 @@
 			@for (option of options; track option.format) {
 				<button type="button" class="pe-row" (click)="submit.emit(option.format)">
 					<span class="pe-icon pe-icon-{{ option.format }}"><ion-icon [name]="option.icon"></ion-icon></span>
-					<span class="pe-text">
-						<span class="pe-label">{{ option.label }}</span>
-						<span class="pe-description">{{ option.description }}</span>
-					</span>
+					<span class="pe-label">{{ option.label }}</span>
 					<ion-icon class="pe-chevron" name="chevron-forward-outline"></ion-icon>
 				</button>
 			}

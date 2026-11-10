@@ -9,7 +9,6 @@ import { SDK } from "src/sdk";
 interface ProgramExportOption {
 	format: SDK.ProgramExportFormats;
 	label: string;
-	description: string;
 	icon: string;
 }
 
@@ -24,19 +23,16 @@ export class ProgramExportModalComponent extends InputModalComponent<SDK.Program
 		{
 			format: "pdf",
 			label: "PDF",
-			description: "Program připravený k tisku a rozeslání",
 			icon: "document-outline",
 		},
 		{
 			format: "docx",
 			label: "Word (DOCX)",
-			description: "Stejný program jako PDF, dá se dál upravovat",
 			icon: "document-text-outline",
 		},
 		{
 			format: "xlsx",
 			label: "Excel (XLSX)",
-			description: "Tabulka se sloupci Název, Datum, Stav a Vedoucí",
 			icon: "grid-outline",
 		},
 	];
