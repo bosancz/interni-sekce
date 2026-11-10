@@ -173,7 +173,11 @@
 
 		@if (viewSelections().age) {
 			<admin-table-column header="Věk" sort="age" headerClass="align-middle">
-				<ng-container *adminCell="let member">{{ member | member: "age" }}</ng-container>
+				<ng-container *adminCell="let member">
+					@if (member | member: "age"; as age) {
+						{{ age }} let
+					}
+				</ng-container>
 			</admin-table-column>
 		}
 

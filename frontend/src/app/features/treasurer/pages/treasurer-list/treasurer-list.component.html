@@ -210,7 +210,7 @@
 		}
 
 		@if (viewSelections().lastName) {
-			<admin-table-column header="Příjmení" sort="lastName" headerClass="align-middle">
+			<admin-table-column header="Příjmení" sort="lastName" [mobileJoin]="true" headerClass="align-middle">
 				<ng-container *adminCell="let member">{{ member.lastName }}</ng-container>
 			</admin-table-column>
 		}
@@ -315,7 +315,11 @@
 
 		@if (viewSelections().age) {
 			<admin-table-column header="Věk" sort="age" headerClass="align-middle">
-				<ng-container *adminCell="let member">{{ member | member: "age" }}</ng-container>
+				<ng-container *adminCell="let member">
+					@if (member | member: "age"; as age) {
+						{{ age }} let
+					}
+				</ng-container>
 			</admin-table-column>
 		}
 

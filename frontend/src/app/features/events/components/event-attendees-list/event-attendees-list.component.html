@@ -109,7 +109,7 @@
 			<admin-table-column header="Věk" sort="age" headerClass="align-middle" cellClass="align-middle">
 				<ng-container *adminCell="let attendee">
 					@if (attendee.member | member: "age" : event()?.dateFrom; as age) {
-						{{ age }}
+						{{ age }} let
 					}
 				</ng-container>
 			</admin-table-column>
