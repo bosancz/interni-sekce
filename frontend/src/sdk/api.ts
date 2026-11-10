@@ -14880,6 +14880,14 @@ export namespace SDK {
          */
         membership?: Array<MembershipPaymentStatesEnum>
     
+        //achievements
+        /**
+         * 
+         * @type {Array<MemberAchievementTypesEnum>}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        achievements?: Array<MemberAchievementTypesEnum>
+    
         //membershipYear
         /**
          * Which year the membership filter and the membership sort look at. Defaults to the current one.
@@ -15019,6 +15027,14 @@ export namespace SDK {
          * @memberof MembersApiExportMembershipXlsx
          */
         membership?: Array<MembershipPaymentStatesEnum>
+    
+        //achievements
+        /**
+         * 
+         * @type {Array<MemberAchievementTypesEnum>}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        achievements?: Array<MemberAchievementTypesEnum>
     
         //membershipYear
         /**
@@ -15330,6 +15346,14 @@ export namespace SDK {
          * @memberof MembersApiListMembers
          */
         membership?: Array<MembershipPaymentStatesEnum>
+    
+        //achievements
+        /**
+         * 
+         * @type {Array<MemberAchievementTypesEnum>}
+         * @memberof MembersApiListMembers
+         */
+        achievements?: Array<MemberAchievementTypesEnum>
     
         //membershipYear
         /**
@@ -16281,6 +16305,10 @@ export namespace SDK {
                 requestQueryParameter['membership'] = queryParams.membership;
             }
     
+            if (queryParams.achievements) {
+                requestQueryParameter['achievements'] = queryParams.achievements;
+            }
+    
             if (queryParams.membershipYear !== undefined) {
                 requestQueryParameter['membershipYear'] = queryParams.membershipYear;
             }
@@ -16376,6 +16404,10 @@ export namespace SDK {
     
             if (queryParams.membership) {
                 requestQueryParameter['membership'] = queryParams.membership;
+            }
+    
+            if (queryParams.achievements) {
+                requestQueryParameter['achievements'] = queryParams.achievements;
             }
     
             if (queryParams.membershipYear !== undefined) {
@@ -17198,6 +17230,10 @@ export namespace SDK {
     
             if (queryParams.membership) {
                 requestQueryParameter['membership'] = queryParams.membership;
+            }
+    
+            if (queryParams.achievements) {
+                requestQueryParameter['achievements'] = queryParams.achievements;
             }
     
             if (queryParams.membershipYear !== undefined) {
@@ -21359,6 +21395,14 @@ export namespace SDK {
          * @memberof PublicAPIV2ApiGetPublicGallery
          */
         offset?: number
+    
+        //previewPhotos
+        /**
+         * 
+         * @type {number}
+         * @memberof PublicAPIV2ApiGetPublicGallery
+         */
+        previewPhotos?: number
     }
     
     
@@ -21732,6 +21776,10 @@ export namespace SDK {
     
             if (queryParams.offset !== undefined) {
                 requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+            if (queryParams.previewPhotos !== undefined) {
+                requestQueryParameter['previewPhotos'] = queryParams.previewPhotos;
             }
     
     

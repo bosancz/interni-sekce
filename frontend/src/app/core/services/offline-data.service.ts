@@ -146,7 +146,7 @@ export class OfflineDataService {
 			const members: SDK.MemberResponseWithLinks[] = [];
 			for (let offset = 0; ; offset += PAGE_SIZE) {
 				const page = await this.api.MembersApi.listMembers(
-					{ active: true, contacts: true, limit: PAGE_SIZE, offset },
+					{ active: true, contacts: true, badges: true, limit: PAGE_SIZE, offset },
 					options,
 				).then((res) => res.data);
 				members.push(...page);

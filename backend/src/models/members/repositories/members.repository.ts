@@ -10,7 +10,7 @@ import { PaginationOptions } from "src/helpers/pagination";
 import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
 import { Brackets, FindOneOptions, FindOptionsRelations, In, Not, Repository } from "typeorm";
-import { MemberAchievement } from "../entities/member-achievements.entity";
+import { MemberAchievement, MemberAchievementTypes } from "../entities/member-achievements.entity";
 import { MemberContact } from "../entities/member-contact.entity";
 import { MemberTraining } from "../entities/member-training.entity";
 import { sortMemberContacts } from "../helpers/member-contacts";
@@ -26,6 +26,7 @@ export interface GetMembersOptions extends PaginationOptions {
 	// Which year the membership filter and sort look at; defaults to the current one.
 	membershipYear?: number;
 	age?: number[];
+	achievements?: MemberAchievementTypes[];
 	active?: boolean;
 	// Keep the members who paid the fee of membershipYear even where `active` would drop them.
 	includeMembershipPaid?: boolean;
@@ -143,6 +144,12 @@ export class MembersRepository {
 			q.andWhere(
 				"members.birthday IS NOT NULL AND DATE_PART('year', AGE(CURRENT_DATE, members.birthday))::int IN (:...ages)",
 				{ ages: options.age },
+			);
+
+		if (options.achievements?.length)
+			q.andWhere(
+				"EXISTS (SELECT 1 FROM members_achievements ma WHERE ma.member_id = members.id AND ma.type IN (:...achievements))",
+				{ achievements: options.achievements },
 			);
 
 		// The treasurer view hides inactive members like every other list, with one exception: the

@@ -104,6 +104,10 @@ function filterMembers(members: Member[], groups: Group[], params: URLSearchPara
 	const unpaid = membership.includes("nezaplaceno");
 	if (paid !== unpaid) result = result.filter((m) => isMembershipPaid(m.membership, year) === paid);
 
+	const achievements = params.getAll("achievements");
+	if (achievements.length)
+		result = result.filter((m) => m.achievements?.some((achievement) => achievements.includes(achievement.type)));
+
 	const tokens = normalize(params.get("search") ?? "")
 		.split(/\s+/)
 		.filter(Boolean);

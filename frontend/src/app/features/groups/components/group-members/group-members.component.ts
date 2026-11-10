@@ -1,3 +1,4 @@
+import { MEMBER_ACHIEVEMENT_FILTER_OPTIONS } from "src/app/core/config/member-achievements";
 import { DatePipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
@@ -104,6 +105,7 @@ export class GroupMembersComponent implements OnInit {
 	private readonly defaultFilter: FilterValues = {
 		roles: [],
 		membership: [],
+		achievements: [],
 		showInactive: false,
 		sort: "role",
 		order: "DESC",
@@ -112,6 +114,7 @@ export class GroupMembersComponent implements OnInit {
 
 	selectedRoles = computed(() => this.asArray(this.model.value("roles")));
 	selectedMembership = computed(() => this.asArray(this.model.value("membership")));
+	selectedAchievements = computed(() => this.asArray(this.model.value("achievements")));
 
 	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? null);
 	sortOrder = computed<"ASC" | "DESC">(() => (this.model.value("order") === "ASC" ? "ASC" : "DESC"));
@@ -189,6 +192,8 @@ export class GroupMembersComponent implements OnInit {
 		value: key,
 		label: state.title,
 	}));
+
+	readonly achievementOptions: FilterPillOption[] = MEMBER_ACHIEVEMENT_FILTER_OPTIONS;
 
 	viewSelections = signal<{ [key: string]: boolean }>({
 		photo: true,
@@ -279,6 +284,10 @@ export class GroupMembersComponent implements OnInit {
 		this.model.set("membership", membership);
 	}
 
+	setAchievementsFilter(achievements: string[]) {
+		this.model.set("achievements", achievements);
+	}
+
 	setShowInactive(showInactive: boolean) {
 		this.model.set("showInactive", showInactive);
 	}
@@ -303,6 +312,7 @@ export class GroupMembersComponent implements OnInit {
 			search: this.search() || undefined,
 			roles: this.asArray(applied["roles"]) as SDK.ListMembersRolesEnum[],
 			membership: this.asArray(applied["membership"]) as SDK.MembershipPaymentStatesEnum[],
+			achievements: this.asArray(applied["achievements"]) as SDK.MemberAchievementTypesEnum[],
 			groups: [this.groupId],
 			limit: 1000,
 			active: applied["showInactive"] ? undefined : true,

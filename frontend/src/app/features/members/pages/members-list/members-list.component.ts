@@ -1,3 +1,4 @@
+import { MEMBER_ACHIEVEMENT_FILTER_OPTIONS } from "src/app/core/config/member-achievements";
 import { DatePipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, effect, inject, OnInit, signal, untracked } from "@angular/core";
 import { FormsModule } from "@angular/forms";
@@ -131,6 +132,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	selectedGroups = computed(() => this.normalizeFilterValueToArray(this.model.value("groups")));
 	selectedRoles = computed(() => this.normalizeFilterValueToArray(this.model.value("roles")));
 	selectedMembership = computed(() => this.normalizeFilterValueToArray(this.model.value("membership")));
+	selectedAchievements = computed(() => this.normalizeFilterValueToArray(this.model.value("achievements")));
 
 	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? null);
 	sortOrder = computed<"ASC" | "DESC">(() => (this.model.value("order") === "DESC" ? "DESC" : "ASC"));
@@ -169,6 +171,8 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		value: key,
 		label: state.title,
 	}));
+
+	readonly achievementOptions: FilterPillOption[] = MEMBER_ACHIEVEMENT_FILTER_OPTIONS;
 
 	rowLink = (member: SDK.MemberResponseWithLinks) => "" + member.id;
 	rowClass = (member: SDK.MemberResponseWithLinks) => ({
@@ -286,6 +290,9 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			membership: this.normalizeFilterValueToArray(
 				(this.filter as any)["membership"],
 			) as SDK.MembershipPaymentStatesEnum[],
+			achievements: this.normalizeFilterValueToArray(
+				(this.filter as any)["achievements"],
+			) as SDK.MemberAchievementTypesEnum[],
 			groups: this.normalizeFilterValueToArray((this.filter as any)["groups"]).map((group) =>
 				parseInt(group, 10),
 			),
@@ -336,6 +343,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			groups: this.normalizeFilterValueToArray(p["groups"]),
 			roles: this.normalizeFilterValueToArray(p["roles"]),
 			membership: this.normalizeFilterValueToArray(p["membership"]),
+			achievements: this.normalizeFilterValueToArray(p["achievements"]),
 			active: p["active"] ?? null,
 			sort: p["sort"] ?? null,
 			order: p["order"] ?? null,
@@ -352,6 +360,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 				groups: list(filter["groups"]),
 				roles: list(filter["roles"]),
 				membership: list(filter["membership"]),
+				achievements: list(filter["achievements"]),
 				active: (filter["active"] as string) || null,
 				sort: (filter["sort"] as string) || null,
 				order: (filter["order"] as string) || null,
@@ -390,6 +399,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			search: filter.search || undefined,
 			roles: this.normalizeFilterValueToArray(filter["roles"]) as SDK.ListMembersRolesEnum[],
 			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.MembershipPaymentStatesEnum[],
+			achievements: this.normalizeFilterValueToArray(filter["achievements"]) as SDK.MemberAchievementTypesEnum[],
 			limit: this.pageSize,
 			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
 			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,
