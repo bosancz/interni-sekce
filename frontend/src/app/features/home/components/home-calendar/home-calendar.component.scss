@@ -92,6 +92,10 @@ bo-page-content {
 	}
 }
 
+:host-context(body.dark) .weekdays .weekend {
+	color: #8a96e0;
+}
+
 @media (min-width: 992px) {
 	bo-page-header {
 		order: -2;

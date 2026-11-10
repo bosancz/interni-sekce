@@ -3,8 +3,18 @@
 $eventHeight: 20px;
 
 :host {
+	--calendar-week-line: #dadde8;
+	--calendar-today-tint: #fff8ec;
+	--calendar-weekend-text: var(--bo-blue-mid);
+
 	overflow: auto;
 	width: 100%;
+}
+
+:host-context(body.dark) {
+	--calendar-week-line: #353949;
+	--calendar-today-tint: rgba(226, 143, 38, 0.09);
+	--calendar-weekend-text: #8a96e0;
 }
 .calendar {
 	user-select: none;
@@ -16,7 +26,8 @@ $eventHeight: 20px;
 	min-height: 80px;
 	padding-bottom: 20px;
 	overflow: hidden;
-	padding-top: 24px;
+	padding-top: 26px;
+	border-top: 1px solid var(--calendar-week-line);
 }
 
 .events {
@@ -31,14 +42,28 @@ $eventHeight: 20px;
 	display: flex;
 	align-items: center;
 	color: #fff;
-	border: none;
-	border-radius: 6px;
+	border: 0 solid transparent;
+	border-inline-width: 3px;
+	border-radius: 8px;
+	background-clip: padding-box;
 	font-size: 12px;
 	font-weight: 600;
 	padding: 0 6px;
 	overflow: hidden;
 	cursor: pointer;
 	text-decoration: none;
+
+	&.continues-left {
+		border-inline-start-width: 0;
+		border-start-start-radius: 0;
+		border-end-start-radius: 0;
+	}
+
+	&.continues-right {
+		border-inline-end-width: 0;
+		border-start-end-radius: 0;
+		border-end-end-radius: 0;
+	}
 
 	.event-label {
 		overflow: hidden;
@@ -54,8 +79,9 @@ $eventHeight: 20px;
 	width: 100%;
 
 	.event {
-		background-color: var(--bo-black, #000) !important;
-		color: var(--bo-white, #fff);
+		background-color: var(--bo-white) !important;
+		box-shadow: inset 0 0 0 1.5px var(--bo-ink);
+		color: var(--bo-ink);
 	}
 }
 
@@ -72,24 +98,37 @@ $eventHeight: 20px;
 	border-width: 0 1px 0 1px;
 }
 
-.day.odd-month {
-	background-color: var(--ion-color-light);
-}
-
 .day.weekend {
 	background-color: var(--bo-blue-tint, #eef1fb);
 }
 .day.holiday {
 	background-color: var(--bo-yellow-tint, #fdf1de);
 }
+.day.today {
+	background-color: var(--calendar-today-tint);
+}
 
 .day {
 	.date {
-		font-size: 0.8em;
+		display: flex;
+		align-items: center;
+		gap: 5px;
 		width: 100%;
-		padding: 0 2px;
-		border-top: 1px solid var(--bo-card-line);
-		border-bottom: 1px solid var(--bo-card-line);
+		height: 26px;
+		padding: 0 4px;
+		font-size: 12.5px;
+		font-weight: 700;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+	.date.past {
+		color: var(--bo-muted);
+	}
+	.day-number {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		height: 22px;
 	}
 	.date.selectedRange {
 		background-color: yellow;
@@ -101,6 +140,55 @@ $eventHeight: 20px;
 		border-color: #fff;
 		color: #fff;
 	}
+}
+
+.day.weekend .date:not(.past) {
+	color: var(--calendar-weekend-text);
+}
+
+.holiday-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	min-width: 0;
+}
+
+.holiday-name {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-weight: 600;
+	color: var(--bo-yellow-deep);
+}
+
+@media (max-width: 991.98px) {
+	.holiday-name {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+	}
+}
+
+.holiday-icon {
+	flex: none;
+	width: 12px;
+	height: 12px;
+	fill: none;
+	stroke: var(--bo-yellow);
+	stroke-width: 2.4;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.day.today .day-number {
+	min-width: 22px;
+	padding: 0 6px;
+	border-radius: 11px;
+	background-color: var(--bo-yellow);
+	color: #1f2430;
+	font-weight: 800;
 }
 
 .day .date.first-of-month {

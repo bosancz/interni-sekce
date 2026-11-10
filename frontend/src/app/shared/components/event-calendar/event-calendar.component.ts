@@ -1,7 +1,6 @@
 import { Component, effect, HostListener, input, OnInit, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { IonBadge } from "@ionic/angular/standalone";
-import { CzechHolidays } from "czech-holidays";
+import { CzechHolidays, HolidayDate } from "czech-holidays";
 import { DateTime } from "luxon";
 import { ApiService } from "src/app/core/services/api.service";
 import { MONTH_NAMES } from "src/app/core/config/months";
@@ -31,10 +30,11 @@ class CalendarRowBlock<T extends SDK.CPVEventResponseWithLinks | SDK.EventRespon
 
 interface CalendarDayProperties {
 	holiday?: boolean;
+	holidayName?: string;
 	empty?: boolean;
 	weekend?: boolean;
-	oddMonth: boolean;
 	today?: boolean;
+	past?: boolean;
 	firstOfMonth?: boolean;
 }
 class CalendarDay {
@@ -62,7 +62,7 @@ class CalendarEvent<T extends SDK.CPVEventResponseWithLinks | SDK.EventResponseW
 	templateUrl: "./event-calendar.component.html",
 	styleUrls: ["./event-calendar.component.scss"],
 
-	imports: [RouterLink, IonBadge, EventStatusPipe, TooltipDirective],
+	imports: [RouterLink, EventStatusPipe, TooltipDirective],
 })
 export class EventCalendarComponent implements OnInit {
 	dateFromString = input.required<DateTime | string, DateTime>({
@@ -99,7 +99,7 @@ export class EventCalendarComponent implements OnInit {
 
 	eventsCPV: SDK.CPVEventResponseWithLinks[] = [];
 
-	eventHeight = 22;
+	eventHeight = 23;
 
 	constructor(private api: ApiService) {
 		effect(() => {
@@ -134,7 +134,11 @@ export class EventCalendarComponent implements OnInit {
 		let dateTill = this.dateTill;
 		if (dateTill.weekday < 7) dateTill = dateTill.plus({ days: 7 - dateTill.weekday });
 
-		let holidays = CzechHolidays(currentDate.year);
+		const holidays = new Map<number, HolidayDate[]>();
+		const getHoliday = (date: DateTime) => {
+			if (!holidays.has(date.year)) holidays.set(date.year, CzechHolidays(date.year));
+			return holidays.get(date.year)!.find((item) => item.m === date.month && item.d === date.day);
+		};
 
 		let row = new CalendarRow(currentDate, currentDate.plus({ days: 6 }));
 		const calendar = [row];
@@ -145,14 +149,14 @@ export class EventCalendarComponent implements OnInit {
 				calendar.push(row);
 			}
 
-			if (currentDate.year !== row.to.year) holidays.push(...CzechHolidays(row.to.year));
-
+			const holiday = getHoliday(currentDate);
 			const dayInfo = {
 				empty: currentDate < this.dateFrom || currentDate > this.dateTill,
-				holiday: this.isHoliday(currentDate),
+				holiday: !!holiday,
+				holidayName: holiday?.name.cs,
 				weekend: this.isWeekend(currentDate),
-				oddMonth: (currentDate.month - this.dateFrom.month) % 2 === 0,
 				today: this.isToday(currentDate),
+				past: currentDate < DateTime.now().startOf("day"),
 				firstOfMonth: currentDate.day === 1,
 			};
 
@@ -223,10 +227,6 @@ export class EventCalendarComponent implements OnInit {
 		return date.weekday >= 6;
 	}
 
-	private isHoliday(date: DateTime): boolean {
-		return CzechHolidays(date.year).some((item) => item.m === date.month && item.d === date.day);
-	}
-
 	private isToday(date: DateTime): boolean {
 		return date.hasSame(DateTime.now(), "day");
 	}
@@ -264,6 +264,12 @@ export class EventCalendarComponent implements OnInit {
 
 	emitSelected() {
 		if (!this.selection) return;
+	}
+
+	dayLabel(day: CalendarDay) {
+		const first = this.calendarRows[0]?.days[0];
+		if (day.properties.firstOfMonth || day === first) return `${day.date.day}. ${day.date.month}.`;
+		return `${day.date.day}`;
 	}
 
 	monthLabel(date: DateTime) {
