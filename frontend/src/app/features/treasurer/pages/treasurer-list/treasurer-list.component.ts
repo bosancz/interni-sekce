@@ -1,10 +1,9 @@
-import { DatePipe, DecimalPipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
+import { DatePipe, DecimalPipe, NgTemplateOutlet } from "@angular/common";
 import { AfterViewInit, Component, computed, inject, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonButton,
-	IonCheckbox,
 	IonContent,
 	IonIcon,
 	IonInfiniteScroll,
@@ -42,6 +41,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
 import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
+import { ColumnsSelectComponent } from "src/app/shared/components/columns-select/columns-select.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
@@ -52,15 +52,6 @@ import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loading";
-
-// Custom "columns" glyph, same as the members list — see the note there on why it must be a
-// `data:image/svg+xml;utf8,` URI rather than a raw SVG string.
-const COLUMNS_ICON =
-	"data:image/svg+xml;utf8," +
-	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
-	'<rect x="64" y="80" width="384" height="352" rx="24" fill="none" stroke="currentColor" stroke-width="32"/>' +
-	'<line x1="192" y1="80" x2="192" y2="432" stroke="currentColor" stroke-width="32"/>' +
-	'<line x1="320" y1="80" x2="320" y2="432" stroke="currentColor" stroke-width="32"/></svg>';
 
 /**
  * The years the stepper can reach. They only stop it running away — every year in between is one
@@ -95,7 +86,6 @@ const LAST_YEAR = 2200;
 		IonItemDivider,
 		IonButton,
 		IonPopover,
-		IonCheckbox,
 		IonToggle,
 		IonIcon,
 		IonSkeletonText,
@@ -104,10 +94,10 @@ const LAST_YEAR = 2200;
 		AdminTableComponent,
 		AdminTableColumnComponent,
 		AdminTableCellDirective,
+		ColumnsSelectComponent,
 		FilterPillComponent,
 		SortSelectComponent,
 		GroupBadgeComponent,
-		KeyValuePipe,
 		DatePipe,
 		DecimalPipe,
 		MemberPipe,
@@ -262,7 +252,6 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			createOutline,
 			downloadOutline,
 			eyeOutline,
-			columns: COLUMNS_ICON,
 		});
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 	}
@@ -886,10 +875,6 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		this.groups.set(groups);
 	}
 
-	originalViewOrder = (a: KeyValue<string, boolean>, b: KeyValue<string, boolean>): number => {
-		return 0;
-	};
-
 	// The fee column is the point of the page, so it is always on and is not offered here.
 	private loadViewSelections() {
 		this.viewSelections.set({
@@ -910,10 +895,6 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			firstEmail: false,
 			status: false,
 		});
-	}
-
-	setViewSelection(key: string, value: boolean) {
-		this.applyViewSelections({ ...this.viewSelections(), [key]: value });
 	}
 
 	// Mobile renders the column picker as a multiselect pill, which emits the full list of

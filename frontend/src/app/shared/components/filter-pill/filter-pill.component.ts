@@ -2,6 +2,7 @@ import { Component, computed, input, output, signal } from "@angular/core";
 import { IonContent, IonIcon, IonPopover } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { chevronDown } from "ionicons/icons";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 
 export interface FilterPillOption {
 	value: string;
@@ -16,7 +17,7 @@ export interface FilterPillOption {
 	selector: "bo-filter-pill",
 	templateUrl: "./filter-pill.component.html",
 	styleUrls: ["./filter-pill.component.scss"],
-	imports: [IonIcon, IonPopover, IonContent],
+	imports: [IonIcon, IonPopover, IonContent, TooltipDirective],
 })
 export class FilterPillComponent {
 	label = input.required<string>();
@@ -24,6 +25,7 @@ export class FilterPillComponent {
 	selected = input<string[]>([]);
 	multiple = input<boolean>(true);
 	columns = input<number>(1);
+	icon = input<string | null>(null);
 	selectedChange = output<string[]>();
 
 	popoverOpen = signal(false);

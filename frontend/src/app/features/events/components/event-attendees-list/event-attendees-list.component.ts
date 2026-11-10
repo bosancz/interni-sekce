@@ -1,17 +1,26 @@
 import { Component, computed, input, output, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
+import { PlatformService } from "src/app/core/services/platform.service";
 import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { flag, flagOutline, swapHorizontalOutline, trashOutline } from "ionicons/icons";
 import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { GroupsService } from "src/app/core/services/groups.service";
+import { UserSettingsService } from "src/app/core/services/user-settings.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
 import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
+import { ColumnsSelectComponent } from "src/app/shared/components/columns-select/columns-select.component";
+import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
+import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
+import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
+import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
+import { GroupPipe } from "src/app/shared/pipes/group.pipe";
+import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
 import { SDK } from "src/sdk";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 import { RolePipe } from "../../../../shared/pipes/role.pipe";
@@ -25,6 +34,28 @@ const ROLE_SORT_ORDER = [...ROLE_ORDER].reverse();
 
 const collator = new Intl.Collator("cs");
 
+const ATTENDEES_COLUMNS: FilterPillOption[] = [
+	{ value: "photo", label: "Fotka" },
+	{ value: "name", label: "Jméno" },
+	{ value: "group", label: "Oddíl" },
+	{ value: "age", label: "Věk" },
+	{ value: "role", label: "Role" },
+	{ value: "notes", label: "Poznámky" },
+];
+
+const SORT_OPTIONS: SortOption[] = [
+	{ key: "nickname", label: "Přezdívka" },
+	{ key: "group", label: "Oddíl" },
+	{ key: "age", label: "Věk" },
+	{ key: "role", label: "Role" },
+];
+
+const normalize = (value: string) =>
+	value
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.toLowerCase();
+
 @Component({
 	selector: "bo-event-attendees-list",
 	templateUrl: "./event-attendees-list.component.html",
@@ -35,8 +66,15 @@ const collator = new Intl.Collator("cs");
 		AdminTableComponent,
 		AdminTableColumnComponent,
 		AdminTableCellDirective,
+		AvatarComponent,
+		ColumnsSelectComponent,
+		FilterComponent,
+		FilterPillComponent,
+		SortSelectComponent,
 		GroupBadgeComponent,
+		GroupPipe,
 		MemberPipe,
+		MemberProfilePhotoUrlPipe,
 		RolePipe,
 	],
 })
@@ -48,6 +86,27 @@ export class EventAttendeesListComponent {
 	remove = output<Attendee>();
 	roleChange = output<{ attendee: Attendee; role: SDK.MemberRolesEnum }>();
 	leadChange = output<{ attendee: Attendee; lead: boolean }>();
+
+	private readonly savedColumns = this.userSettings.watch("eventAttendeesColumns");
+
+	readonly columnOptions = ATTENDEES_COLUMNS;
+
+	columns = computed(() => {
+		const saved = this.savedColumns();
+		return Object.fromEntries(ATTENDEES_COLUMNS.map(({ value }) => [value, saved?.[value] ?? true]));
+	});
+
+	selectedColumns = computed(() =>
+		Object.entries(this.columns())
+			.filter(([, visible]) => visible)
+			.map(([key]) => key),
+	);
+
+	readonly sortOptions = SORT_OPTIONS;
+
+	search = signal<string>("");
+
+	isDesktop = toSignal(this.platformService.isLg, { initialValue: true });
 
 	sort = signal<string | null>("role");
 	order = signal<"ASC" | "DESC">("ASC");
@@ -75,6 +134,17 @@ export class EventAttendeesListComponent {
 					? valueA - valueB
 					: collator.compare(String(valueA), String(valueB));
 			return result * direction || this.compareNicknames(a, b);
+		});
+	});
+
+	filteredAttendees = computed(() => {
+		const attendees = this.sortedAttendees();
+		const search = normalize(this.search().trim());
+		if (!attendees || !search) return attendees;
+		return attendees.filter((attendee) => {
+			const member = attendee.member;
+			const text = [member?.nickname, member?.firstName, member?.lastName].filter(Boolean).join(" ");
+			return normalize(text).includes(search);
 		});
 	});
 
@@ -125,8 +195,22 @@ export class EventAttendeesListComponent {
 	constructor(
 		private readonly groupsService: GroupsService,
 		private readonly modalService: ModalService,
+		private readonly userSettings: UserSettingsService,
+		private readonly platformService: PlatformService,
 	) {
 		addIcons({ flag });
+	}
+
+	onFilterChange(filter: FilterData) {
+		this.search.set(String(filter["search"] ?? ""));
+	}
+
+	setColumns(keys: string[]) {
+		const selected = new Set(keys);
+		this.userSettings.set(
+			"eventAttendeesColumns",
+			Object.fromEntries(ATTENDEES_COLUMNS.map(({ value }) => [value, selected.has(value)])),
+		);
 	}
 
 	setSort(sort: AdminTableSort) {

@@ -1,10 +1,9 @@
 import { MEMBER_ACHIEVEMENT_FILTER_OPTIONS } from "src/app/core/config/member-achievements";
-import { DatePipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
+import { DatePipe, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import {
 	IonButton,
-	IonCheckbox,
 	IonContent,
 	IonIcon,
 	IonItem,
@@ -17,13 +16,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { arrowUndoOutline, eyeOutline, mailOutline, trashOutline } from "ionicons/icons";
 
-const COLUMNS_ICON =
-	"data:image/svg+xml;utf8," +
-	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
-	'<rect x="64" y="80" width="384" height="352" rx="24" fill="none" stroke="currentColor" stroke-width="32"/>' +
-	'<line x1="192" y1="80" x2="192" y2="432" stroke="currentColor" stroke-width="32"/>' +
-	'<line x1="320" y1="80" x2="320" y2="432" stroke="currentColor" stroke-width="32"/></svg>';
-
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipPaymentStates } from "src/app/core/config/membership";
 import { ApiService } from "src/app/core/services/api.service";
@@ -34,6 +26,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
 import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
+import { ColumnsSelectComponent } from "src/app/shared/components/columns-select/columns-select.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
@@ -72,6 +65,7 @@ const mailAddresses = (emails: string[]) =>
 		GroupPipe,
 		AvatarComponent,
 		FilterComponent,
+		ColumnsSelectComponent,
 		FilterPillComponent,
 		SortSelectComponent,
 		IonContent,
@@ -80,14 +74,12 @@ const mailAddresses = (emails: string[]) =>
 		IonItemDivider,
 		IonButton,
 		IonPopover,
-		IonCheckbox,
 		IonToggle,
 		IonIcon,
 		AdminTableComponent,
 		AdminTableColumnComponent,
 		AdminTableCellDirective,
 		FormsModule,
-		KeyValuePipe,
 		DatePipe,
 		NgTemplateOutlet,
 		MemberPipe,
@@ -251,7 +243,7 @@ export class GroupMembersComponent implements OnInit {
 		private toasts: ToastService,
 		private platformService: PlatformService,
 	) {
-		addIcons({ arrowUndoOutline, eyeOutline, mailOutline, trashOutline, columns: COLUMNS_ICON });
+		addIcons({ arrowUndoOutline, eyeOutline, mailOutline, trashOutline });
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 
 		this.model.setCommitted(this.defaultFilter);
@@ -381,15 +373,24 @@ export class GroupMembersComponent implements OnInit {
 		this.loadMembers();
 	}
 
-	originalViewOrder = (a: KeyValue<string, boolean>, b: KeyValue<string, boolean>): number => {
-		return 0;
-	};
-
-	setViewSelection(key: string, value: boolean) {
+	setColumnSelection(keys: string[]) {
+		const selected = new Set(keys);
 		const badgesLoaded = this.needsBadges();
-		this.viewSelections.update((selections) => ({ ...selections, [key]: value }));
+		this.viewSelections.update((selections) =>
+			Object.fromEntries(Object.keys(selections).map((key) => [key, selected.has(key)])),
+		);
 		if (!badgesLoaded && this.needsBadges()) this.loadMembers();
 	}
+
+	columnOptions = computed<FilterPillOption[]>(() =>
+		Object.keys(this.viewSelections()).map((key) => ({ value: key, label: this.getViewSelectionLabel(key) })),
+	);
+
+	selectedColumns = computed(() =>
+		Object.entries(this.viewSelections())
+			.filter(([, visible]) => visible)
+			.map(([key]) => key),
+	);
 
 	public getViewSelectionLabel(key: string): string {
 		const labels: { [key: string]: string } = {

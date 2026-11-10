@@ -124,6 +124,10 @@ ion-item ion-label h3 {
 	color: var(--bo-heading);
 }
 
+:host-context(body.dark) ion-item ion-label h3 {
+	color: var(--bo-ink);
+}
+
 .admin-table-end {
 	gap: 0.25rem;
 }

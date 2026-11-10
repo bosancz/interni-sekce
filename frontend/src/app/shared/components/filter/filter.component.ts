@@ -38,6 +38,7 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 	showButtonMobileOnly = input<boolean>(false);
 	filterModal = input<boolean>(true);
 	immediateFilter = input<boolean>(false);
+	autofocus = input<boolean>(true);
 	change = output<FilterData>();
 
 	@ViewChild(IonModal) modal?: IonModal;
@@ -73,7 +74,7 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 
 	ngAfterViewInit(): void {
 		// FIXME: Workaround for focus on searchbar, because it's not working when called directly
-		setTimeout(() => this.searchbar?.setFocus(), 500);
+		if (this.autofocus()) setTimeout(() => this.searchbar?.setFocus(), 500);
 	}
 
 	async openFilter(filterContent: TemplateRef<any>) {

@@ -1,0 +1,22 @@
+:host ::ng-deep {
+	ion-list {
+		background: transparent;
+		padding: 0;
+	}
+
+	ion-item,
+	ion-item-divider {
+		--background: transparent;
+	}
+
+	ion-item-divider {
+		--color: var(--bo-muted);
+		--padding-start: 16px;
+		border: none;
+		min-height: auto;
+		padding-top: 12px;
+		padding-bottom: 4px;
+		font-size: 0.8125rem;
+		font-weight: 700;
+	}
+}

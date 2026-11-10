@@ -1,12 +1,11 @@
 import { MEMBER_ACHIEVEMENT_FILTER_OPTIONS } from "src/app/core/config/member-achievements";
-import { DatePipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
+import { DatePipe, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, effect, inject, OnInit, signal, untracked } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonButton,
-	IonCheckbox,
 	IonContent,
 	IonIcon,
 	IonInfiniteScroll,
@@ -32,6 +31,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
 import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
+import { ColumnsSelectComponent } from "src/app/shared/components/columns-select/columns-select.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { MemberBadgesInlineComponent } from "src/app/shared/components/member-badges-inline/member-badges-inline.component";
 import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
@@ -49,13 +49,6 @@ import { SDK } from "src/sdk";
 import { MembershipPaymentStates } from "../../../../core/config/membership";
 import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
 import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loading";
-
-const COLUMNS_ICON =
-	"data:image/svg+xml;utf8," +
-	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
-	'<rect x="64" y="80" width="384" height="352" rx="24" fill="none" stroke="currentColor" stroke-width="32"/>' +
-	'<line x1="192" y1="80" x2="192" y2="432" stroke="currentColor" stroke-width="32"/>' +
-	'<line x1="320" y1="80" x2="320" y2="432" stroke="currentColor" stroke-width="32"/></svg>';
 
 const MEMBERS_LIST_COLUMNS: { [key: string]: boolean } = {
 	photo: true,
@@ -94,14 +87,12 @@ const BADGE_COLUMNS = ["achievements", "trainings"];
 		IonItemDivider,
 		IonButton,
 		IonPopover,
-		IonCheckbox,
 		IonToggle,
 		IonIcon,
 		AdminTableComponent,
 		AdminTableColumnComponent,
 		AdminTableCellDirective,
 		FormsModule,
-		KeyValuePipe,
 		MemberPipe,
 		MemberProfilePhotoUrlPipe,
 		AvatarComponent,
@@ -111,6 +102,7 @@ const BADGE_COLUMNS = ["achievements", "trainings"];
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
 		DatePipe,
+		ColumnsSelectComponent,
 		FilterPillComponent,
 		SortSelectComponent,
 		NgTemplateOutlet,
@@ -254,7 +246,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			eyeOutline,
 			schoolOutline,
 			trashOutline,
-			columns: COLUMNS_ICON,
 		});
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 
@@ -479,14 +470,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		this.toasts.toast("Člen uložen.");
 
 		this.router.navigate([member.id], { relativeTo: this.route });
-	}
-
-	originalViewOrder = (a: KeyValue<string, boolean>, b: KeyValue<string, boolean>): number => {
-		return 0;
-	};
-
-	setViewSelection(key: string, value: boolean) {
-		this.userSettings.set("membersListColumns", { ...this.viewSelections(), [key]: value });
 	}
 
 	setColumnSelection(keys: string[]) {

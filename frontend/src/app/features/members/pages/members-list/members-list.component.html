@@ -5,9 +5,11 @@
 		<div toolbar-actions slot="end" class="members-filter-actions">
 			<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
 
-			<ion-button fill="clear" size="small" id="columns-popover-trigger" boTooltip="Sloupce">
-				<ion-icon slot="icon-only" name="columns"></ion-icon>
-			</ion-button>
+			<bo-columns-select
+				[options]="columnOptions()"
+				[selected]="selectedColumns()"
+				(selectedChange)="setColumnSelection($event)"
+			/>
 
 			<ion-button fill="clear" size="small" id="inactive-popover-trigger" boTooltip="Zobrazení">
 				<ion-icon slot="icon-only" name="eye-outline"></ion-icon>
@@ -77,21 +79,6 @@
 	/>
 </ng-template>
 
-<ng-template #columnsList>
-	<ion-item-divider>Sloupce</ion-item-divider>
-	@for (selection of viewSelections() | keyvalue: originalViewOrder; track selection.key) {
-		<ion-item>
-			<ion-checkbox
-				[checked]="viewSelections()[selection.key]"
-				(ionChange)="setViewSelection(selection.key, $event.detail.checked)"
-				justify="space-between"
-			>
-				{{ getViewSelectionLabel(selection.key) }}
-			</ion-checkbox>
-		</ion-item>
-	}
-</ng-template>
-
 <ng-template #viewOptionsList>
 	<ion-item-divider>Zobrazení</ion-item-divider>
 	<ion-item lines="none">
@@ -104,21 +91,6 @@
 		</ion-toggle>
 	</ion-item>
 </ng-template>
-
-<ion-popover
-	trigger="columns-popover-trigger"
-	triggerAction="click"
-	cssClass="view-options-popover"
-	[dismissOnSelect]="false"
->
-	<ng-template>
-		<ion-content>
-			<ion-list lines="full">
-				<ng-container [ngTemplateOutlet]="columnsList"></ng-container>
-			</ion-list>
-		</ion-content>
-	</ng-template>
-</ion-popover>
 
 <ion-popover
 	trigger="inactive-popover-trigger"

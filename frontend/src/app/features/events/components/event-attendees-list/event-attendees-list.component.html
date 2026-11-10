@@ -1,9 +1,48 @@
 @if (attendees()?.length === 0) {
 	<p class="attendees-empty text-muted"><em>Žádní účastníci</em></p>
 } @else {
+	<bo-filter
+		class="attendees-filter"
+		[search]="true"
+		[showButtonMobileOnly]="true"
+		[immediateFilter]="true"
+		[autofocus]="false"
+		(change)="onFilterChange($event)"
+	>
+		@if (isDesktop()) {
+			<div toolbar-actions slot="end">
+				<bo-columns-select
+					[options]="columnOptions"
+					[selected]="selectedColumns()"
+					(selectedChange)="setColumns($event)"
+				/>
+			</div>
+		} @else {
+			<div class="attendees-filter-modal">
+				<bo-sort-select
+					[options]="sortOptions"
+					[sort]="sort()"
+					[order]="order()"
+					(sortChange)="setSort($event)"
+				/>
+
+				<div class="attendees-filter-section">
+					<span class="attendees-filter-label">Sloupce</span>
+					<bo-filter-pill
+						label="Vybrat sloupce"
+						[options]="columnOptions"
+						[selected]="selectedColumns()"
+						[columns]="2"
+						(selectedChange)="setColumns($event)"
+					/>
+				</div>
+			</div>
+		}
+	</bo-filter>
+
 	<admin-table
 		class="attendees-table"
-		[rows]="sortedAttendees()"
+		[rows]="filteredAttendees()"
 		[loading]="attendees() === undefined"
 		[skeletonRows]="10"
 		[rowLink]="rowLink"
@@ -15,19 +54,18 @@
 		[order]="order()"
 		(sortChange)="setSort($event)"
 	>
-		<admin-table-column
-			header="Oddíl"
-			sort="group"
-			[start]="true"
-			headerClass="align-middle attendees-group-column"
-			cellClass="align-middle attendees-group-column"
-		>
-			<ng-container *adminCell="let attendee">
-				@if (attendee.member) {
-					<bo-group-badge [short]="true" [groupId]="attendee.member.groupId"></bo-group-badge>
-				}
-			</ng-container>
-		</admin-table-column>
+		@if (columns()["photo"]) {
+			<admin-table-column [start]="true" headerClass="attendees-photo-column" cellClass="attendees-photo-column">
+				<ng-container *adminCell="let attendee">
+					@let photoUrl = attendee.member | memberProfilePhotoUrl;
+					<bo-avatar
+						class="attendees-photo"
+						[photoUrl]="photoUrl"
+						[color]="attendee.member?.groupId | group: 'color'"
+					/>
+				</ng-container>
+			</admin-table-column>
+		}
 
 		<admin-table-column
 			header="Přezdívka"
@@ -45,39 +83,61 @@
 						>
 					}
 				</span>
-				@if (attendee.member) {
+				@if (attendee.member && columns()["name"]) {
 					<span class="member-name">{{ attendee.member.firstName }} {{ attendee.member.lastName }}</span>
 				}
 			</ng-container>
 		</admin-table-column>
 
-		<admin-table-column header="Věk" sort="age" headerClass="align-middle" cellClass="align-middle">
-			<ng-container *adminCell="let attendee">
-				@if (attendee.member | member: "age" : event()?.dateFrom; as age) {
-					{{ age }}
-				}
-			</ng-container>
-		</admin-table-column>
-
-		<admin-table-column header="Role" sort="role" headerClass="align-middle" cellClass="align-middle">
-			<ng-container *adminCell="let attendee">{{ attendee.role | role: "title" }}</ng-container>
-		</admin-table-column>
-
-		<admin-table-column
-			header="Poznámky"
-			[hideMobileLabel]="true"
-			headerClass="align-middle attendees-notes-column"
-			cellClass="align-middle attendees-wrap"
-		>
-			<ng-container *adminCell="let attendee">
-				<span class="notes">
-					@for (note of notes().get(attendee.memberId) ?? []; track $index) {
-						<span class="note" [class]="'note-' + note.tone">
-							<ion-icon [name]="note.icon" aria-hidden="true"></ion-icon>{{ note.text }}
-						</span>
+		@if (columns()["group"]) {
+			<admin-table-column
+				header="Oddíl"
+				sort="group"
+				headerClass="align-middle"
+				cellClass="align-middle"
+				[right]="true"
+			>
+				<ng-container *adminCell="let attendee">
+					@if (attendee.member) {
+						<bo-group-badge [groupId]="attendee.member.groupId"></bo-group-badge>
 					}
-				</span>
-			</ng-container>
-		</admin-table-column>
+				</ng-container>
+			</admin-table-column>
+		}
+
+		@if (columns()["age"]) {
+			<admin-table-column header="Věk" sort="age" headerClass="align-middle" cellClass="align-middle">
+				<ng-container *adminCell="let attendee">
+					@if (attendee.member | member: "age" : event()?.dateFrom; as age) {
+						{{ age }}
+					}
+				</ng-container>
+			</admin-table-column>
+		}
+
+		@if (columns()["role"]) {
+			<admin-table-column header="Role" sort="role" headerClass="align-middle" cellClass="align-middle">
+				<ng-container *adminCell="let attendee">{{ attendee.role | role: "title" }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (columns()["notes"]) {
+			<admin-table-column
+				header="Poznámky"
+				[hideMobileLabel]="true"
+				headerClass="align-middle attendees-notes-column"
+				cellClass="align-middle attendees-wrap"
+			>
+				<ng-container *adminCell="let attendee">
+					<span class="notes">
+						@for (note of notes().get(attendee.memberId) ?? []; track $index) {
+							<span class="note" [class]="'note-' + note.tone">
+								<ion-icon [name]="note.icon" aria-hidden="true"></ion-icon>{{ note.text }}
+							</span>
+						}
+					</span>
+				</ng-container>
+			</admin-table-column>
+		}
 	</admin-table>
 }
