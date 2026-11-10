@@ -26,7 +26,7 @@
 						[disabled]="box.empty && !canEdit()"
 						(click)="open(box)"
 					>
-						<span class="badge-icon-wrap">
+						<span class="badge-icon-wrap" [attr.data-stars]="box.stars.length">
 							<img [src]="box.icon" alt="" class="badge-icon" />
 							@for (star of box.stars; track star) {
 								<img [src]="starIcon" alt="" class="badge-star" [attr.data-star]="star" />

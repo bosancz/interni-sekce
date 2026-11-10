@@ -74,6 +74,11 @@
 		left: 79%;
 		top: 68%;
 	}
+
+	[data-stars="3"] > &[data-star="3"] {
+		left: 50%;
+		top: 92%;
+	}
 }
 
 .star-rating {

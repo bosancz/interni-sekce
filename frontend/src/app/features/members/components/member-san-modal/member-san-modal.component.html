@@ -3,7 +3,7 @@
 
 	<div class="bm-body">
 		<div class="san-preview">
-			<div class="san-figure" [class.empty]="!hasSan()">
+			<div class="san-figure" [class.empty]="!hasSan()" [attr.data-stars]="shownStars()">
 				<img [src]="icon()" alt="" class="san-icon" />
 				@for (star of starPositions; track star) {
 					<img
