@@ -31,12 +31,14 @@
 </bo-page-content>
 
 <bo-page-footer class="d-lg-none">
-	<ion-tab-bar>
+	<bo-tabs>
 		@for (item of sections; track item.path) {
-			<ion-tab-button [class.tab-selected]="section() === item.path" [routerLink]="item.path">
-				<ion-icon [name]="item.icon"></ion-icon>
-				<ion-label>{{ item.tabLabel }}</ion-label>
-			</ion-tab-button>
+			<bo-tab
+				[label]="item.tabLabel"
+				[icon]="item.icon"
+				[selected]="section() === item.path"
+				(select)="openSection(item.path)"
+			></bo-tab>
 		}
-	</ion-tab-bar>
+	</bo-tabs>
 </bo-page-footer>

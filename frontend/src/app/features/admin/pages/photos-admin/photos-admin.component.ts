@@ -1,7 +1,7 @@
 import { Component, computed } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from "@angular/router";
-import { IonButton, IonIcon, IonItem, IonLabel, IonList, IonTabBar, IonTabButton } from "@ionic/angular/standalone";
+import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from "@angular/router";
+import { IonButton, IonIcon, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { addOutline, happyOutline, imagesOutline, peopleOutline, pricetagsOutline } from "ionicons/icons";
 import { filter, map } from "rxjs";
@@ -9,6 +9,8 @@ import { ApiService } from "src/app/core/services/api.service";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { TabComponent } from "src/app/shared/components/tab/tab.component";
+import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 
 const BASE_URL = "/admin/fotky";
@@ -25,8 +27,8 @@ const BASE_URL = "/admin/fotky";
 		RouterLink,
 		IonList,
 		IonItem,
-		IonTabBar,
-		IonTabButton,
+		TabsComponent,
+		TabComponent,
 		IonLabel,
 		IonButton,
 		IonIcon,
@@ -66,8 +68,13 @@ export class PhotosAdminComponent {
 
 	constructor(
 		private router: Router,
+		private route: ActivatedRoute,
 		private api: ApiService,
 	) {
 		addIcons({ addOutline, happyOutline, imagesOutline, peopleOutline, pricetagsOutline });
+	}
+
+	openSection(path: string) {
+		this.router.navigate([path], { relativeTo: this.route });
 	}
 }

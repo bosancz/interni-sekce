@@ -1,7 +1,9 @@
 import { Component, input } from "@angular/core";
-import { IonIcon, IonLabel, IonTabBar, IonTabButton, NavController } from "@ionic/angular/standalone";
+import { IonIcon, NavController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { albumsOutline, imageOutline, pricetagsOutline } from "ionicons/icons";
+import { TabComponent } from "src/app/shared/components/tab/tab.component";
+import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 
 export type GalleryView = "albums" | "categories" | "photos";
 
@@ -15,7 +17,7 @@ const GALLERY_VIEWS: { name: GalleryView; label: string; icon: string; url: stri
 	selector: "bo-gallery-view-switch",
 	templateUrl: "./gallery-view-switch.component.html",
 	styleUrl: "./gallery-view-switch.component.scss",
-	imports: [IonTabBar, IonTabButton, IonIcon, IonLabel],
+	imports: [TabsComponent, TabComponent, IonIcon],
 })
 export class GalleryViewSwitchComponent {
 	active = input.required<GalleryView>();
