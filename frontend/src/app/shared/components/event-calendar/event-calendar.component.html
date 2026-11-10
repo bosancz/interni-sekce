@@ -1,5 +1,5 @@
 <div class="calendar" (contextmenu)="clearSelection($event)">
-	@for (row of calendar(); track row.from) {
+	@for (row of calendar(); track row.from.toMillis()) {
 		@if (monthLabels() && row.monthStart) {
 			<div class="month-label" [attr.data-month]="row.monthStart.toFormat('yyyy-MM')">
 				{{ monthLabel(row.monthStart) }}
@@ -7,7 +7,7 @@
 		}
 		<div class="calendar-row" [attr.data-week]="row.from.toISODate()">
 			<div class="days clearfix">
-				@for (day of row.days; track day.date; let i = $index) {
+				@for (day of row.days; track day.date.toMillis(); let i = $index) {
 					<div
 						class="day"
 						[style.left]="i * (1 / row.days.length) * 100 + '%'"
