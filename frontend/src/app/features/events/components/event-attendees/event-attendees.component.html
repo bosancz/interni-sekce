@@ -1,6 +1,4 @@
-<div class="list-header">
-	<h3>Lidé na akci</h3>
-
+<bo-section-header title="Lidé na akci">
 	@if (allMembers().length) {
 		<ion-button
 			fill="clear"
@@ -12,17 +10,17 @@
 			aria-label="Napsat e-mail všem na akci"
 		>
 			<ion-icon name="mail-outline" slot="start"></ion-icon>
-			<span class="mail-label">Napsat všem</span>
+			<span class="section-action-label">Napsat všem</span>
 		</ion-button>
 	}
 
 	@if (event() && people()?.length) {
 		<ion-button fill="clear" size="small" color="primary" (click)="openAgeModal()" aria-label="Počty podle věku">
 			<ion-icon name="bar-chart-outline" slot="start"></ion-icon>
-			<span class="mail-label">Počty podle věku</span>
+			<span class="section-action-label">Počty podle věku</span>
 		</ion-button>
 	}
-</div>
+</bo-section-header>
 
 @if (event() && showAnnouncement()) {
 	<div class="announcement" [class.announcement-warning]="announcementMissing().length">

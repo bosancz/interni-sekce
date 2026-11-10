@@ -1,33 +1,5 @@
 @use "src/styles/variables" as *;
 
-.list-header {
-	display: flex;
-	align-items: center;
-	gap: 0.25rem;
-	margin: 16px 0 10px;
-
-	h3 {
-		margin: 0;
-		margin-inline-end: auto;
-	}
-}
-
-@media (max-width: 575.98px) {
-	.button-label {
-		display: none;
-	}
-
-	.list-header ion-button {
-		--padding-start: 0.5rem;
-		--padding-end: 0.5rem;
-	}
-
-	.list-header ion-icon {
-		margin-inline-end: 0;
-		font-size: 1.25rem;
-	}
-}
-
 .accounting-bar {
 	display: flex;
 	align-items: center;

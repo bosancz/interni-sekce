@@ -3,29 +3,3 @@ bo-people-table {
 	display: block;
 	margin-inline: -16px;
 }
-
-@media (max-width: 991.98px) {
-	bo-people-filter {
-		margin-top: -16px;
-	}
-}
-
-.members-mail-button ion-icon {
-	font-size: 20px;
-}
-
-@media (max-width: 575.98px) {
-	.mail-label {
-		display: none;
-	}
-
-	.members-mail-button {
-		--padding-start: 0.5rem;
-		--padding-end: 0.5rem;
-
-		ion-icon {
-			margin-inline-end: 0;
-			font-size: 24px;
-		}
-	}
-}

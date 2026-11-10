@@ -25,6 +25,7 @@ import { AddButtonComponent } from "src/app/shared/components/add-button/add-but
 import { getBirthdaysBetween } from "src/helpers/age";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { getMemberEmails } from "src/helpers/member-contacts";
+import { SectionHeaderComponent } from "src/app/shared/components/section-header/section-header.component";
 import { SDK } from "src/sdk";
 import { EventAgeModalComponent } from "../event-age-modal/event-age-modal.component";
 import { EventAttendeesListComponent } from "../event-attendees-list/event-attendees-list.component";
@@ -53,7 +54,15 @@ const mailAddresses = (emails: string[]) =>
 	templateUrl: "./event-attendees.component.html",
 	styleUrls: ["./event-attendees.component.scss"],
 
-	imports: [CommonModule, IonButton, IonIcon, TooltipDirective, EventAttendeesListComponent, AddButtonComponent],
+	imports: [
+		SectionHeaderComponent,
+		CommonModule,
+		IonButton,
+		IonIcon,
+		TooltipDirective,
+		EventAttendeesListComponent,
+		AddButtonComponent,
+	],
 })
 export class EventAttendeesComponent implements OnInit, OnDestroy {
 	event = input<SDK.EventResponseWithLinks | null | undefined>();

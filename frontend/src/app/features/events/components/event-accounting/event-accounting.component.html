@@ -1,15 +1,13 @@
 <div class="row">
 	<div class="col-12">
-		<div class="list-header">
-			<h3>Účtenky</h3>
-
+		<bo-section-header title="Účtenky">
 			@if (expenses().length > 0) {
 				<ion-button fill="clear" size="small" color="primary" aria-label="Statistiky" (click)="openStats()">
 					<ion-icon name="pie-chart-outline" slot="start"></ion-icon>
-					<span class="button-label">Statistiky</span>
+					<span class="section-action-label">Statistiky</span>
 				</ion-button>
 			}
-		</div>
+		</bo-section-header>
 
 		@if (expenses().length > 0 || event()?._links?.getEventAccounting?.allowed) {
 			<div class="accounting-bar" [class.accounting-warning]="!event()?.accountingSentAt">

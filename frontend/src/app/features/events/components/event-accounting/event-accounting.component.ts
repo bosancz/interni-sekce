@@ -19,6 +19,7 @@ import { AdminTableComponent } from "src/app/shared/components/admin-table/admin
 import { AddButtonComponent } from "src/app/shared/components/add-button/add-button.component";
 import { EventExpensePipe } from "src/app/shared/pipes/event-expense.pipe";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
+import { SectionHeaderComponent } from "src/app/shared/components/section-header/section-header.component";
 import { SDK } from "src/sdk";
 import { getEventDays, getExpenseAmount } from "../../helpers/event-person-days";
 import { EventExpenseTypesInfoComponent } from "../event-expense-types-info/event-expense-types-info.component";
@@ -31,6 +32,7 @@ import { EventExpensesStatsModalComponent } from "../event-expenses-stats-modal/
 	styleUrls: ["./event-accounting.component.scss"],
 
 	imports: [
+		SectionHeaderComponent,
 		CommonModule,
 		IonButton,
 		IonIcon,
