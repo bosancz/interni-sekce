@@ -14,7 +14,7 @@
 						[style.width]="(1 / row.days.length) * 100 + '%'"
 						[class.weekend]="day.properties.weekend"
 						[class.holiday]="day.properties.holiday"
-						[class.odd-month]="day.properties.oddMonth"
+						[class.today]="day.properties.today"
 						(click)="setSelection(day)"
 						(mouseenter)="setSelectionHover(day)"
 					>
@@ -26,14 +26,22 @@
 							[class.selectedRange]="isSelectedRange(day)"
 							[class.empty]="day.properties.empty"
 							[class.first-of-month]="monthLabels() && day.properties.firstOfMonth"
+							[class.past]="day.properties.past"
 						>
-							@if (!day.properties.today) {
-								{{ day.date.day }}. {{ day.date.month }}.
-							} @else {
-								<ion-badge>{{ day.date.day }}. {{ day.date.month }}.</ion-badge>
-							}
+							<span class="day-number">{{ dayLabel(day) }}</span>
 							@if (day.properties.holiday) {
-								<span class="float-right" boTooltip="Svátek">🎉</span>
+								<span
+									class="holiday-label"
+									[boTooltip]="day.properties.holidayName"
+									[boTooltipTap]="true"
+								>
+									<svg class="holiday-icon" aria-hidden="true" viewBox="0 0 24 24">
+										<path
+											d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"
+										/>
+									</svg>
+									<span class="holiday-name">{{ day.properties.holidayName }}</span>
+								</span>
 							}
 						</div>
 					</div>
@@ -44,6 +52,8 @@
 				@for (calEvent of row.blocks.own.events; track calEvent.event.id) {
 					<div
 						class="event"
+						[class.continues-left]="calEvent.dateFrom < row.from"
+						[class.continues-right]="calEvent.dateTill > row.to"
 						[style.background-color]="calEvent.event.status | eventStatus: 'color'"
 						[style.left]="getEventLeft(calEvent, row) * 100 + '%'"
 						[style.width]="getEventWidth(calEvent, row) * 100 + '%'"
@@ -61,6 +71,8 @@
 				@for (calEvent of row.blocks.cpv.events; track calEvent.event.name) {
 					<a
 						class="event"
+						[class.continues-left]="calEvent.dateFrom < row.from"
+						[class.continues-right]="calEvent.dateTill > row.to"
 						[style.left]="getEventLeft(calEvent, row) * 100 + '%'"
 						[style.width]="getEventWidth(calEvent, row) * 100 + '%'"
 						[style.top]="eventHeight * (calEvent.level - 1) + 'px'"
