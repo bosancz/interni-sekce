@@ -1,7 +1,19 @@
-<button type="button" class="filter-pill-button" [class.has-value]="selected().length > 0" (click)="open($event)">
-	<span>{{ buttonLabel() }}</span>
-	<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
-</button>
+@if (icon(); as icon) {
+	<button
+		type="button"
+		class="filter-pill-icon-button"
+		[boTooltip]="label()"
+		[attr.aria-label]="label()"
+		(click)="open($event)"
+	>
+		<ion-icon [name]="icon" aria-hidden="true"></ion-icon>
+	</button>
+} @else {
+	<button type="button" class="filter-pill-button" [class.has-value]="selected().length > 0" (click)="open($event)">
+		<span>{{ buttonLabel() }}</span>
+		<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+	</button>
+}
 
 <ion-popover
 	cssClass="filter-pill-chips-popover"

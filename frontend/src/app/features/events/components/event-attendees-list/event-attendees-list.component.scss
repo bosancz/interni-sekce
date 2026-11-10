@@ -4,6 +4,27 @@
 	display: block;
 }
 
+.attendees-photo {
+	font-size: 2rem;
+}
+
+.attendees-filter {
+	margin-inline: -16px;
+}
+
+.attendees-filter-section {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 8px 16px;
+}
+
+.attendees-filter-label {
+	color: var(--bo-muted);
+	font-size: 0.8125rem;
+	font-weight: 700;
+}
+
 .attendees-empty {
 	margin: 0.75rem 0;
 }
@@ -13,13 +34,21 @@
 		white-space: normal;
 	}
 
-	.attendees-group-column {
+	.attendees-photo-column {
 		width: 1%;
 	}
 
 	tr.attendee-festive {
 		--bo-table-row-bg: var(--bo-yellow-tint);
 	}
+}
+
+:host ::ng-deep admin-table ion-list {
+	padding: 0;
+	overflow: hidden;
+	background-color: var(--bo-white);
+	border-radius: var(--bo-radius-card);
+	box-shadow: var(--bo-shadow-card);
 }
 
 :host ::ng-deep ion-item.attendee-festive {
@@ -107,4 +136,9 @@
 
 :host ::ng-deep .admin-table-line:has(.notes:not(:has(.note))) {
 	display: none;
+}
+
+:host ::ng-deep admin-table ion-item .admin-table-start {
+	align-self: flex-start;
+	margin-top: 16px;
 }
