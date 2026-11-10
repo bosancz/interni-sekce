@@ -47,8 +47,6 @@ export class MonthPickerModalComponent extends InputModalComponent<string> imple
 		}));
 	});
 
-	selectedLabel = computed(() => `${MONTH_NAMES[this.selected().month - 1]} ${this.selected().year}`);
-
 	constructor(
 		modalController: ModalController,
 		private api: ApiService,
@@ -72,15 +70,7 @@ export class MonthPickerModalComponent extends InputModalComponent<string> imple
 	}
 
 	pick(option: MonthOption) {
-		this.selected.set(DateTime.local(this.year(), option.month, 1));
-	}
-
-	confirm() {
-		this.submit.emit(this.selected().toFormat("yyyy-MM"));
-	}
-
-	today() {
-		this.submit.emit(DateTime.local().toFormat("yyyy-MM"));
+		this.submit.emit(DateTime.local(this.year(), option.month, 1).toFormat("yyyy-MM"));
 	}
 
 	countLabel(count: number) {
