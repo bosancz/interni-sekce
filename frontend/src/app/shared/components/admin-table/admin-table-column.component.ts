@@ -16,6 +16,10 @@ export class AdminTableColumnComponent {
 
 	hideMobileLabel = input<boolean>(false);
 
+	mobileJoin = input<boolean>(false);
+
+	below = input<boolean>(false);
+
 	cellClass = input<string>("");
 
 	headerClass = input<string>("");

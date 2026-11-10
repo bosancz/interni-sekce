@@ -4,7 +4,7 @@
 			<table [class]="tableClass()">
 				<thead>
 					<tr>
-						@for (column of columns(); track column) {
+						@for (column of tableColumns(); track column) {
 							<th [class]="column.headerClass()">
 								@if (column.sort()) {
 									<button
@@ -34,8 +34,8 @@
 				<tbody>
 					@if (loading()) {
 						@for (skeleton of skeletonArray(); track $index) {
-							<tr>
-								@for (column of columns(); track column) {
+							<tr [class.admin-table-row-even]="$index % 2 === 1" [class.admin-table-row-last]="$last">
+								@for (column of tableColumns(); track column) {
 									<td><ion-skeleton-text animated></ion-skeleton-text></td>
 								}
 								@if (actions()) {
@@ -45,14 +45,17 @@
 						}
 					} @else {
 						@for (row of rows() ?? []; track trackRow($index, row)) {
+							@let even = $index % 2 === 1;
 							<tr
 								[attr.id]="resolveId(row)"
 								[ngClass]="resolveClass(row)"
+								[class.admin-table-row-even]="even"
+								[class.admin-table-row-last]="$last"
 								[class.clickable]="!!rowLink()"
 								[routerLink]="resolveLink(row)"
 								(click)="onRowClick(row)"
 							>
-								@for (column of columns(); track column) {
+								@for (column of tableColumns(); track column) {
 									<td [class]="column.cellClass()">
 										<ng-container
 											[ngTemplateOutlet]="column.cellTemplate()"
@@ -69,6 +72,31 @@
 									></td>
 								}
 							</tr>
+							@if (belowColumns().length) {
+								<tr
+									class="admin-table-below"
+									[ngClass]="resolveClass(row)"
+									[class.admin-table-row-even]="even"
+									[class.admin-table-row-last]="$last"
+									[class.clickable]="!!rowLink()"
+									[routerLink]="resolveLink(row)"
+									(click)="onRowClick(row)"
+								>
+									@if (belowIndent()) {
+										<td></td>
+									}
+									<td [attr.colspan]="belowColspan()" adminTableValue>
+										@for (column of belowColumns(); track column) {
+											<div [class]="column.cellClass()">
+												<ng-container
+													[ngTemplateOutlet]="column.cellTemplate()"
+													[ngTemplateOutletContext]="{ $implicit: row }"
+												></ng-container>
+											</div>
+										}
+									</td>
+								</tr>
+							}
 						}
 					}
 				</tbody>
@@ -100,27 +128,37 @@
 							</div>
 						}
 						<ion-label>
-							@for (column of lineColumns(); track column) {
-								@if (column.primary()) {
-									<h3>
-										<ng-container
-											[ngTemplateOutlet]="column.cellTemplate()"
-											[ngTemplateOutletContext]="{ $implicit: row }"
-										></ng-container>
-									</h3>
-								} @else {
-									<p class="admin-table-line">
-										@if (column.header() && !column.hideMobileLabel()) {
-											<span class="admin-table-line-label">{{ column.header() }}:</span>
-										}
-										<span class="admin-table-line-value">
+							@for (column of primaryColumns(); track column) {
+								<h3>
+									<ng-container
+										[ngTemplateOutlet]="column.cellTemplate()"
+										[ngTemplateOutletContext]="{ $implicit: row }"
+									></ng-container>
+								</h3>
+							}
+							@if (valueColumns().length) {
+								<p class="admin-table-values">
+									@for (column of valueColumns(); track column) {
+										<span
+											class="admin-table-value"
+											[class.admin-table-value-join]="column.mobileJoin()"
+											adminTableValue
+										>
 											<ng-container
 												[ngTemplateOutlet]="column.cellTemplate()"
 												[ngTemplateOutletContext]="{ $implicit: row }"
 											></ng-container>
 										</span>
-									</p>
-								}
+									}
+								</p>
+							}
+							@for (column of blockColumns(); track column) {
+								<div class="admin-table-value admin-table-block" adminTableValue>
+									<ng-container
+										[ngTemplateOutlet]="column.cellTemplate()"
+										[ngTemplateOutletContext]="{ $implicit: row }"
+									></ng-container>
+								</div>
 							}
 						</ion-label>
 

@@ -68,7 +68,3 @@ ion-select::part(text) {
 		margin-top: 8px;
 	}
 }
-
-:host ::ng-deep .admin-table-line:has(bo-member-badges-inline:empty) {
-	display: none;
-}
