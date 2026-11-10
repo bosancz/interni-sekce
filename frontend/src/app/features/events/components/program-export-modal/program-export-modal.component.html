@@ -1,0 +1,24 @@
+<bo-modal-layout>
+	<h4 slot="title">Stáhnout program</h4>
+
+	<div class="bm-body">
+		<p class="pe-hint">Program obsahuje akce podle filtrů nastavených v seznamu.</p>
+
+		<div class="pe-list">
+			@for (option of options; track option.format) {
+				<button type="button" class="pe-row" (click)="submit.emit(option.format)">
+					<span class="pe-icon pe-icon-{{ option.format }}"><ion-icon [name]="option.icon"></ion-icon></span>
+					<span class="pe-text">
+						<span class="pe-label">{{ option.label }}</span>
+						<span class="pe-description">{{ option.description }}</span>
+					</span>
+					<ion-icon class="pe-chevron" name="chevron-forward-outline"></ion-icon>
+				</button>
+			}
+		</div>
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+	</div>
+</bo-modal-layout>

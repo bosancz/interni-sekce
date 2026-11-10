@@ -25,7 +25,7 @@ import { SessionUser } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventPlaceGeometry, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository, GetEventsOptions } from "src/models/events/repositories/events.repository";
-import { EventsProgramPdfService } from "src/models/events/services/events-program-pdf.service";
+import { EventsProgramExportService } from "src/models/events/services/events-program-export.service";
 import { NotificationsService } from "src/models/notifications/services/notifications.service";
 import {
 	EventCancelPermission,
@@ -40,7 +40,7 @@ import {
 	EventRestorePermission,
 	EventsDeletedListPermission,
 	EventsListPermission,
-	EventsProgramPdfPermission,
+	EventsProgramExportPermission,
 	EventsStatusesPermission,
 	EventSubmitPermission,
 	EventsYearsPermission,
@@ -48,7 +48,7 @@ import {
 	EventUnpublishPermission,
 } from "../acl/events.acl";
 import { EventCreateBody, EventResponse, EventStatusChangeBody, EventUpdateBody } from "../dto/event.dto";
-import { ListEventsQuery } from "../dto/events.dto";
+import { ListEventsQuery, ProgramExportQuery } from "../dto/events.dto";
 
 @Controller("events")
 @Authenticated()
@@ -60,7 +60,7 @@ export class EventsController {
 	constructor(
 		private events: EventsRepository,
 		private notificationsService: NotificationsService,
-		private eventsProgramPdfService: EventsProgramPdfService,
+		private eventsProgramExportService: EventsProgramExportService,
 	) {}
 
 	@Get()
@@ -76,26 +76,33 @@ export class EventsController {
 		return this.events.getEvents(this.listOptions(query, authUser), where);
 	}
 
-	@Get("program-pdf")
-	@AcLinks(EventsProgramPdfPermission)
-	@ApiOkResponse({ schema: { type: "string", format: "binary" }, content: { "application/pdf": {} } })
-	async exportEventsPdf(
+	@Get("program-export")
+	@AcLinks(EventsProgramExportPermission)
+	@ApiOkResponse({
+		schema: { type: "string", format: "binary" },
+		content: {
+			"application/pdf": {},
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document": {},
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {},
+		},
+	})
+	async exportEventsProgram(
 		@Req() req: Request,
 		@AuthUser() authUser: SessionUser,
-		@Query() query: ListEventsQuery,
+		@Query() query: ProgramExportQuery,
 		@Res() res: Response,
 	): Promise<void> {
-		EventsProgramPdfPermission.canOrThrow(req);
+		EventsProgramExportPermission.canOrThrow(req);
 
 		const where = EventsListPermission.canWhere(req, "events");
-		const { limit, offset, sort, order, ...filter } = query;
+		const { limit, offset, format, ...filter } = query;
 
 		const events = await this.events.getEvents({ ...this.listOptions(filter, authUser), groups: true }, where);
-		const pdf = await this.eventsProgramPdfService.renderProgram(events, filter);
+		const file = await this.eventsProgramExportService.renderProgram(events, filter, format);
 
-		res.setHeader("Content-Type", "application/pdf");
-		res.setHeader("Content-Disposition", "attachment; filename=program.pdf");
-		res.send(pdf);
+		res.setHeader("Content-Type", file.contentType);
+		res.setHeader("Content-Disposition", `attachment; filename=${file.fileName}`);
+		res.send(file.buffer);
 	}
 
 	private listOptions(query: ListEventsQuery, authUser: SessionUser): GetEventsOptions {

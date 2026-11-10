@@ -1,0 +1,93 @@
+@use "./../../../../../styles/brand-modal" as *;
+
+.pe-hint {
+	margin: 0 0 8px;
+	font-size: 14px;
+	color: var(--bm-muted);
+}
+
+.pe-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.pe-row {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	width: 100%;
+	padding: 14px 4px;
+	border: 0;
+	border-radius: 10px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: start;
+	cursor: pointer;
+	transition: background-color 150ms;
+
+	& + & {
+		border-top: 1px solid var(--bm-border-soft);
+		border-radius: 0;
+	}
+
+	&:hover {
+		background: var(--bm-surface-hover);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--bm-blue);
+		outline-offset: 2px;
+	}
+}
+
+.pe-icon {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 10px;
+	font-size: 22px;
+
+	&.pe-icon-pdf {
+		background: var(--bo-red-tint);
+		color: var(--bo-red);
+	}
+
+	&.pe-icon-docx {
+		background: var(--bo-blue-tint);
+		color: var(--bm-blue);
+	}
+
+	&.pe-icon-xlsx {
+		background: var(--bo-green-tint);
+		color: var(--bm-green);
+	}
+}
+
+.pe-text {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.pe-label {
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--bo-heading);
+}
+
+.pe-description {
+	font-size: 13.5px;
+	color: var(--bm-muted);
+}
+
+.pe-chevron {
+	flex: none;
+	font-size: 18px;
+	color: var(--bm-muted);
+}

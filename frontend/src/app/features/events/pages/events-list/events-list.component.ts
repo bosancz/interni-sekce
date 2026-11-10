@@ -39,6 +39,7 @@ import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { ProgramExportModalComponent } from "src/app/features/events/components/program-export-modal/program-export-modal.component";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
@@ -150,9 +151,9 @@ export class EventsListComponent implements OnInit {
 			handler: () => this.create(),
 		},
 		{
-			text: "Stáhnout program (PDF)",
+			text: "Stáhnout program",
 			icon: "download-outline",
-			handler: () => this.exportPdf(),
+			handler: () => this.exportProgram(),
 		},
 		{
 			text: "Smazané akce",
@@ -338,16 +339,23 @@ export class EventsListComponent implements OnInit {
 		this.router.navigate([event.id], { relativeTo: this.route });
 	}
 
-	async exportPdf() {
-		const { sort, order, ...params } = this.listParams(this.filter);
+	async exportProgram() {
+		const format = await this.modalService.componentModal(
+			ProgramExportModalComponent,
+			{},
+			{ cssClass: "dialog-brand" },
+		);
+		if (!format) return;
 
-		this.toasts.toast("Připravuji PDF…");
-		const res = await this.api.EventsApi.exportEventsPdf(params, { responseType: "blob" });
+		const params = this.listParams(this.filter);
 
-		const url = URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
+		this.toasts.toast("Připravuji program…");
+		const res = await this.api.EventsApi.exportEventsProgram({ ...params, format }, { responseType: "blob" });
+
+		const url = URL.createObjectURL(res.data as unknown as Blob);
 		const a = document.createElement("a");
 		a.href = url;
-		a.download = "program.pdf";
+		a.download = `program.${format}`;
 		a.click();
 		URL.revokeObjectURL(url);
 	}

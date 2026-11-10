@@ -28,7 +28,7 @@ export const EventsDeletedListPermission = new Permission<void>({
 	},
 });
 
-export const EventsProgramPdfPermission = new Permission<void>({
+export const EventsProgramExportPermission = new Permission<void>({
 	linkTo: RootResponse,
 
 	allowed: {

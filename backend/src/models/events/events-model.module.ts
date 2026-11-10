@@ -8,7 +8,7 @@ import { EventsRepository } from "./repositories/events.repository";
 import { EventAccountingService } from "./services/event-accountig.service";
 import { EventAnnouncementService } from "./services/event-announcement.service";
 import { EventRegistrationService } from "./services/event-registration.service";
-import { EventsProgramPdfService } from "./services/events-program-pdf.service";
+import { EventsProgramExportService } from "./services/events-program-export.service";
 
 @Module({
 	imports: [TypeOrmModule.forFeature([Event, EventExpense, EventAttendee]), MailModelModule],
@@ -17,14 +17,14 @@ import { EventsProgramPdfService } from "./services/events-program-pdf.service";
 		EventAccountingService,
 		EventAnnouncementService,
 		EventRegistrationService,
-		EventsProgramPdfService,
+		EventsProgramExportService,
 	],
 	exports: [
 		EventsRepository,
 		EventAccountingService,
 		EventAnnouncementService,
 		EventRegistrationService,
-		EventsProgramPdfService,
+		EventsProgramExportService,
 	],
 })
 export class EventsModelModule {}

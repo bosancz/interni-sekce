@@ -17,12 +17,7 @@ import {
 	IonInfiniteScrollContent,
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import {
-	addOutline,
-	chevronBackOutline,
-	chevronForwardOutline,
-	printOutline,
-} from "ionicons/icons";
+import { addOutline, chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
 import { DateTime } from "luxon";
 import { MONTH_NAMES } from "src/app/core/config/months";
 import { ApiService } from "src/app/core/services/api.service";
@@ -30,7 +25,6 @@ import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { EventCreateModalComponent } from "src/app/features/events/components/event-create-modal/event-create-modal.component";
 import { MonthPickerModalComponent } from "src/app/features/home/components/month-picker-modal/month-picker-modal.component";
-import { ProgramPrintModalComponent } from "src/app/features/home/components/program-print-modal/program-print-modal.component";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
@@ -74,12 +68,6 @@ export class HomeCalendarComponent implements OnInit, OnDestroy {
 			pinned: false,
 			handler: () => this.enableAddEvent(),
 		},
-		{
-			text: "Tisk programu",
-			icon: "print-outline",
-			pinned: false,
-			handler: () => this.openPrintModal(),
-		},
 	]);
 
 	private pageContent = viewChild(PageContentComponent);
@@ -104,7 +92,7 @@ export class HomeCalendarComponent implements OnInit, OnDestroy {
 		private readonly injector: Injector,
 		private readonly elementRef: ElementRef<HTMLElement>,
 	) {
-		addIcons({ printOutline, addOutline, chevronBackOutline, chevronForwardOutline });
+		addIcons({ addOutline, chevronBackOutline, chevronForwardOutline });
 	}
 
 	async ngOnInit() {
@@ -281,9 +269,5 @@ export class HomeCalendarComponent implements OnInit, OnDestroy {
 		await this.loadEvents();
 
 		this.toastService.toast("Akce vytvořena.");
-	}
-
-	private async openPrintModal() {
-		await this.modalService.componentModal(ProgramPrintModalComponent);
 	}
 }
