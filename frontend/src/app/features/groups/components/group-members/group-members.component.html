@@ -69,6 +69,12 @@
 		[selected]="selectedMembership()"
 		(selectedChange)="setMembershipFilter($event)"
 	/>
+	<bo-filter-pill
+		label="Ocenění"
+		[options]="achievementOptions"
+		[selected]="selectedAchievements()"
+		(selectedChange)="setAchievementsFilter($event)"
+	/>
 </ng-template>
 
 <ng-template #columnsList>

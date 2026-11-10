@@ -49,6 +49,11 @@ export const MemberAchievementTypes: { [type in SDK.MemberAchievementTypesEnum]:
 
 export const MEMBER_ACHIEVEMENT_TYPES = Object.keys(MemberAchievementTypes) as SDK.MemberAchievementTypesEnum[];
 
+export const MEMBER_ACHIEVEMENT_FILTER_OPTIONS = MEMBER_ACHIEVEMENT_TYPES.map((type) => ({
+	value: type,
+	label: MemberAchievementTypes[type].title,
+}));
+
 export const MEMBER_ACHIEVEMENT_STARS = MEMBER_ACHIEVEMENT_TYPES.filter((type) => MemberAchievementTypes[type].star);
 
 export const MEMBER_ACHIEVEMENT_RANKS = MEMBER_ACHIEVEMENT_TYPES.filter(

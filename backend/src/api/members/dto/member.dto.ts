@@ -4,6 +4,7 @@ import { IsArray, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min, Valid
 import { PaginationQuery } from "src/api/helpers/dto";
 import { MembershipPaymentStates } from "src/helpers/membership";
 import { EnsureArray, EnsureBoolean, Trim } from "src/helpers/validation";
+import { MemberAchievementTypes } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { MembershipPayment } from "src/models/members/entities/membership-payment.entity";
 import { HealthEntry, HealthSeverity, Member, MemberRanks } from "src/models/members/entities/member.entity";
@@ -129,6 +130,12 @@ export class MembersListQuery extends PaginationQuery {
 	@IsNumber({}, { each: true })
 	@IsOptional()
 	age?: number[];
+
+	@ApiPropertyOptional({ enum: MemberAchievementTypes, enumName: "MemberAchievementTypesEnum", isArray: true })
+	@EnsureArray({ split: "," })
+	@IsEnum(MemberAchievementTypes, { each: true })
+	@IsOptional()
+	achievements?: MemberAchievementTypes[];
 
 	/** Which year the membership filter and the membership sort look at. Defaults to the current one. */
 	@ApiPropertyOptional({ type: "number" })
