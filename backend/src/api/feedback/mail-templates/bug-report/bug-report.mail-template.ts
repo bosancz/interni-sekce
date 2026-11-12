@@ -13,6 +13,7 @@ export const BugReportMailTemplate = createMailTemplate<{
 	viewport?: string;
 	display?: string;
 	pointer?: string;
+	element?: { selector?: string; components?: string; text?: string; rect?: string };
 	issueNumber?: number;
 	issueUrl?: string;
 }>({

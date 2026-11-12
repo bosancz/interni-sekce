@@ -2,8 +2,13 @@ import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { Config } from "src/config";
 import { SDK } from "src/sdk";
-import { BugReportModalComponent } from "../components/bug-report-modal/bug-report-modal.component";
+import { describeElement, DomElementDescription } from "src/helpers/dom-element";
+import {
+	BugReportModalComponent,
+	BugReportModalResult,
+} from "../components/bug-report-modal/bug-report-modal.component";
 import { ApiService } from "./api.service";
+import { ElementPickerService } from "./element-picker.service";
 import { ModalService } from "./modal.service";
 import { ToastService } from "./toast.service";
 
@@ -17,27 +22,47 @@ export class BugReportService {
 		private toastService: ToastService,
 		private router: Router,
 		private config: Config,
+		private elementPickerService: ElementPickerService,
 	) {}
 
 	async reportBug() {
 		const url = window.location.href;
 
-		const result = await this.modalService.componentModal(
-			BugReportModalComponent,
-			{},
-			{ cssClass: "dialog-brand" },
-		);
+		let description = "";
+		let element: DomElementDescription | null = null;
 
-		if (!result) return;
+		while (true) {
+			const result: BugReportModalResult | null = await this.modalService.componentModal(
+				BugReportModalComponent,
+				{ initialDescription: description, initialElement: element },
+				{ cssClass: "dialog-brand" },
+			);
 
-		if (result.action === "list") {
-			await this.router.navigate(["/ucet/chyby"]);
+			if (!result) return;
+
+			if (result.action === "list") {
+				await this.router.navigate(["/ucet/chyby"]);
+				return;
+			}
+
+			description = result.description;
+			element = result.element;
+
+			if (result.action === "pick") {
+				const picked = await this.elementPickerService.pick();
+				if (picked) element = describeElement(picked, this.config.bugReport.elementTextMaxLength);
+				continue;
+			}
+
+			await this.send(url, description, element);
 			return;
 		}
+	}
 
+	private async send(url: string, description: string, element: DomElementDescription | null) {
 		try {
 			await this.api.FeedbackApi.sendBugReport({
-				description: result.description,
+				description,
 				url,
 				frontendVersion: this.config.version,
 				screenWidth: window.screen?.width,
@@ -47,6 +72,14 @@ export class BugReportService {
 				viewportHeight: window.innerHeight,
 				displayMode: this.getDisplayMode(),
 				pointer: this.getPointerType(),
+				element: element
+					? {
+							selector: element.selector,
+							components: element.components || undefined,
+							text: element.text || undefined,
+							rect: element.rect,
+						}
+					: undefined,
 			});
 			await this.toastService.toast("Díky! Chyba byla odeslána.");
 		} catch {

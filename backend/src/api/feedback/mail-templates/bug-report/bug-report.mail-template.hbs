@@ -37,6 +37,16 @@
 	<p><strong>Ovládání:</strong> {{pointer}}</p>
 {{/if}}
 
+{{#if element}}
+	<p><strong>Označený prvek:</strong></p>
+	<ul>
+		{{#if element.text}}<li>Text: {{element.text}}</li>{{/if}}
+		{{#if element.components}}<li>Komponenty: <code>{{element.components}}</code></li>{{/if}}
+		{{#if element.rect}}<li>Poloha: {{element.rect}}</li>{{/if}}
+		{{#if element.selector}}<li>Selektor: <code>{{element.selector}}</code></li>{{/if}}
+	</ul>
+{{/if}}
+
 {{#if issueUrl}}
 	<p><strong>GitHub issue:</strong> <a href="{{issueUrl}}">#{{issueNumber}}</a></p>
 {{/if}}

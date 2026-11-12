@@ -1,0 +1,17 @@
+@if (box(); as box) {
+	<div
+		class="ep-highlight"
+		[style.top.px]="box.top"
+		[style.left.px]="box.left"
+		[style.width.px]="box.width"
+		[style.height.px]="box.height"
+		[class.ep-label-inside]="box.top < 28"
+	>
+		<span class="ep-label">{{ box.name }}</span>
+	</div>
+}
+
+<div class="ep-bar" #bar role="dialog" aria-label="Označení problému na webu">
+	<span class="ep-bar-text">Klikni na místo, kde je problém</span>
+	<button type="button" class="ep-bar-cancel" (click)="cancel()">Zrušit</button>
+</div>

@@ -1272,6 +1272,12 @@ export namespace SDK {
          * @memberof BugReportBody
          */
         'pointer'?: BugReportPointerTypesEnum;
+        /**
+         * Prvek stránky, který uživatel označil.
+         * @type {BugReportElementBody}
+         * @memberof BugReportBody
+         */
+        'element'?: BugReportElementBody;
     }
     
     
@@ -1291,6 +1297,38 @@ export namespace SDK {
     
     export type BugReportDisplayModesEnum = typeof BugReportDisplayModesEnum[keyof typeof BugReportDisplayModesEnum];
     
+    
+        /**
+     * 
+     * @export
+     * @interface BugReportElementBody
+     */
+    export interface BugReportElementBody {
+        /**
+         * CSS selektor označeného prvku stránky.
+         * @type {string}
+         * @memberof BugReportElementBody
+         */
+        'selector'?: string;
+        /**
+         * Komponenty aplikace, ve kterých označený prvek leží, od vnější.
+         * @type {string}
+         * @memberof BugReportElementBody
+         */
+        'components'?: string;
+        /**
+         * Text označeného prvku.
+         * @type {string}
+         * @memberof BugReportElementBody
+         */
+        'text'?: string;
+        /**
+         * Poloha a velikost označeného prvku v okně (CSS px).
+         * @type {string}
+         * @memberof BugReportElementBody
+         */
+        'rect'?: string;
+    }
     
         /**
      * Ukazovací zařízení, která má zařízení k dispozici.
