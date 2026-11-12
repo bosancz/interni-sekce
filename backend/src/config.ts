@@ -253,6 +253,10 @@ const chronicles = {
 	maxUploadSize: 50 * 1024 * 1024,
 };
 
+const changelog = {
+	pageEntries: 40,
+};
+
 @Injectable()
 export class Config {
 	announcements = announcements;
@@ -284,6 +288,7 @@ export class Config {
 	photoContent = photoContent;
 	photos = photos;
 	chronicles = chronicles;
+	changelog = changelog;
 	publicLinks = publicLinks;
 	publicApi = publicApi;
 }

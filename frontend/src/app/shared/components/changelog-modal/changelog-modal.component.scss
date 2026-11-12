@@ -8,11 +8,13 @@
 		h2 {
 			font-size: 1.1rem;
 			margin: 2.5rem 0 1rem;
+			border-top: 1px solid var(--bo-line);
+			padding-top: 1.5rem;
+		}
 
-			&:not(:first-of-type) {
-				border-top: 1px solid var(--bo-line);
-				padding-top: 1.5rem;
-			}
+		.changelog-page:first-child > h2:first-child {
+			border-top: none;
+			padding-top: 0;
 		}
 
 		hr {

@@ -47,9 +47,6 @@ export class ApiService extends SDK {
 		shareReplay(1),
 	);
 
-	public changelog = this.watch((signal) => this.RootApi.getChangelog({ signal })).pipe(
-		map((res) => res.data.content),
-	);
 	public rootLinks = new ReplaySubject<SDK.RootResponseLinks>(1);
 
 	public links: Signal<SDK.RootResponseLinks | undefined> = toSignal(this.rootLinks);

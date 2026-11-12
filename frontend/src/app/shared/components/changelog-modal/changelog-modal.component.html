@@ -13,10 +13,10 @@
 		</a>
 	</div>
 
-	@if (content() === undefined) {
-		<p class="muted">Načítání…</p>
-	} @else if (content()) {
-		@if (types().length > 1) {
+	@if (types() === undefined) {
+		<p class="muted">{{ error() ? "Seznam změn se nepodařilo načíst." : "Načítání…" }}</p>
+	} @else if (types()!.length) {
+		@if (types()!.length > 1) {
 			<div class="changelog-filter">
 				<button type="button" class="changelog-pill" [class.active]="!selectedTypes().size" (click)="showAll()">
 					Vše
@@ -38,15 +38,25 @@
 				}
 			</div>
 		}
-
-		@if (filteredContent()) {
-			<div class="changelog" [innerHTML]="filteredContent() | markdown | changelogLinks"></div>
-		} @else {
-			<p class="muted">Vybraným typům neodpovídají žádné změny.</p>
-		}
 	} @else {
 		<p class="muted">Zatím tu nejsou žádné změny k zobrazení.</p>
 	}
+
+	<div class="changelog" #scroller [hidden]="!types()?.length">
+		@for (page of pages(); track $index) {
+			<div class="changelog-page" [innerHTML]="page | markdown | changelogLinks"></div>
+		}
+
+		<div #sentinel class="changelog-more">
+			@if (loading() && pages().length) {
+				<p class="muted">Načítání…</p>
+			} @else if (error() && pages().length) {
+				<p class="muted">Další změny se nepodařilo načíst.</p>
+			} @else if (!loading() && !pages().length && nextOffset() === null && types()?.length) {
+				<p class="muted">Vybraným typům neodpovídají žádné změny.</p>
+			}
+		</div>
+	</div>
 
 	<ion-buttons slot="buttons">
 		<ion-button (click)="close.emit()" color="primary">Zavřít</ion-button>
