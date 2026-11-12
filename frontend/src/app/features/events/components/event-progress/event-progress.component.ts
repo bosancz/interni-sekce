@@ -142,7 +142,7 @@ export class EventProgressComponent {
 			},
 			{
 				key: "closure" as const,
-				label: `Uzavření ${this.closureDone()}/${CLOSURE_ITEMS}`,
+				label: `Uzavření\u00a0${this.closureDone()}/${CLOSURE_ITEMS}`,
 				reached: this.closureReached(),
 				clickable: !!event,
 				note: false,
