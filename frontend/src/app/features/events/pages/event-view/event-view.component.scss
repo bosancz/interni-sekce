@@ -1,9 +1,13 @@
+:host ::ng-deep bo-section-header:first-child {
+	margin-top: 0;
+
+	&:has(> ion-button) {
+		margin-top: -5px;
+	}
+}
+
 @media (max-width: 991.98px) {
 	bo-event-progress {
 		padding-bottom: 6px;
-	}
-
-	:host ::ng-deep bo-section-header:first-child {
-		margin-top: 0;
 	}
 }
