@@ -23,6 +23,7 @@ import { SortOption } from "src/app/shared/components/sort-select/sort-select.co
 import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { getMemberEmails } from "src/helpers/member-contacts";
+import { SectionHeaderComponent } from "src/app/shared/components/section-header/section-header.component";
 import { SDK } from "src/sdk";
 import { GroupsService } from "../../services/groups.service";
 
@@ -44,6 +45,7 @@ const mailAddresses = (emails: string[]) =>
 	templateUrl: "./group-members.component.html",
 	styleUrls: ["./group-members.component.scss"],
 	imports: [
+		SectionHeaderComponent,
 		PeopleFilterComponent,
 		PeopleFilterPillsDirective,
 		PeopleTableComponent,

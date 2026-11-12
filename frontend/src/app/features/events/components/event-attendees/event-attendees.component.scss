@@ -6,19 +6,6 @@
 	font-style: italic;
 }
 
-.list-header {
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 0.5rem 0.25rem;
-	margin: 16px 0 10px;
-
-	h3 {
-		margin: 0;
-		margin-inline-end: auto;
-	}
-}
-
 .announcement {
 	display: flex;
 	align-items: center;
@@ -42,20 +29,4 @@
 .announcement-text {
 	flex: 1 1 280px;
 	min-width: 0;
-}
-
-@media (max-width: 575.98px) {
-	.mail-label {
-		display: none;
-	}
-
-	.list-header ion-button {
-		--padding-start: 0.5rem;
-		--padding-end: 0.5rem;
-	}
-
-	.list-header ion-icon {
-		margin-inline-end: 0;
-		font-size: 1.25rem;
-	}
 }

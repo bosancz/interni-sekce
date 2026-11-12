@@ -42,6 +42,7 @@ import {
 } from "../../components/group-unpaid-membership/group-unpaid-membership.component";
 import { MemberCreateModalComponent } from "src/app/features/members/components/member-create-modal/member-create-modal.component";
 import { GroupsService } from "../../services/groups.service";
+import { SectionHeaderComponent } from "src/app/shared/components/section-header/section-header.component";
 
 @UntilDestroy()
 @Component({
@@ -49,6 +50,7 @@ import { GroupsService } from "../../services/groups.service";
 	templateUrl: "./group-view.component.html",
 	styleUrls: ["./group-view.component.scss"],
 	imports: [
+		SectionHeaderComponent,
 		PageHeaderComponent,
 		PageContentComponent,
 		PageFooterComponent,

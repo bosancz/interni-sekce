@@ -1,0 +1,30 @@
+bo-section-header {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5rem 0.25rem;
+	margin: 16px 0 10px;
+
+	> h3 {
+		margin: 0;
+		margin-inline-end: auto;
+	}
+}
+
+@media (max-width: 575.98px) {
+	bo-section-header {
+		.section-action-label {
+			display: none;
+		}
+
+		ion-button {
+			--padding-start: 0.5rem;
+			--padding-end: 0.5rem;
+		}
+
+		ion-button ion-icon {
+			margin-inline-end: 0;
+			font-size: 1.25rem;
+		}
+	}
+}

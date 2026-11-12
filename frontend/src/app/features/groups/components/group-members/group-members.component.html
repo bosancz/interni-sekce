@@ -1,3 +1,20 @@
+<bo-section-header title="Členové oddílu">
+	@if (members()?.length) {
+		<ion-button
+			fill="clear"
+			size="small"
+			color="primary"
+			[href]="mailto()"
+			[boTooltip]="mailTooltip()"
+			(click)="sendMail()"
+			aria-label="Napsat e-mail všem v oddíle"
+		>
+			<ion-icon name="mail-outline" slot="start"></ion-icon>
+			<span class="section-action-label">Napsat všem</span>
+		</ion-button>
+	}
+</bo-section-header>
+
 <bo-people-filter
 	[columns]="columns"
 	[sortOptions]="sortOptions"
@@ -28,24 +45,6 @@
 			(selectedChange)="setAchievementsFilter($event)"
 		/>
 	</ng-template>
-
-	<span people-filter-actions>
-		@if (members()?.length) {
-			<ion-button
-				class="members-mail-button"
-				fill="clear"
-				size="small"
-				color="primary"
-				[href]="mailto()"
-				[boTooltip]="mailTooltip()"
-				(click)="sendMail()"
-				aria-label="Napsat e-mail všem v oddíle"
-			>
-				<ion-icon name="mail-outline" slot="start"></ion-icon>
-				<span class="mail-label">Napsat všem</span>
-			</ion-button>
-		}
-	</span>
 </bo-people-filter>
 
 <bo-people-table

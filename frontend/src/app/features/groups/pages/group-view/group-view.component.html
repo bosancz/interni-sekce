@@ -59,10 +59,12 @@
 			<bo-group-members class="mb-5" [class.d-none]="view() !== 'clenove'"></bo-group-members>
 
 			@if (view() === "statistiky") {
+				<bo-section-header title="Statistiky" />
 				<bo-group-statistics class="d-block mb-5" [members]="members()" [color]="group()?.color || undefined" />
 			}
 
 			@if (view() === "kontrola") {
+				<bo-section-header title="Kontrola" />
 				<bo-group-unpaid-membership
 					class="d-block mb-4"
 					[members]="members()"
