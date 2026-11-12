@@ -29,6 +29,14 @@ export interface BugReport {
 	display?: string;
 	pointer?: string;
 	userAgent?: string;
+	element?: BugReportElement;
+}
+
+export interface BugReportElement {
+	selector?: string;
+	components?: string;
+	text?: string;
+	rect?: string;
 }
 
 export interface BugReportIssue {
@@ -75,6 +83,7 @@ export class FeedbackService {
 			display: body.displayMode ? BugReportDisplayModeLabels[body.displayMode] : undefined,
 			pointer: body.pointer ? BugReportPointerLabels[body.pointer] : undefined,
 			userAgent: userAgent || undefined,
+			element: this.getElement(body),
 		};
 	}
 
@@ -92,6 +101,7 @@ export class FeedbackService {
 			viewport: report.viewport,
 			display: report.display,
 			pointer: report.pointer,
+			element: report.element,
 			issueNumber: issue?.number,
 			issueUrl: issue?.url,
 		});
@@ -157,6 +167,31 @@ export class FeedbackService {
 		});
 	}
 
+	private getElement(body: BugReportBody): BugReportElement | undefined {
+		const element = {
+			selector: body.element?.selector?.trim() || undefined,
+			components: body.element?.components?.trim() || undefined,
+			text: body.element?.text?.replace(/\s+/g, " ").trim() || undefined,
+			rect: body.element?.rect?.trim() || undefined,
+		};
+
+		return element.selector || element.components || element.text ? element : undefined;
+	}
+
+	private elementLines(element?: BugReportElement): string[] {
+		if (!element) return [];
+
+		return [
+			"",
+			"### Označený prvek",
+			"",
+			element.text ? `**Text:** ${element.text}` : null,
+			element.components ? `**Komponenty:** \`${element.components}\`` : null,
+			element.rect ? `**Poloha:** ${element.rect}` : null,
+			element.selector ? ["**Selektor:**", "", "```css", element.selector, "```"].join("\n") : null,
+		].filter((line): line is string => line !== null);
+	}
+
 	private formatScreen(width?: number, height?: number, pixelRatio?: number): string | undefined {
 		const css = this.formatSize(width, height);
 
@@ -192,6 +227,7 @@ export class FeedbackService {
 			report.display ? `**Zobrazení:** ${report.display}` : null,
 			report.pointer ? `**Ovládání:** ${report.pointer}` : null,
 			report.userAgent ? `**User agent:** \`${report.userAgent}\`` : null,
+			...this.elementLines(report.element),
 		]
 			.filter((line) => line !== null)
 			.join("\n");

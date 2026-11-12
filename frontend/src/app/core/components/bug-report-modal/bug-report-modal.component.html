@@ -24,6 +24,31 @@
 			(input)="description.set($any($event.target).value)"
 		></textarea>
 
+		@if (element(); as element) {
+			<div class="bug-report-element">
+				<ion-icon name="locate-outline" class="bug-report-element-icon"></ion-icon>
+				<div class="bug-report-element-text">
+					<span class="bug-report-element-title">Označený prvek</span>
+					<span class="bug-report-element-label">{{ element.label }}</span>
+				</div>
+				<button type="button" class="bug-report-element-action" (click)="pickElement()">Označit znovu</button>
+				<button
+					type="button"
+					class="bug-report-element-remove"
+					aria-label="Odebrat označený prvek"
+					title="Odebrat označený prvek"
+					(click)="removeElement()"
+				>
+					<ion-icon name="close-outline"></ion-icon>
+				</button>
+			</div>
+		} @else {
+			<button type="button" class="bug-report-pick" (click)="pickElement()">
+				<ion-icon name="locate-outline"></ion-icon>
+				Označit problém na webu
+			</button>
+		}
+
 		<span class="bug-report-hint">Chyba se založí jako úkol pro vývojáře. Až ji opravíme, dáme ti vědět.</span>
 	</div>
 

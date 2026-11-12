@@ -8,4 +8,8 @@ export class Config {
 	jwtDomains = ["bosan.cz"];
 
 	googleClientId = "249555539983-j8rvff7bovgnecsmjffe0a3dj55j33hh.apps.googleusercontent.com";
+
+	bugReport = {
+		elementTextMaxLength: 200,
+	};
 }

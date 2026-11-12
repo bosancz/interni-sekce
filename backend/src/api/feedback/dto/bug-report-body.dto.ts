@@ -1,8 +1,45 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, MaxLength, Min, MinLength } from "class-validator";
+import {
+	IsEnum,
+	IsInt,
+	IsNumber,
+	IsOptional,
+	IsString,
+	Max,
+	MaxLength,
+	Min,
+	MinLength,
+	ValidateNested,
+} from "class-validator";
 import { BugReportDisplayModes } from "src/models/bug-reports/schema/bug-report-display-modes";
 import { BugReportPointerTypes } from "src/models/bug-reports/schema/bug-report-pointer-types";
+
+export class BugReportElementBody {
+	@ApiPropertyOptional({ description: "CSS selektor označeného prvku stránky." })
+	@IsOptional()
+	@IsString()
+	@MaxLength(2000)
+	selector?: string;
+
+	@ApiPropertyOptional({ description: "Komponenty aplikace, ve kterých označený prvek leží, od vnější." })
+	@IsOptional()
+	@IsString()
+	@MaxLength(1000)
+	components?: string;
+
+	@ApiPropertyOptional({ description: "Text označeného prvku." })
+	@IsOptional()
+	@IsString()
+	@MaxLength(500)
+	text?: string;
+
+	@ApiPropertyOptional({ description: "Poloha a velikost označeného prvku v okně (CSS px)." })
+	@IsOptional()
+	@IsString()
+	@MaxLength(100)
+	rect?: string;
+}
 
 export class BugReportBody {
 	@ApiProperty({ description: "Popis chyby, který uživatel zadal." })
@@ -80,4 +117,10 @@ export class BugReportBody {
 	@IsOptional()
 	@IsEnum(BugReportPointerTypes)
 	pointer?: BugReportPointerTypes;
+
+	@ApiPropertyOptional({ type: BugReportElementBody, description: "Prvek stránky, který uživatel označil." })
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => BugReportElementBody)
+	element?: BugReportElementBody;
 }
