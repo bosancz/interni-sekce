@@ -91,10 +91,12 @@
 }
 
 .dot.type-icon {
-	width: 1.75rem;
-	height: 1.75rem;
-	padding: 2px;
-	background: var(--bo-line);
+	--ring: var(--bo-line);
+	width: 1.5rem;
+	height: 1.5rem;
+	margin: 0 2px;
+	background: var(--ring);
+	box-shadow: 0 0 0 2px var(--ring);
 
 	img {
 		display: block;
@@ -108,7 +110,7 @@
 	}
 
 	&.filled {
-		background: var(--accent);
+		--ring: var(--accent);
 
 		img {
 			filter: none;
@@ -157,6 +159,12 @@
 .step.active {
 	.dot {
 		box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+	}
+
+	.dot.type-icon {
+		box-shadow:
+			0 0 0 2px var(--ring),
+			0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent);
 	}
 
 	.label {
