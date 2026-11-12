@@ -20,7 +20,7 @@ import { CardComponent } from "src/app/shared/components/card/card.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
-import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
+import { EventGroupsComponent } from "src/app/shared/components/event-groups/event-groups.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
@@ -59,7 +59,7 @@ export interface ReportAccountingRow {
 		CardContentComponent,
 		FilterComponent,
 		FilterPillComponent,
-		GroupBadgeComponent,
+		EventGroupsComponent,
 		PageContentComponent,
 		PageHeaderComponent,
 		DateRangePipe,

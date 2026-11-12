@@ -16,6 +16,7 @@ import { TypographyPipe } from "../../pipes/typography.pipe";
 import { CardContentComponent } from "../card-content/card-content.component";
 import { CardStatusBarComponent } from "../card-status-bar/card-status-bar.component";
 import { CardComponent } from "../card/card.component";
+import { EventGroupsComponent } from "../event-groups/event-groups.component";
 
 @Component({
 	selector: "bo-event-card",
@@ -36,6 +37,7 @@ import { CardComponent } from "../card/card.component";
 		CardComponent,
 		CardContentComponent,
 		CardStatusBarComponent,
+		EventGroupsComponent,
 	],
 })
 export class EventCardComponent {

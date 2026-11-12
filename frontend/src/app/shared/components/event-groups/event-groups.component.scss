@@ -1,0 +1,19 @@
+:host {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	line-height: 0;
+}
+
+:host:empty {
+	display: none;
+}
+
+ion-badge {
+	border-radius: var(--bo-radius-pill);
+	font-weight: 800;
+	color: #fff;
+	min-width: 1.9em;
+	padding: 0.45em 0.5em;
+	text-align: center;
+}

@@ -1,6 +1,17 @@
-import { AfterViewInit, Component, computed, ElementRef, forwardRef, input, OnInit, signal } from "@angular/core";
+import {
+	AfterViewInit,
+	Component,
+	computed,
+	ElementRef,
+	forwardRef,
+	input,
+	model,
+	OnInit,
+	signal,
+} from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { IonCheckbox } from "@ionic/angular/standalone";
+import { LeadersEventGroup } from "src/app/core/config/leaders-event";
 import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 
@@ -32,6 +43,10 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	readonly = input<boolean>(false);
 	multiple = input<boolean>(false);
 	required = input<boolean>(false);
+	leadersOption = input<boolean>(false);
+	leadersEvent = model<boolean>(false);
+
+	readonly leadersGroup = LeadersEventGroup;
 
 	onChange: (value: number | number[]) => void = () => {};
 	onTouched: () => void = () => {};
@@ -97,6 +112,11 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 		}
 
 		this.emitChange();
+	}
+
+	toggleLeaders() {
+		if (this.disabled() || this.readonly()) return;
+		this.leadersEvent.update((value) => !value);
 	}
 
 	private emitIonStyle() {

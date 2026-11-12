@@ -1,0 +1,10 @@
+@for (groupId of sortedGroupsIds(); track groupId) {
+	<ion-badge mode="ios" [style.background-color]="groupId | group: 'color'" [title]="groupId | group: 'name'">
+		{{ groupId | group: "code" }}
+	</ion-badge>
+}
+@if (leadersEvent()) {
+	<ion-badge mode="ios" [style.background-color]="leadersGroup.color" [title]="leadersGroup.name">
+		{{ leadersGroup.shortName }}
+	</ion-badge>
+}

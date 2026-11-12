@@ -63,6 +63,9 @@
 							[ngModel]="event()?.groupsIds ?? []"
 							(ngModelChange)="update.emit({ groupsIds: $event })"
 							[multiple]="true"
+							[leadersOption]="true"
+							[leadersEvent]="event()?.leadersEvent ?? false"
+							(leadersEventChange)="update.emit({ leadersEvent: $event })"
 						></bo-group-select>
 					</bo-item>
 				</ion-list>
