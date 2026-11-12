@@ -138,6 +138,10 @@
 		padding: 0.15rem 0.45rem;
 		border-radius: var(--bo-radius-btn);
 		transition: background-color 150ms;
+
+		@media (max-width: 575.98px) {
+			padding-inline: 0.3rem;
+		}
 	}
 }
 
