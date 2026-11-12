@@ -1482,10 +1482,42 @@ export namespace SDK {
         'content': string;
         /**
          * 
+         * @type {number}
+         * @memberof ChangelogResponseWithLinks
+         */
+        'nextOffset': number | null;
+        /**
+         * 
+         * @type {Array<ChangelogTypeCountResponse>}
+         * @memberof ChangelogResponseWithLinks
+         */
+        'types': Array<ChangelogTypeCountResponse>;
+        /**
+         * 
          * @type {object}
          * @memberof ChangelogResponseWithLinks
          */
         '_links': object;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface ChangelogTypeCountResponse
+     */
+    export interface ChangelogTypeCountResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof ChangelogTypeCountResponse
+         */
+        'type': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof ChangelogTypeCountResponse
+         */
+        'count': number;
     }
     
         /**
@@ -22007,6 +22039,29 @@ export namespace SDK {
     
     
     
+    /**
+     * Query parameters for getChangelog operation in RootApi.
+     * @export
+     * @interface RootApiGetChangelogQueryParams
+     */
+    export interface RootApiGetChangelogQueryParams {
+        //offset
+        /**
+         * 
+         * @type {number}
+         * @memberof RootApiGetChangelog
+         */
+        offset?: number
+    
+        //types
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof RootApiGetChangelog
+         */
+        types?: Array<string>
+    }
+    
     
     
     
@@ -22077,12 +22132,14 @@ export namespace SDK {
         /**
          * 
     
+         * @param {RootApiGetChangelogQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof RootApi
          */
         
         public async getChangelog(
+            queryParams: RootApiGetChangelogQueryParams = {},
             options: AxiosRequestConfig = {}
         ) {
     
@@ -22097,6 +22154,14 @@ export namespace SDK {
             const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
+    
+            if (queryParams.offset !== undefined) {
+                requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+            if (queryParams.types) {
+                requestQueryParameter['types'] = queryParams.types;
+            }
     
     
     

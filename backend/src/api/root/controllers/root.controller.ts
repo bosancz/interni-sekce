@@ -1,11 +1,11 @@
-import { Controller, Get, ServiceUnavailableException } from "@nestjs/common";
+import { Controller, Get, Query, ServiceUnavailableException } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Config } from "src/config";
 import { ChangelogPermission } from "../acl/changelog.acl";
 import { HealthPermission } from "../acl/health.acl";
 import { RootPermission } from "../acl/root.acl";
-import { ChangelogResponse } from "../dto/changelog-response";
+import { ChangelogQuery, ChangelogResponse } from "../dto/changelog-response";
 import { HealthResponse, HealthStatus } from "../dto/health-response";
 import { RootResponse } from "../dto/root-response";
 import { ChangelogService } from "../services/changelog.service";
@@ -36,10 +36,8 @@ export class RootController {
 	@Get("changelog")
 	@AcLinks(ChangelogPermission)
 	@ApiResponse({ status: 200, type: WithLinks(ChangelogResponse) })
-	getChangelog(): ChangelogResponse {
-		return {
-			content: this.changelogService.getContent(),
-		};
+	getChangelog(@Query() query: ChangelogQuery): ChangelogResponse {
+		return this.changelogService.getPage({ offset: query.offset ?? 0, types: query.types ?? [] });
 	}
 
 	@Get("health")
