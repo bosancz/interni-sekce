@@ -2,6 +2,7 @@ import { BullModule } from "@nestjs/bullmq";
 import { DynamicModule, Module } from "@nestjs/common";
 import { AlbumsModelModule } from "src/models/albums/albums-model.module";
 import { BackupsModelModule } from "src/models/backups/backups-model.module";
+import { BirthdaysModelModule } from "src/models/birthdays/birthdays-model.module";
 import { FacesEnqueueCommand } from "./commands/faces-enqueue.command";
 import { PhotosEmbedCommand } from "./commands/photos-embed.command";
 import { BackendScheduleProcessor } from "./processors/backend-schedule.processor";
@@ -30,6 +31,7 @@ export class WorkerModelModule {
 				),
 				AlbumsModelModule,
 				BackupsModelModule,
+				BirthdaysModelModule,
 			],
 			exports: [
 				FacesDetectionService,

@@ -25,6 +25,7 @@ export enum BackendScheduleJobs {
 	photosEmbedEnqueue = "photos-embed-enqueue",
 	photosEmbedStop = "photos-embed-stop",
 	backupsCheck = "backups-check",
+	birthdaysNotify = "birthdays-notify",
 }
 
 export const WORKER_HEARTBEAT_PREFIX = "worker-heartbeat:";
