@@ -7762,6 +7762,7 @@ export namespace SDK {
         Events: 'events',
         Photos: 'photos',
         Profile: 'profile',
+        Birthdays: 'birthdays',
         Admin: 'admin'
     } as const;
     
@@ -8040,7 +8041,9 @@ export namespace SDK {
         MyPhotos: 'myPhotos',
         NewAlbums: 'newAlbums',
         MyBadges: 'myBadges',
-        Backups: 'backups'
+        Backups: 'backups',
+        LeaderBirthdays: 'leaderBirthdays',
+        ChildBirthdays: 'childBirthdays'
     } as const;
     
     export type NotificationTypesEnum = typeof NotificationTypesEnum[keyof typeof NotificationTypesEnum];

@@ -16,6 +16,7 @@ import { MemberTraining } from "../entities/member-training.entity";
 import { sortMemberContacts } from "../helpers/member-contacts";
 import { Member } from "../entities/member.entity";
 import { MembershipPayment } from "../entities/membership-payment.entity";
+import { MemberRoles } from "../schema/member-roles";
 
 export interface GetMembersOptions extends PaginationOptions {
 	groups?: number[];
@@ -45,6 +46,19 @@ export class MembersRepository {
 		@InjectRepository(MemberTraining) private memberTrainings: Repository<MemberTraining>,
 		@InjectRepository(MembershipPayment) private membershipPaymentsRepository: Repository<MembershipPayment>,
 	) {}
+
+	async getBirthdayMembers(roles: MemberRoles[], month: number, days: number[]) {
+		return this.membersRepository
+			.createQueryBuilder("members")
+			.select(["members.id", "members.nickname", "members.firstName", "members.lastName", "members.birthday"])
+			.where("members.active = TRUE")
+			.andWhere("members.role IN (:...roles)", { roles })
+			.andWhere("EXTRACT(MONTH FROM members.birthday) = :month", { month })
+			.andWhere("EXTRACT(DAY FROM members.birthday) IN (:...days)", { days })
+			.orderBy("members.birthday", "DESC")
+			.addOrderBy("members.nickname", "ASC")
+			.getMany();
+	}
 
 	async getMembers(options: GetMembersOptions = {}, where: Brackets | string = "1=1") {
 		// Everything membership-related on this list — the filter, the sort — is asked about one

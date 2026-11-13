@@ -201,6 +201,11 @@ const backups = {
 	runsMaxLimit: 100,
 };
 
+const birthdays = {
+	notifyCron: "0 7 * * *",
+	timezone: "Europe/Prague",
+};
+
 const photoContent = {
 	batchSize: process.env["PHOTO_CONTENT_BATCH_SIZE"] ? parseInt(process.env["PHOTO_CONTENT_BATCH_SIZE"], 10) : 3000,
 	textTimeoutMs: 30_000,
@@ -262,6 +267,7 @@ export class Config {
 	announcements = announcements;
 	app = app;
 	backups = backups;
+	birthdays = birthdays;
 	db = db;
 	environment = environment;
 	faces = faces;

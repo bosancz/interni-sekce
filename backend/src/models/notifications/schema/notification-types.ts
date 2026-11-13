@@ -11,6 +11,8 @@ export enum NotificationTypes {
 	"newAlbums" = "newAlbums",
 	"myBadges" = "myBadges",
 	"backups" = "backups",
+	"leaderBirthdays" = "leaderBirthdays",
+	"childBirthdays" = "childBirthdays",
 }
 
 export enum NotificationChannels {
@@ -23,6 +25,7 @@ export enum NotificationGroups {
 	"events" = "events",
 	"photos" = "photos",
 	"profile" = "profile",
+	"birthdays" = "birthdays",
 	"admin" = "admin",
 }
 
@@ -30,6 +33,7 @@ export const NotificationGroupsMetadata: Record<NotificationGroups, { title: str
 	[NotificationGroups.events]: { title: "Akce" },
 	[NotificationGroups.photos]: { title: "Fotky" },
 	[NotificationGroups.profile]: { title: "Můj profil" },
+	[NotificationGroups.birthdays]: { title: "Narozeniny" },
 	[NotificationGroups.admin]: { title: "Administrace" },
 };
 
@@ -113,6 +117,20 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 		description: "Záloha databáze nebo souborů skončila chybou nebo dlouho neproběhla — kontroluje se jednou denně",
 		defaultChannels: [NotificationChannels.email, NotificationChannels.inApp],
 		roles: [UserSavedRoles.admin],
+	},
+	[NotificationTypes.leaderBirthdays]: {
+		group: NotificationGroups.birthdays,
+		title: "Narozeniny vedoucích",
+		description: "Kdo z aktivních vedoucích a instruktorů má ten den narozeniny — posílá se jednou denně ráno",
+		defaultChannels: [],
+		roles: [UserDynamicRoles.vedouci],
+	},
+	[NotificationTypes.childBirthdays]: {
+		group: NotificationGroups.birthdays,
+		title: "Narozeniny dětí",
+		description: "Kdo z aktivních dětí má ten den narozeniny — posílá se jednou denně ráno",
+		defaultChannels: [],
+		roles: [UserDynamicRoles.vedouci],
 	},
 };
 

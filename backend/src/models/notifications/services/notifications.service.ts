@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import { Config } from "src/config";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Event } from "src/models/events/entities/event.entity";
+import { Member } from "src/models/members/entities/member.entity";
 import { MailOptions } from "src/models/mail/schema/mail-options";
 import { UserDynamicRoles, UserSavedRoles } from "src/models/users/schema/user-roles";
 import { User } from "src/models/users/entities/user.entity";
@@ -172,6 +173,22 @@ export class NotificationsService {
 			title: "Zálohy potřebují kontrolu",
 			body: problems.join(" "),
 			path: "/admin/zalohy",
+		});
+
+		return recipients.length;
+	}
+
+	async onMemberBirthdays(
+		type: NotificationTypes.leaderBirthdays | NotificationTypes.childBirthdays,
+		members: Pick<Member, "id">[],
+		body: string,
+	) {
+		const recipients = await this.getLeaderUsers();
+
+		await this.notifyUsers(type, recipients, undefined, {
+			title: type === NotificationTypes.leaderBirthdays ? "Narozeniny vedoucích" : "Narozeniny dětí",
+			body,
+			path: members.length === 1 ? `/databaze/clenove/${members[0].id}` : undefined,
 		});
 
 		return recipients.length;
