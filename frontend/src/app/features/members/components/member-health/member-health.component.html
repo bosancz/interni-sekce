@@ -14,10 +14,6 @@
 				<ion-skeleton-text [animated]="true"></ion-skeleton-text>
 			}
 
-			@if (member() && !member()!.allergies?.length) {
-				<p class="empty"><i>Žádné alergie</i></p>
-			}
-
 			@if (member()?.allergies?.length) {
 				<ion-list lines="full">
 					@for (allergy of member()!.allergies; track $index; let i = $index) {
@@ -44,7 +40,7 @@
 				</ion-list>
 			}
 
-			<ion-buttons class="mt-3 justify-content-center">
+			<ion-buttons class="justify-content-center" [class.mt-3]="!member() || member()!.allergies?.length">
 				<bo-add-button (click)="openAllergyForm()">Přidat alergii</bo-add-button>
 			</ion-buttons>
 		</bo-card-content>
@@ -63,10 +59,6 @@
 		<bo-card-content>
 			@if (member() === undefined) {
 				<ion-skeleton-text [animated]="true"></ion-skeleton-text>
-			}
-
-			@if (member() && !member()!.knownProblems?.length) {
-				<p class="empty"><i>Žádné známé problémy</i></p>
 			}
 
 			@if (member()?.knownProblems?.length) {
@@ -95,7 +87,7 @@
 				</ion-list>
 			}
 
-			<ion-buttons class="mt-3 justify-content-center">
+			<ion-buttons class="justify-content-center" [class.mt-3]="!member() || member()!.knownProblems?.length">
 				<bo-add-button (click)="openProblemForm()">Přidat problém</bo-add-button>
 			</ion-buttons>
 		</bo-card-content>
