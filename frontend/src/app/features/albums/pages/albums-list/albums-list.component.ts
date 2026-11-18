@@ -1,5 +1,16 @@
 import { DatePipe, NgTemplateOutlet } from "@angular/common";
-import { Component, computed, inject, OnInit, signal } from "@angular/core";
+import {
+	afterNextRender,
+	Component,
+	computed,
+	effect,
+	inject,
+	Injector,
+	OnInit,
+	signal,
+	untracked,
+	viewChild,
+} from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
 import {
@@ -218,6 +229,10 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	private hasLeft = false;
 
+	private injector = inject(Injector);
+
+	private pageContent = viewChild(PageContentComponent);
+
 	constructor(
 		private api: ApiService,
 		private toastService: ToastService,
@@ -239,6 +254,11 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		});
 
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
+
+		effect(() => {
+			this.view();
+			untracked(() => this.fillViewport());
+		});
 	}
 
 	ngOnInit(): void {
@@ -377,6 +397,20 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		if (token !== this.loadToken) return;
 
 		this.albums.set(mode === "more" ? [...(this.albums() ?? []), ...newAlbums] : newAlbums);
+
+		await this.fillViewport();
+	}
+
+	private async fillViewport() {
+		const albums = this.albums();
+		if (!albums || albums.length < this.page() * this.pageSize) return;
+
+		await new Promise<void>((resolve) => afterNextRender({ read: () => resolve() }, { injector: this.injector }));
+
+		const scrollElement = await this.pageContent()?.contentEl?.getScrollElement();
+		if (!scrollElement?.clientHeight || scrollElement.scrollHeight > scrollElement.clientHeight) return;
+
+		await this.loadAlbums(this.filter, "more");
 	}
 
 	// TODO: move to own page
