@@ -121,6 +121,11 @@ ion-modal.dialog.dialog-upload {
 	--max-width: calc(100vw - 32px);
 }
 
+ion-modal.dialog.dialog-face-review {
+	--width: 760px;
+	--max-width: calc(100vw - 32px);
+}
+
 ion-modal.dialog.dialog-merge {
 	--width: 820px;
 	--max-width: calc(100vw - 32px);
