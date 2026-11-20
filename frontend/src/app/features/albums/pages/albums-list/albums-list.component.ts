@@ -3,6 +3,7 @@ import {
 	afterNextRender,
 	Component,
 	computed,
+	ElementRef,
 	effect,
 	inject,
 	Injector,
@@ -231,6 +232,8 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	private injector = inject(Injector);
 
+	private host = inject<ElementRef<HTMLElement>>(ElementRef);
+
 	private pageContent = viewChild(PageContentComponent);
 
 	constructor(
@@ -408,7 +411,9 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		await new Promise<void>((resolve) => afterNextRender({ read: () => resolve() }, { injector: this.injector }));
 
 		const scrollElement = await this.pageContent()?.contentEl?.getScrollElement();
-		if (!scrollElement?.clientHeight || scrollElement.scrollHeight > scrollElement.clientHeight) return;
+		const lastElement = this.host.nativeElement.querySelector(".albums-grid-item:last-child, ion-infinite-scroll");
+		if (!scrollElement?.clientHeight || !lastElement) return;
+		if (lastElement.getBoundingClientRect().top >= scrollElement.getBoundingClientRect().bottom) return;
 
 		await this.loadAlbums(this.filter, "more");
 	}
