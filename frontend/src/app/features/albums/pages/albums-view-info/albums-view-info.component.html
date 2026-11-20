@@ -51,6 +51,8 @@
 		[selecting]="selecting()"
 		[selectedPhotos]="selectedPhotos()"
 		(upload)="uploadPhotos()"
+		[canReviewFaces]="!!album()?._links?.getAlbumFaceForReview?.allowed"
+		(reviewFaces)="reviewFaces()"
 		(viewChange)="photosView.set($event)"
 		(sort)="sortPhotos()"
 		(selectingStart)="startSelecting()"

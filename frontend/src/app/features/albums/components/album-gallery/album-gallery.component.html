@@ -8,6 +8,13 @@
 				<span class="d-none d-lg-inline">Nahrát fotky</span>
 			</ion-button>
 
+			@if (canReviewFaces()) {
+				<ion-button (click)="reviewFaces.emit()" fill="clear">
+					<ion-icon slot="start" name="scan-outline"></ion-icon>
+					<span class="d-none d-lg-inline">Přiřadit obličeje</span>
+				</ion-button>
+			}
+
 			@if (view() === "gallery") {
 				<ion-button (click)="viewChange.emit('manage')" fill="clear">
 					<ion-icon slot="start" name="create-outline"></ion-icon>

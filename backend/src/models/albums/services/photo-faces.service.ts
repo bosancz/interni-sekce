@@ -9,6 +9,7 @@ import { MemberRoles } from "src/models/members/schema/member-roles";
 import { User } from "src/models/users/entities/user.entity";
 import { DataSource, Repository } from "typeorm";
 import { leftJoinUserAuthor } from "src/models/users/helpers/user-author";
+import { Album } from "../entities/album.entity";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
 import {
@@ -125,15 +126,18 @@ export class PhotoFacesService {
 			excludePhotoIds?: Photo["id"][];
 			memberId?: Member["id"];
 			faceId?: PhotoFace["id"];
+			albumId?: Album["id"];
 		} = {},
 	) {
 		const excludePhotoIds = options.excludePhotoIds ?? [];
 		const query = this.getReviewQuery().setParameters({ auto: PhotoFaceAssignment.auto });
+		const album = options.albumId !== undefined ? "photo.album_id = :albumId AND " : "";
+		if (album) query.setParameters({ albumId: options.albumId });
 
 		const filter = this.getReviewFilter(options.filter, options.memberId);
 		if (filter) query.setParameters(filter.parameters);
-		const auto = `faces.assignment = :auto${filter ? ` AND ${filter.condition("member", "faces.member_id")}` : ""}`;
-		const candidate = `faces.assignment IS NULL AND ${
+		const auto = `${album}faces.assignment = :auto${filter ? ` AND ${filter.condition("member", "faces.member_id")}` : ""}`;
+		const candidate = `${album}faces.assignment IS NULL AND ${
 			filter
 				? filter.condition("candidateMember", "faces.candidate_member_id")
 				: "faces.candidate_member_id IS NOT NULL"
@@ -151,9 +155,22 @@ export class PhotoFacesService {
 					.where(
 						filter
 							? `((${auto}) OR (${candidate}))`
-							: "(faces.assignment IS NULL OR faces.assignment = :auto)",
+							: `${album}(faces.assignment IS NULL OR faces.assignment = :auto)`,
 					)
 					.orderBy("RANDOM()");
+				break;
+			case FaceReviewOrder.unassigned:
+				query
+					.where(
+						`${album}faces.assignment IS NULL${
+							filter ? ` AND ${filter.condition("candidateMember", "faces.candidate_member_id")}` : ""
+						}`,
+					)
+					.orderBy("photo.albumId", "ASC")
+					.addOrderBy("photo.order", "ASC", "NULLS LAST")
+					.addOrderBy("photo.timestamp", "ASC")
+					.addOrderBy("photo.id", "ASC")
+					.addOrderBy("faces.x", "ASC");
 				break;
 		}
 
