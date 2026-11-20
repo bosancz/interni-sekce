@@ -612,6 +612,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof AlbumResponseLinks
          */
+        'getAlbumFaceForReview': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
         'downloadAlbumPhotos': AcLink;
         /**
          * 
@@ -4725,7 +4731,8 @@ export namespace SDK {
     export const FaceReviewOrderEnum = {
         Uncertain: 'uncertain',
         Candidates: 'candidates',
-        Random: 'random'
+        Random: 'random',
+        Unassigned: 'unassigned'
     } as const;
     
     export type FaceReviewOrderEnum = typeof FaceReviewOrderEnum[keyof typeof FaceReviewOrderEnum];
@@ -18663,6 +18670,57 @@ export namespace SDK {
     
     
     
+    /**
+     * Query parameters for getAlbumFaceForReview operation in PhotoGalleryApi.
+     * @export
+     * @interface PhotoGalleryApiGetAlbumFaceForReviewQueryParams
+     */
+    export interface PhotoGalleryApiGetAlbumFaceForReviewQueryParams {
+        //order
+        /**
+         * 
+         * @type {FaceReviewOrderEnum}
+         * @memberof PhotoGalleryApiGetAlbumFaceForReview
+         */
+        order?: FaceReviewOrderEnum
+    
+        //filter
+        /**
+         * 
+         * @type {FaceReviewFilterEnum}
+         * @memberof PhotoGalleryApiGetAlbumFaceForReview
+         */
+        filter?: FaceReviewFilterEnum
+    
+        //excludePhotoIds
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof PhotoGalleryApiGetAlbumFaceForReview
+         */
+        excludePhotoIds?: Array<number>
+    
+        //memberId
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoGalleryApiGetAlbumFaceForReview
+         */
+        memberId?: number
+    
+        //faceId
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoGalleryApiGetAlbumFaceForReview
+         */
+        faceId?: number
+    }
+    
+    
+    
+    
+    
     
     
     
@@ -19481,6 +19539,72 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} albumId 
+         * @param {PhotoGalleryApiGetAlbumFaceForReviewQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async getAlbumFaceForReview(
+            albumId: number,
+            queryParams: PhotoGalleryApiGetAlbumFaceForReviewQueryParams,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('getAlbumFaceForReview', 'albumId', albumId)
+            
+            const localVarPath = `/api/albums/{albumId}/faces/review`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.order !== undefined) {
+                requestQueryParameter['order'] = queryParams.order;
+            }
+    
+            if (queryParams.filter !== undefined) {
+                requestQueryParameter['filter'] = queryParams.filter;
+            }
+    
+            if (queryParams.excludePhotoIds) {
+                requestQueryParameter['excludePhotoIds'] = queryParams.excludePhotoIds;
+            }
+    
+            if (queryParams.memberId !== undefined) {
+                requestQueryParameter['memberId'] = queryParams.memberId;
+            }
+    
+            if (queryParams.faceId !== undefined) {
+                requestQueryParameter['faceId'] = queryParams.faceId;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<FaceReviewResponse>(axiosRequestConfig);
         }
     
         /**

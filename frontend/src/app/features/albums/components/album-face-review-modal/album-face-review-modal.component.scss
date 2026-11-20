@@ -1,0 +1,49 @@
+@use "./../../../../../styles/brand-modal" as *;
+
+bo-modal-layout ::ng-deep > .content {
+	padding: 0;
+}
+
+.fa-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.fa-subtitle {
+	margin: 4px 0 0;
+	font-size: 14px;
+	font-weight: 400;
+	color: var(--bm-muted);
+}
+
+.fa-close {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	margin: -4px -6px 0 0;
+	padding: 0;
+	border: none;
+	border-radius: 9px;
+	background: transparent;
+	color: var(--bm-muted-2);
+	cursor: pointer;
+
+	ion-icon {
+		font-size: 22px;
+	}
+
+	&:hover {
+		background: var(--bm-surface-hover);
+		color: var(--bm-blue);
+	}
+}
+
+bo-face-review ::ng-deep .fr-image {
+	max-height: 40vh;
+	max-height: 40dvh;
+}

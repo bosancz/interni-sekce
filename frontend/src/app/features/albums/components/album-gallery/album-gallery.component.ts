@@ -8,6 +8,7 @@ import {
 	createOutline,
 	eyeOutline,
 	imageOutline,
+	scanOutline,
 	swapVerticalOutline,
 	textOutline,
 	trashOutline,
@@ -32,8 +33,10 @@ export class AlbumGalleryComponent {
 	captionDrafts = input<Record<number, string>>({});
 	changedCaptions = input<number>(0);
 	savingCaptions = input<boolean>(false);
+	canReviewFaces = input<boolean>(false);
 
 	upload = output<void>();
+	reviewFaces = output<void>();
 	viewChange = output<"gallery" | "manage">();
 	sort = output<void>();
 	selectingStart = output<void>();
@@ -98,6 +101,7 @@ export class AlbumGalleryComponent {
 			eyeOutline,
 			imageOutline,
 			textOutline,
+			scanOutline,
 			checkmarkOutline,
 		});
 	}

@@ -4,6 +4,7 @@ import { Request } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Config } from "src/config";
+import { toFaceReviewResponse } from "../helpers/face-review-response";
 import { FaceReviewOrder } from "src/models/albums/schema/detected-faces";
 import { PhotoFacesMatchingService } from "src/models/albums/services/photo-faces-matching.service";
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
@@ -169,32 +170,13 @@ export class FaceDetectionController {
 	async getFaceForReview(@Req() req: Request, @Query() query: FaceReviewQuery): Promise<FaceReviewResponse> {
 		FaceReviewPermission.canOrThrow(req);
 
-		const { face, remaining } = await this.photoFacesService.getFaceForReview(
-			query.order ?? FaceReviewOrder.uncertain,
-			{
+		return toFaceReviewResponse(
+			await this.photoFacesService.getFaceForReview(query.order ?? FaceReviewOrder.uncertain, {
 				filter: query.filter,
 				excludePhotoIds: query.excludePhotoIds,
 				memberId: query.memberId,
 				faceId: query.faceId,
-			},
+			}),
 		);
-		if (!face?.photo) return { face: null, photo: null, remaining };
-
-		const { photo, ...faceData } = face;
-
-		return {
-			face: faceData,
-			photo: {
-				id: photo.id,
-				name: photo.name,
-				albumId: photo.albumId,
-				albumName: photo.album?.name ?? null,
-				width: photo.width,
-				height: photo.height,
-				bg: photo.bg,
-				timestamp: photo.timestamp,
-			},
-			remaining,
-		};
 	}
 }

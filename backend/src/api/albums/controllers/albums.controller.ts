@@ -43,6 +43,7 @@ import {
 	AlbumDeletePermission,
 	AlbumDownloadPermission,
 	AlbumEditPermission,
+	AlbumFaceReviewPermission,
 	AlbumPhotosPermission,
 	AlbumPublishPermission,
 	AlbumReadPermission,
@@ -54,6 +55,10 @@ import {
 	AlbumsYearsPermission,
 	AlbumUnpublishPermission,
 } from "../acl/albums.acl";
+import { FaceReviewQuery, FaceReviewResponse } from "src/api/worker/dto/worker.dto";
+import { toFaceReviewResponse } from "src/api/worker/helpers/face-review-response";
+import { FaceReviewOrder } from "src/models/albums/schema/detected-faces";
+import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
 import { AlbumCreateBody, AlbumListQuery, AlbumResponse, AlbumUpdateBody } from "../dto/album.dto";
 import { AlbumPhotosOrderBody, AlbumTitlePhotoBody, PhotoResponse } from "../dto/photo.dto";
 
@@ -68,6 +73,7 @@ export class AlbumsController {
 		private albums: AlbumsRepository,
 		private photos: PhotosRepository,
 		private photosFiles: PhotosFilesService,
+		private photoFacesService: PhotoFacesService,
 		private notificationsService: NotificationsService,
 		private fileService: FilesService,
 		private config: Config,
@@ -320,6 +326,30 @@ export class AlbumsController {
 		AlbumPhotosPermission.canOrThrow(req, album);
 
 		return this.photos.getPhotos({ album: albumId, uploadedBy: true });
+	}
+
+	@Get(":albumId/faces/review")
+	@AcLinks(AlbumFaceReviewPermission)
+	@ApiResponse({ status: 200, type: FaceReviewResponse })
+	async getAlbumFaceForReview(
+		@Param("albumId", ParseIntPipe) albumId: number,
+		@Query() query: FaceReviewQuery,
+		@Req() req: Request,
+	): Promise<FaceReviewResponse> {
+		const album = await this.albums.getAlbum(albumId);
+		if (!album) throw new NotFoundException();
+
+		AlbumFaceReviewPermission.canOrThrow(req, album);
+
+		return toFaceReviewResponse(
+			await this.photoFacesService.getFaceForReview(query.order ?? FaceReviewOrder.uncertain, {
+				filter: query.filter,
+				excludePhotoIds: query.excludePhotoIds,
+				memberId: query.memberId,
+				faceId: query.faceId,
+				albumId: album.id,
+			}),
+		);
 	}
 
 	@Get(":albumId/download")

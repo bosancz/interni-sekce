@@ -1,0 +1,22 @@
+<bo-modal-layout>
+	<div slot="title" class="fa-head">
+		<div>
+			<h4>Přiřazování obličejů</h4>
+			<p class="fa-subtitle">
+				{{ album.name }}
+				@if (faceReview.review(); as r) {
+					·
+					@if (faceReview.reviewed()) {
+						hotovo {{ faceReview.reviewed() }},
+					}
+					zbývá {{ r.remaining }}
+				}
+			</p>
+		</div>
+		<button type="button" class="fa-close" aria-label="Zavřít" (click)="close.emit()">
+			<ion-icon name="close-outline"></ion-icon>
+		</button>
+	</div>
+
+	<bo-face-review #faceReview [albumId]="album.id" initialOrder="unassigned" [controls]="false" />
+</bo-modal-layout>
