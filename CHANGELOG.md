@@ -1,3 +1,8 @@
+## v4.38.7 — 2026-11-19
+
+- <span class="changelog-type" title="feat">✨</span> [Denní notifikace o narozeninách vedoucích a dětí](https://github.com/bosancz/interni-sekce/commit/def4aa5870ce6ff51071eb0897683540260bcbc8) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+- <span class="changelog-type" title="fix">🐛</span> [Na velkém monitoru galerie dotáhne alba, dokud nezaplní obrazovku](https://github.com/bosancz/interni-sekce/commit/de03240a3ca5c9045c8c93f51d53297af86703fe) (#842) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.38.6 — 2026-11-13
 
 - <span class="changelog-type" title="patch">🚸</span> [Obsah všech záložek akce začíná stejně daleko pod průběhem](https://github.com/bosancz/interni-sekce/commit/c533d5151066f4fdb1cd241e3db50a639e4011ef) (#838) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
