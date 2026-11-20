@@ -61,7 +61,7 @@ export class BugReportService {
 
 	private async send(url: string, description: string, element: DomElementDescription | null) {
 		try {
-			await this.api.FeedbackApi.sendBugReport({
+			const response = await this.api.FeedbackApi.sendBugReport({
 				description,
 				url,
 				frontendVersion: this.config.version,
@@ -81,7 +81,24 @@ export class BugReportService {
 						}
 					: undefined,
 			});
-			await this.toastService.toast("Díky! Chyba byla odeslána.");
+			const issueUrl = response.data.issueUrl;
+			await this.toastService.toast(
+				"Díky! Chyba byla odeslána.",
+				issueUrl
+					? {
+							duration: this.config.bugReport.sentToastDuration,
+							cssClass: "bo-toast-action",
+							buttons: [
+								{
+									text: "Otevřít v GitHubu",
+									handler: () => {
+										window.open(issueUrl, "_blank", "noopener");
+									},
+								},
+							],
+						}
+					: undefined,
+			);
 		} catch {
 			await this.toastService.toast("Chybu se nepodařilo odeslat.");
 		}

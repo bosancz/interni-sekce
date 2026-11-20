@@ -1413,6 +1413,26 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface BugReportSendResponse
+     */
+    export interface BugReportSendResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof BugReportSendResponse
+         */
+        'issueNumber': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BugReportSendResponse
+         */
+        'issueUrl': string | null;
+    }
+    
+        /**
+     * 
+     * @export
      * @enum {string}
      */
     
@@ -14686,7 +14706,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<void>(axiosRequestConfig);
+            return this.axios.request<BugReportSendResponse>(axiosRequestConfig);
         }
     }
     
