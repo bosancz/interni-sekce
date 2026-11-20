@@ -8,6 +8,7 @@ import { SessionUser } from "src/auth/schema/user-token";
 import { ListBugReportsPermission, SendBugReportPermission } from "../acl/feedback.acl";
 import { BugReportBody } from "../dto/bug-report-body.dto";
 import { BugReportResponse } from "../dto/bug-report-response.dto";
+import { BugReportSendResponse } from "../dto/bug-report-send-response.dto";
 import { FeedbackService } from "../services/feedback.service";
 
 @Controller("feedback")
@@ -19,7 +20,12 @@ export class FeedbackController {
 
 	@Post("bug")
 	@AcLinks(SendBugReportPermission)
-	async sendBugReport(@Req() req: Request, @AuthUser() authUser: SessionUser, @Body() body: BugReportBody) {
+	@ApiResponse({ status: 201, type: BugReportSendResponse })
+	async sendBugReport(
+		@Req() req: Request,
+		@AuthUser() authUser: SessionUser,
+		@Body() body: BugReportBody,
+	): Promise<BugReportSendResponse> {
 		SendBugReportPermission.canOrThrow(req);
 
 		const report = await this.feedback.buildBugReport(authUser.userId, body, req.headers["user-agent"]);
@@ -27,6 +33,8 @@ export class FeedbackController {
 		const issue = await this.feedback.fileBugReportIssue(report);
 
 		if (!issue) await this.feedback.sendBugReportEmail(report).catch(() => undefined);
+
+		return { issueNumber: issue?.number ?? null, issueUrl: issue?.url ?? null };
 	}
 
 	@Get("bugs")

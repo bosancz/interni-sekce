@@ -11,5 +11,6 @@ export class Config {
 
 	bugReport = {
 		elementTextMaxLength: 200,
+		sentToastDuration: 6000,
 	};
 }
