@@ -1,6 +1,8 @@
 import {
+	AfterViewInit,
 	Component,
 	computed,
+	DestroyRef,
 	ElementRef,
 	inject,
 	input,
@@ -33,7 +35,7 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 })
 export class MemberSelectorModalComponent
 	extends InputModalComponent<SDK.MemberResponse>
-	implements OnInit, ViewDidEnter
+	implements OnInit, AfterViewInit, ViewDidEnter
 {
 	members = input<SDK.MemberResponse[]>([]);
 	keepOpenAfterSelect = false;
@@ -57,6 +59,10 @@ export class MemberSelectorModalComponent
 	private groupsService = inject(GroupsService);
 	private modalService = inject(ModalService);
 	private toastService = inject(ToastService);
+	private destroyRef = inject(DestroyRef);
+	private searchFocused = false;
+	private focusFrame?: number;
+	private stopEarlyFocusListeners?: () => void;
 
 	canCreate = computed(
 		() => this.allowCreate && this.members().length === 0 && !!this.api.links()?.createMember?.allowed,
@@ -141,8 +147,68 @@ export class MemberSelectorModalComponent
 		this.loading.set(false);
 	}
 
+	ngAfterViewInit() {
+		const input = this.searchInput.nativeElement;
+
+		const onKeydown = (event: KeyboardEvent) => this.captureEarlyKey(event);
+		const onPointerdown = () => this.stopEarlyFocus();
+		const onFocus = () => this.stopEarlyFocus();
+
+		document.addEventListener("keydown", onKeydown, true);
+		document.addEventListener("pointerdown", onPointerdown, true);
+		input.addEventListener("focus", onFocus);
+
+		this.stopEarlyFocusListeners = () => {
+			document.removeEventListener("keydown", onKeydown, true);
+			document.removeEventListener("pointerdown", onPointerdown, true);
+			input.removeEventListener("focus", onFocus);
+		};
+
+		this.destroyRef.onDestroy(() => this.stopEarlyFocus());
+
+		this.focusSearchEarly();
+	}
+
 	ionViewDidEnter() {
-		window.setTimeout(() => this.searchInput?.nativeElement.focus(), 300);
+		if (!this.searchFocused) this.focusSearch();
+		this.stopEarlyFocus();
+	}
+
+	private focusSearchEarly() {
+		if (this.searchFocused) return;
+		this.focusSearch();
+		if (document.activeElement === this.searchInput.nativeElement) return this.stopEarlyFocus();
+		this.focusFrame = window.requestAnimationFrame(() => this.focusSearchEarly());
+	}
+
+	private focusSearch() {
+		const input = this.searchInput?.nativeElement;
+		if (!input) return;
+		input.focus({ preventScroll: true });
+		input.setSelectionRange(input.value.length, input.value.length);
+	}
+
+	private stopEarlyFocus() {
+		if (this.searchFocused) return;
+		this.searchFocused = true;
+		if (this.focusFrame !== undefined) window.cancelAnimationFrame(this.focusFrame);
+		this.stopEarlyFocusListeners?.();
+	}
+
+	private captureEarlyKey(event: KeyboardEvent) {
+		const input = this.searchInput.nativeElement;
+		if (event.target === input || document.activeElement === input) return;
+		if (event.isComposing || event.metaKey) return;
+		if ((event.ctrlKey || event.altKey) && !event.getModifierState("AltGraph")) return;
+		if (event.key.length !== 1 && event.key !== "Backspace") return;
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		const value = event.key === "Backspace" ? this.query().slice(0, -1) : this.query() + event.key;
+		this.query.set(value);
+		input.value = value;
+		this.focusSearch();
 	}
 
 	isSelected(memberId: number) {
