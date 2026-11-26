@@ -150,3 +150,12 @@ export const AlbumChronicleDeletePermission = new Permission({
 	inherit: AlbumEditPermission,
 	applicable: ({ doc }) => !doc.deletedAt && !!doc.chronicleFileName,
 });
+
+export const AlbumFaceReviewPermission = new Permission({
+	linkTo: AlbumResponse,
+	params: { albumId: "id" },
+
+	allowed: {
+		vedouci: true,
+	},
+});

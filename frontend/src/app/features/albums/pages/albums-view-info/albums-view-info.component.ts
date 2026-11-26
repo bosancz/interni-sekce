@@ -41,6 +41,7 @@ import { SDK } from "src/sdk";
 import { AlbumDescriptionComponent } from "../../components/album-description/album-description.component";
 import { AlbumGalleryComponent } from "../../components/album-gallery/album-gallery.component";
 import { AlbumInfoComponent } from "../../components/album-info/album-info.component";
+import { AlbumFaceReviewModalComponent } from "../../components/album-face-review-modal/album-face-review-modal.component";
 import { AlbumTitlePhotoModalComponent } from "../../components/album-title-photo-modal/album-title-photo-modal.component";
 import { PhotosEditComponent } from "../../components/photos-edit/photos-edit.component";
 import { PhotosUploadComponent } from "../../components/photos-upload/photos-upload.component";
@@ -428,6 +429,17 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		toast.dismiss();
 		this.toastService.toast("Fotky smazány");
 		this.cancelSelecting();
+	}
+
+	async reviewFaces() {
+		const album = this.album();
+		if (!album) return;
+
+		await this.modalService.componentModal(
+			AlbumFaceReviewModalComponent,
+			{ album },
+			{ cssClass: "dialog-face-review" },
+		);
 	}
 
 	async uploadPhotos() {

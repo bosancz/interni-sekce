@@ -51,6 +51,7 @@ export enum FaceReviewOrder {
 	uncertain = "uncertain",
 	candidates = "candidates",
 	random = "random",
+	unassigned = "unassigned",
 }
 
 export enum FaceReviewFilter {
