@@ -1,3 +1,7 @@
+## v4.38.9 — 2026-11-26
+
+- <span class="changelog-type" title="patch">🚸</span> [Více možností a ovládání šipkami při přiřazování obličejů](https://github.com/bosancz/interni-sekce/commit/663d2bf41fd04b49f24fb0a1d0a566c27307b3d3) (#844) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.38.8 — 2026-11-26
 
 - <span class="changelog-type" title="patch">🚸</span> [Přiřazování obličejů na stránce alba](https://github.com/bosancz/interni-sekce/commit/f9243e6d142525bbc007c57406853a5126028cd3) (#844) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
