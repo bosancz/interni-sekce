@@ -1,56 +1,86 @@
 <bo-modal-layout>
 	<h4 slot="title">Přidat člena</h4>
 
-	<form [formGroup]="form" [class.was-validated]="showValidationErrors()">
-		<ion-list>
-			<ion-item>
-				<ion-input
-					label="Přezdívka"
-					labelPlacement="stacked"
-					type="text"
-					formControlName="nickname"
-					placeholder="Pulčík"
-					required
-				></ion-input>
-			</ion-item>
+	<form class="bm-body" [formGroup]="form" (ngSubmit)="createMember()">
+		<label class="mc-field">
+			<span class="mc-label">Přezdívka <span class="mc-required" aria-hidden="true">*</span></span>
+			<input
+				type="text"
+				class="mc-input"
+				formControlName="nickname"
+				placeholder="Pulčík"
+				required
+				[class.invalid]="isInvalid('nickname')"
+			/>
+			@if (isInvalid("nickname")) {
+				<span class="mc-error">Vyplň přezdívku.</span>
+			}
+		</label>
 
-			<ion-item>
-				<ion-input
-					label="Jméno"
-					labelPlacement="stacked"
-					type="text"
-					formControlName="firstName"
-					placeholder="Bilbo"
-				></ion-input>
-			</ion-item>
+		<div class="mc-row">
+			<label class="mc-field">
+				<span class="mc-label">Jméno</span>
+				<input type="text" class="mc-input" formControlName="firstName" placeholder="Bilbo" />
+			</label>
 
-			<ion-item>
-				<ion-input
-					label="Příjmení"
-					labelPlacement="stacked"
-					type="text"
-					formControlName="lastName"
-					placeholder="Pytlík"
-				></ion-input>
-			</ion-item>
+			<label class="mc-field">
+				<span class="mc-label">Příjmení</span>
+				<input type="text" class="mc-input" formControlName="lastName" placeholder="Pytlík" />
+			</label>
+		</div>
 
-			<ion-item>
-				<ion-label position="stacked">Oddíl</ion-label>
-				<bo-group-select formControlName="groupId" [required]="true"></bo-group-select>
-			</ion-item>
+		<div class="mc-field">
+			<span class="mc-label">Oddíl <span class="mc-required" aria-hidden="true">*</span></span>
+			<bo-group-select formControlName="groupId" [required]="true"></bo-group-select>
+			@if (isInvalid("groupId")) {
+				<span class="mc-error">Vyber oddíl.</span>
+			}
+		</div>
 
-			<ion-item>
-				<ion-select label="Role" labelPlacement="stacked" formControlName="role" placeholder="nositel prstenu">
-					@for (role of roles | keyvalue; track role.key) {
-						<ion-select-option [value]="role.key">{{ role.value.title }}</ion-select-option>
-					}
-				</ion-select>
-			</ion-item>
-		</ion-list>
+		<div class="mc-field">
+			<span class="mc-label">Role <span class="mc-required" aria-hidden="true">*</span></span>
+			<div class="mc-options" role="radiogroup" aria-label="Role">
+				@for (role of roles | keyvalue; track role.key) {
+					<button
+						type="button"
+						class="mc-option"
+						role="radio"
+						[class.selected]="form.controls.role.value === role.key"
+						[attr.aria-checked]="form.controls.role.value === role.key"
+						(click)="setRole($any(role.key))"
+					>
+						{{ role.value.title }}
+					</button>
+				}
+			</div>
+			@if (isInvalid("role")) {
+				<span class="mc-error">Vyber roli.</span>
+			}
+		</div>
+
+		<div class="mc-field">
+			<span class="mc-label">Stav</span>
+			<div class="mc-options" role="radiogroup" aria-label="Stav">
+				@for (option of activeOptions; track option.value) {
+					<button
+						type="button"
+						class="mc-option"
+						role="radio"
+						[class.selected]="form.controls.active.value === option.value"
+						[attr.aria-checked]="form.controls.active.value === option.value"
+						(click)="form.controls.active.setValue(option.value)"
+					>
+						{{ option.title }}
+					</button>
+				}
+			</div>
+		</div>
+
+		<span class="mc-hint"><span class="mc-required" aria-hidden="true">*</span> povinné údaje</span>
 	</form>
 
-	<ion-buttons slot="buttons">
-		<ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
-		<ion-button (click)="createMember()" color="primary">Vytvořit</ion-button>
-	</ion-buttons>
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" (click)="createMember()">Vytvořit</button>
+	</div>
 </bo-modal-layout>

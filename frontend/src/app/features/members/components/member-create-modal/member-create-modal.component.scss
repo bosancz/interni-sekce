@@ -1,3 +1,107 @@
-bo-group-select {
-	margin-top: 8px;
+@use "./../../../../../styles/brand-modal" as *;
+
+.bm-body {
+	gap: 14px;
+}
+
+.mc-row {
+	display: flex;
+	gap: 12px;
+
+	> .mc-field {
+		flex: 1 1 0;
+		min-width: 0;
+	}
+}
+
+.mc-field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.mc-label {
+	font-size: 13.5px;
+	font-weight: 700;
+	color: var(--bm-muted);
+}
+
+.mc-required {
+	color: var(--ion-color-danger);
+}
+
+.mc-hint {
+	font-size: 13px;
+	color: var(--bm-muted);
+}
+
+.mc-error {
+	color: var(--ion-color-danger);
+	font-size: 13.5px;
+	font-weight: 600;
+}
+
+.mc-input {
+	width: 100%;
+	padding: 10px 14px;
+	border: 2px solid var(--bm-border);
+	border-radius: 12px;
+	background: transparent;
+	color: var(--bm-text);
+	font-family: inherit;
+	font-size: 15px;
+
+	&::placeholder {
+		color: var(--bm-muted-2);
+	}
+
+	&:focus {
+		outline: none;
+		border-color: var(--bm-blue);
+	}
+
+	&.invalid {
+		border-color: var(--ion-color-danger);
+	}
+}
+
+.mc-options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.mc-option {
+	min-width: 44px;
+	padding: 7px 14px;
+	border: 2px solid var(--bm-border);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--bm-text);
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+
+	&:hover {
+		background: var(--bm-surface-hover);
+	}
+
+	&.selected {
+		border-color: var(--bm-blue);
+		background: var(--bm-blue);
+		color: #ffffff;
+	}
+}
+
+:host-context(body.dark) .mc-option.selected {
+	border-color: var(--bm-yellow-on-blue);
+	background: var(--bm-yellow-on-blue);
+	color: #22284f;
+}
+
+@media (max-width: 575.98px) {
+	.mc-row {
+		flex-direction: column;
+	}
 }

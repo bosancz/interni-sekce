@@ -1,17 +1,7 @@
 import { KeyValuePipe } from "@angular/common";
 import { Component, Input, OnInit, signal } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import {
-	IonButton,
-	IonButtons,
-	IonInput,
-	IonItem,
-	IonLabel,
-	IonList,
-	IonSelect,
-	IonSelectOption,
-	ModalController,
-} from "@ionic/angular/standalone";
+import { ModalController } from "@ionic/angular/standalone";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { InputModalComponent } from "src/app/core/services/modal.service";
 import { GroupsSelectComponent } from "src/app/shared/components/groups-select/groups-select.component";
@@ -23,20 +13,7 @@ import { SDK } from "src/sdk";
 	templateUrl: "./member-create-modal.component.html",
 	styleUrls: ["./member-create-modal.component.scss"],
 
-	imports: [
-		ReactiveFormsModule,
-		KeyValuePipe,
-		IonList,
-		IonItem,
-		IonLabel,
-		IonInput,
-		IonSelect,
-		IonSelectOption,
-		IonButtons,
-		IonButton,
-		ModalLayoutComponent,
-		GroupsSelectComponent,
-	],
+	imports: [ReactiveFormsModule, KeyValuePipe, ModalLayoutComponent, GroupsSelectComponent],
 })
 export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCreateBody> implements OnInit {
 	@Input() defaultGroupId?: number | null;
@@ -44,6 +21,11 @@ export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCr
 	@Input() allowedRoles?: SDK.MemberRolesEnum[];
 
 	roles: Record<string, (typeof MemberRoles)[SDK.MemberRolesEnum]> = MemberRoles;
+
+	readonly activeOptions = [
+		{ value: true, title: "Aktivní" },
+		{ value: false, title: "Neaktivní" },
+	];
 
 	showValidationErrors = signal(false);
 
@@ -53,6 +35,7 @@ export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCr
 		lastName: new FormControl<string>("", { nonNullable: true }),
 		groupId: new FormControl<number | null>(null, { validators: [Validators.required] }),
 		role: new FormControl<SDK.MemberCreateBodyRoleEnum | null>(null, { validators: [Validators.required] }),
+		active: new FormControl<boolean>(true, { nonNullable: true }),
 	});
 
 	constructor(modalController: ModalController) {
@@ -72,6 +55,14 @@ export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCr
 		}
 	}
 
+	isInvalid(control: keyof typeof this.form.controls) {
+		return this.showValidationErrors() && this.form.controls[control].invalid;
+	}
+
+	setRole(role: SDK.MemberCreateBodyRoleEnum) {
+		this.form.controls.role.setValue(role);
+	}
+
 	createMember() {
 		this.form.markAllAsTouched();
 		this.showValidationErrors.set(true);
@@ -86,6 +77,7 @@ export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCr
 			role: value.role!,
 			firstName: value.firstName || null,
 			lastName: value.lastName || null,
+			active: value.active,
 		};
 
 		this.submit.emit(memberData);

@@ -6030,6 +6030,12 @@ export namespace SDK {
          * @memberof MemberCreateBody
          */
         'lastName': string | null;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MemberCreateBody
+         */
+        'active'?: boolean;
     }
     
     export const MemberCreateBodyRoleEnum = {
