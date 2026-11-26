@@ -10,6 +10,10 @@
 			margin: 2.5rem 0 1rem;
 			border-top: 1px solid var(--bo-line);
 			padding-top: 1.5rem;
+
+			&.changelog-patch {
+				color: var(--ion-color-medium);
+			}
 		}
 
 		.changelog-page:first-child > h2:first-child {
