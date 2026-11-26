@@ -50,6 +50,10 @@
 			text-indent: -1.75rem;
 		}
 
+		li:has(> .changelog-type[title="feat"]) {
+			font-weight: 700;
+		}
+
 		a {
 			color: inherit;
 			text-decoration: none;
