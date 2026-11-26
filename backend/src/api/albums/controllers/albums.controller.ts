@@ -58,6 +58,7 @@ import {
 import { FaceReviewQuery, FaceReviewResponse } from "src/api/worker/dto/worker.dto";
 import { toFaceReviewResponse } from "src/api/worker/helpers/face-review-response";
 import { FaceReviewOrder } from "src/models/albums/schema/detected-faces";
+import { PhotoFacesMatchingService } from "src/models/albums/services/photo-faces-matching.service";
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
 import { AlbumCreateBody, AlbumListQuery, AlbumResponse, AlbumUpdateBody } from "../dto/album.dto";
 import { AlbumPhotosOrderBody, AlbumTitlePhotoBody, PhotoResponse } from "../dto/photo.dto";
@@ -74,6 +75,7 @@ export class AlbumsController {
 		private photos: PhotosRepository,
 		private photosFiles: PhotosFilesService,
 		private photoFacesService: PhotoFacesService,
+		private photoFacesMatchingService: PhotoFacesMatchingService,
 		private notificationsService: NotificationsService,
 		private fileService: FilesService,
 		private config: Config,
@@ -349,6 +351,7 @@ export class AlbumsController {
 				faceId: query.faceId,
 				albumId: album.id,
 			}),
+			this.photoFacesMatchingService,
 		);
 	}
 

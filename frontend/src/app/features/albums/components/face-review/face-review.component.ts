@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, HostListener, input, OnInit, signal } from "@angular/core";
+import { Component, computed, ElementRef, HostListener, input, linkedSignal, OnInit, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonContent, IonIcon, IonPopover, IonSkeletonText, IonSpinner } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
@@ -11,7 +11,6 @@ import {
 	peopleOutline,
 	personAddOutline,
 	playForwardOutline,
-	trashOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -27,6 +26,12 @@ const SEEN_PHOTOS_LIMIT = 300;
 const HISTORY_LIMIT = 50;
 
 type HistoryEntry = { review: SDK.FaceReviewResponse; decided: boolean };
+
+type FaceOption = {
+	member: { id: number; nickname: string };
+	score: number | null;
+	kind: "auto" | "candidate" | null;
+};
 
 const ORDERS: { value: SDK.FaceReviewOrderEnum; label: string; description: string }[] = [
 	{
@@ -118,13 +123,37 @@ export class FaceReviewComponent implements OnInit {
 	face = computed(() => this.review()?.face ?? null);
 	photo = computed(() => this.review()?.photo ?? null);
 
-	suggested = computed(() => {
+	options = computed<FaceOption[]>(() => {
 		const face = this.face();
-		if (!face) return null;
-		if (face.member) return { member: face.member, score: face.matchScore ?? face.candidateScore ?? null };
-		if (face.candidateMember) return { member: face.candidateMember, score: face.candidateScore ?? null };
-		return null;
+		if (!face) return [];
+
+		const live = this.review()?.options ?? [];
+		const liveScore = (memberId: number) => live.find((option) => option.member.id === memberId)?.score;
+
+		const options: FaceOption[] = live.map((option) => ({
+			member: option.member,
+			score: option.score,
+			kind: option.member.id === face.candidateMember?.id && !face.member ? "candidate" : null,
+		}));
+
+		if (face.member) {
+			const index = options.findIndex((option) => option.member.id === face.member!.id);
+			if (index !== -1) options.splice(index, 1);
+			options.unshift({
+				member: face.member,
+				score: liveScore(face.member.id) ?? face.matchScore ?? null,
+				kind: face.assignment === "auto" ? "auto" : null,
+			});
+		} else if (face.candidateMember && !options.some((option) => option.kind === "candidate")) {
+			options.unshift({ member: face.candidateMember, score: face.candidateScore ?? null, kind: "candidate" });
+		}
+
+		return options.slice(0, Math.max(live.length, 1));
 	});
+
+	activeIndex = linkedSignal({ source: this.options, computation: () => 0 });
+	active = computed(() => this.options()[this.activeIndex()] ?? null);
+	pickActive = computed(() => this.activeIndex() === this.options().length);
 
 	emotion = computed(() => {
 		const emotion = this.face()?.emotion;
@@ -149,7 +178,6 @@ export class FaceReviewComponent implements OnInit {
 			peopleOutline,
 			personAddOutline,
 			playForwardOutline,
-			trashOutline,
 		});
 	}
 
@@ -250,9 +278,14 @@ export class FaceReviewComponent implements OnInit {
 		}
 	}
 
-	async confirm() {
-		const suggested = this.suggested();
-		if (suggested) await this.assign(suggested.member.id);
+	async confirm(option = this.active()) {
+		if (this.pickActive() && option === this.active()) return this.pickMember();
+		if (option) await this.assign(option.member.id);
+	}
+
+	moveActive(step: number) {
+		const count = this.options().length + 1;
+		this.activeIndex.update((index) => (index + step + count) % count);
 	}
 
 	async pickMember() {
@@ -274,22 +307,6 @@ export class FaceReviewComponent implements OnInit {
 
 	async reject() {
 		await this.assign(null);
-	}
-
-	async deleteFace() {
-		const face = this.face();
-		if (!face || this.busy()) return;
-
-		this.pickerOpen = true;
-		const confirmed = await this.modalService
-			.deleteConfirmationModal("Označený výřez se z fotky odebere. Použij, když na něm žádný obličej není.", {
-				header: "Není to obličej?",
-				buttonText: "Odebrat",
-			})
-			.finally(() => (this.pickerOpen = false));
-		if (!confirmed) return;
-
-		await this.save(() => this.api.PhotoGalleryApi.deletePhotoFace(face.photoId, face.id), false);
 	}
 
 	skip() {
@@ -363,7 +380,7 @@ export class FaceReviewComponent implements OnInit {
 
 	@HostListener("document:keydown", ["$event"])
 	onKeyDown(event: KeyboardEvent) {
-		if (this.pickerOpen || this.scopeOpen() || event.altKey || event.repeat) return;
+		if (this.pickerOpen || this.scopeOpen() || event.altKey || event.shiftKey || event.repeat) return;
 
 		const target = event.target as HTMLElement | null;
 		if (target?.closest("input, textarea, [contenteditable], ion-alert, ion-popover")) return;
@@ -372,27 +389,33 @@ export class FaceReviewComponent implements OnInit {
 
 		const key = event.key.toLowerCase();
 		if (event.ctrlKey || event.metaKey) {
-			if (key !== "z" || event.shiftKey) return;
+			if (key !== "z") return;
 			this.undo();
 			event.preventDefault();
 			return;
 		}
 
 		switch (key) {
-			case "a":
-				if (this.suggested()) this.confirm();
+			case "enter":
+				this.confirm();
+				break;
+			case "arrowright":
+				this.skip();
+				break;
+			case "arrowleft":
+				this.undo();
+				break;
+			case "arrowdown":
+				this.moveActive(1);
+				break;
+			case "arrowup":
+				this.moveActive(-1);
 				break;
 			case "n":
 				this.reject();
 				break;
 			case "v":
 				this.pickMember();
-				break;
-			case "s":
-				this.skip();
-				break;
-			case "z":
-				this.undo();
 				break;
 			default:
 				return;

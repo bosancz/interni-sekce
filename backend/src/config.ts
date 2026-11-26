@@ -183,6 +183,10 @@ const faces = {
 		minScore: 0.36,
 		margin: 0.1,
 	},
+	review: {
+		options: 3,
+		minScore: 0.25,
+	},
 	analysis: {
 		targetPrecision: 0.95,
 		minDecisions: 50,
