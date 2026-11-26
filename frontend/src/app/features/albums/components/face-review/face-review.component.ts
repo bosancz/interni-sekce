@@ -19,13 +19,14 @@ import { MemberSelectorModalComponent } from "src/app/features/events/components
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoFaceImageUrlPipe } from "src/app/shared/pipes/photo-face-image-url.pipe";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
+import { TypographyPipe } from "src/app/shared/pipes/typography.pipe";
 import { FACE_EMOTIONS } from "src/helpers/face-emotions";
 import { SDK } from "src/sdk";
 
 const SEEN_PHOTOS_LIMIT = 300;
 const HISTORY_LIMIT = 50;
 
-type HistoryEntry = { review: SDK.FaceReviewResponse; decided: boolean };
+type HistoryEntry = { review: SDK.FaceReviewResponse; decided: boolean; counted: boolean };
 
 type FaceOption = {
 	member: { id: number; nickname: string };
@@ -46,8 +47,8 @@ const ORDERS: { value: SDK.FaceReviewOrderEnum; label: string; description: stri
 	},
 	{
 		value: "unassigned",
-		label: "Nepřiřazené",
-		description: "Nepřiřazené obličeje postupně po fotkách.",
+		label: "Po fotkách",
+		description: "Nepřiřazené a automaticky přiřazené obličeje postupně po fotkách.",
 	},
 	{
 		value: "random",
@@ -78,6 +79,7 @@ const FILTERS: { value: SDK.FaceReviewFilterEnum | null; label: string; chip: st
 		TooltipDirective,
 		PhotoImageUrlPipe,
 		PhotoFaceImageUrlPipe,
+		TypographyPipe,
 	],
 })
 export class FaceReviewComponent implements OnInit {
@@ -121,6 +123,7 @@ export class FaceReviewComponent implements OnInit {
 	history = signal<HistoryEntry[]>([]);
 
 	face = computed(() => this.review()?.face ?? null);
+	unassigned = signal<{ faceId: number; option: FaceOption } | null>(null);
 	photo = computed(() => this.review()?.photo ?? null);
 
 	options = computed<FaceOption[]>(() => {
@@ -146,6 +149,13 @@ export class FaceReviewComponent implements OnInit {
 			});
 		} else if (face.candidateMember && !options.some((option) => option.kind === "candidate")) {
 			options.unshift({ member: face.candidateMember, score: face.candidateScore ?? null, kind: "candidate" });
+		}
+
+		const unassigned = this.unassigned();
+		if (!face.member && unassigned?.faceId === face.id) {
+			const index = options.findIndex((option) => option.member.id === unassigned.option.member.id);
+			if (index !== -1) options.splice(index, 1);
+			options.unshift(unassigned.option);
 		}
 
 		return options.slice(0, Math.max(live.length, 1));
@@ -309,6 +319,17 @@ export class FaceReviewComponent implements OnInit {
 		await this.assign(null);
 	}
 
+	async unassign() {
+		const face = this.face();
+		const option = this.options()[0];
+		if (!face || !option || this.busy()) return;
+
+		this.unassigned.set({ faceId: face.id, option: { ...option, kind: null } });
+		await this.save(() => this.api.PhotoGalleryApi.updatePhotoFace(face.photoId, face.id, { memberId: null }), {
+			advance: false,
+		});
+	}
+
 	skip() {
 		if (this.busy()) return;
 		this.remember(false);
@@ -330,7 +351,7 @@ export class FaceReviewComponent implements OnInit {
 			} finally {
 				this.saving.set(false);
 			}
-			this.reviewed.update((count) => Math.max(0, count - 1));
+			if (entry.counted) this.reviewed.update((count) => Math.max(0, count - 1));
 		}
 
 		this.history.update((history) => history.slice(0, -1));
@@ -349,7 +370,7 @@ export class FaceReviewComponent implements OnInit {
 		await this.save(() => this.api.PhotoGalleryApi.updatePhotoFace(face.photoId, face.id, { memberId }));
 	}
 
-	private async save(request: () => Promise<unknown>, undoable = true) {
+	private async save(request: () => Promise<unknown>, { advance = true } = {}) {
 		this.saving.set(true);
 		try {
 			await request();
@@ -360,15 +381,16 @@ export class FaceReviewComponent implements OnInit {
 			this.saving.set(false);
 		}
 
+		this.remember(true, advance);
+		if (!advance) return await this.load(this.face()!.id);
 		this.reviewed.update((count) => count + 1);
-		if (undoable) this.remember(true);
 		await this.next();
 	}
 
-	private remember(decided: boolean) {
+	private remember(decided: boolean, counted = decided) {
 		const review = this.review();
 		if (!review?.face) return;
-		this.history.update((history) => [...history, { review, decided }].slice(-HISTORY_LIMIT));
+		this.history.update((history) => [...history, { review, decided, counted }].slice(-HISTORY_LIMIT));
 	}
 
 	private async next(skipped = false) {
@@ -412,7 +434,7 @@ export class FaceReviewComponent implements OnInit {
 				this.moveActive(-1);
 				break;
 			case "n":
-				this.reject();
+				if (this.controls()) this.reject();
 				break;
 			case "v":
 				this.pickMember();

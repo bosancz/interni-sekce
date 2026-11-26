@@ -234,6 +234,7 @@ export class FaceReviewPhotoResponse {
 	@ApiPropertyOptional({ type: "integer", nullable: true }) width!: number | null;
 	@ApiPropertyOptional({ type: "integer", nullable: true }) height!: number | null;
 	@ApiPropertyOptional({ type: "string", nullable: true }) bg!: string | null;
+	@ApiPropertyOptional({ type: "string", nullable: true }) caption!: string | null;
 	@ApiProperty({ type: "string" }) timestamp!: Date | string;
 }
 

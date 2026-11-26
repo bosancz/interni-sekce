@@ -162,9 +162,9 @@ export class PhotoFacesService {
 			case FaceReviewOrder.unassigned:
 				query
 					.where(
-						`${album}faces.assignment IS NULL${
-							filter ? ` AND ${filter.condition("candidateMember", "faces.candidate_member_id")}` : ""
-						}`,
+						filter
+							? `((${auto}) OR (${album}faces.assignment IS NULL AND ${filter.condition("candidateMember", "faces.candidate_member_id")}))`
+							: `${album}(faces.assignment IS NULL OR faces.assignment = :auto)`,
 					)
 					.orderBy("photo.albumId", "ASC")
 					.addOrderBy("photo.order", "ASC", "NULLS LAST")
