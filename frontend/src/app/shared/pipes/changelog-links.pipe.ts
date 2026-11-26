@@ -8,7 +8,7 @@ const ISSUE_URL = "https://github.com/bosancz/interni-sekce/issues/";
 export class ChangelogLinksPipe implements PipeTransform {
 	transform(value: string | null | undefined): string {
 		if (!value) return "";
-		return openInNewTab(linkIssues(value));
+		return markPatchVersions(openInNewTab(linkIssues(value)));
 	}
 }
 
@@ -22,4 +22,8 @@ function linkIssues(html: string): string {
 
 function openInNewTab(html: string): string {
 	return html.replace(/<a\b(?![^>]*\starget=)([^>]*)>/g, '<a$1 target="_blank" rel="noopener noreferrer">');
+}
+
+function markPatchVersions(html: string): string {
+	return html.replace(/<h2\b([^>]*)>(\s*v\d+\.\d+\.[1-9]\d*\b)/g, '<h2$1 class="changelog-patch">$2');
 }
