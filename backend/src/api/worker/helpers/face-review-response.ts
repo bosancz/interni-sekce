@@ -20,6 +20,7 @@ export async function toFaceReviewResponse(
 			width: photo.width,
 			height: photo.height,
 			bg: photo.bg,
+			caption: photo.caption,
 			timestamp: photo.timestamp,
 		},
 		options: await matchingService.getReviewOptions(face),

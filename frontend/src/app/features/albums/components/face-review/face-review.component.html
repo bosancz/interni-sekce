@@ -71,6 +71,9 @@
 					[style.height.%]="face()!.height * 100"
 				></div>
 			}
+			@if (photo()!.caption) {
+				<div class="fr-caption">{{ photo()!.caption | typography }}</div>
+			}
 		</div>
 		@if (busy()) {
 			<div class="fr-busy"><ion-spinner name="crescent"></ion-spinner></div>
@@ -78,26 +81,47 @@
 	</div>
 
 	<div class="fr-info">
-		<img class="fr-crop" [src]="face() | photoFaceImageUrl" alt="Výřez obličeje" />
+		<div class="fr-portrait">
+			<img class="fr-crop" [src]="face() | photoFaceImageUrl" alt="Výřez obličeje" />
+			@if (emotion(); as e) {
+				<span class="fr-emotion">{{ e.emoji }} {{ e.label }}</span>
+			}
+		</div>
 		<div class="fr-who">
 			@if (!options().length) {
 				<div class="fr-name">Neznámý obličej</div>
 			}
 			<div class="fr-options">
 				@for (option of options(); track option.member.id; let i = $index) {
-					<button
-						type="button"
-						class="fr-option"
-						[class.active]="i === activeIndex()"
-						[disabled]="busy()"
-						(click)="confirm(option)"
-					>
-						<span class="fr-option-name">{{ option.member.nickname }}</span>
-						@if (option.kind === "auto") {
-							<span class="bo-pill bo-pill-blue">automaticky</span>
-						}
-						<span class="fr-option-score">{{ score(option.score) }}</span>
-					</button>
+					@if (option.kind === "auto") {
+						<div class="fr-option fr-option-auto" [class.active]="i === activeIndex()">
+							<button type="button" class="fr-option-main" [disabled]="busy()" (click)="confirm(option)">
+								<span class="fr-option-name">{{ option.member.nickname }}</span>
+								<span class="fr-option-note">automaticky přiřazený</span>
+							</button>
+							<button
+								type="button"
+								class="fr-option-clear"
+								[disabled]="busy()"
+								(click)="unassign()"
+								boTooltip="Odebrat přiřazení"
+								aria-label="Odebrat přiřazení"
+							>
+								<ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+							</button>
+						</div>
+					} @else {
+						<button
+							type="button"
+							class="fr-option"
+							[class.active]="i === activeIndex()"
+							[disabled]="busy()"
+							(click)="confirm(option)"
+						>
+							<span class="fr-option-name">{{ option.member.nickname }}</span>
+							<span class="fr-option-score">{{ score(option.score) }}</span>
+						</button>
+					}
 				}
 				<button
 					type="button"
@@ -113,9 +137,6 @@
 			<div class="fr-meta">
 				@if (!options().length) {
 					<span>Systém nemá žádný návrh.</span>
-				}
-				@if (emotion(); as e) {
-					<span>{{ e.emoji }} {{ e.label }}</span>
 				}
 				@if (albumId() === undefined) {
 					<a
@@ -133,7 +154,7 @@
 	</div>
 
 	<div class="fr-actions">
-		<div class="fr-primary">
+		<div class="fr-primary" [class.fr-primary-single]="!controls()">
 			<ion-button
 				color="success"
 				[disabled]="busy() || !active()"
@@ -145,22 +166,24 @@
 				"
 			>
 				<ion-icon slot="start" name="checkmark-outline"></ion-icon>
-				Ano
+				{{ controls() ? "Ano" : "Potvrdit" }}
 			</ion-button>
-			<ion-button
-				fill="outline"
-				color="danger"
-				[disabled]="busy()"
-				(click)="reject()"
-				[boTooltip]="
-					options().length
-						? 'Klávesa N – obličej se už nikomu automaticky nepřiřadí.'
-						: 'Klávesa N – nevím, kdo to je, a automatika ho nemá přiřazovat.'
-				"
-			>
-				<ion-icon slot="start" name="close-outline"></ion-icon>
-				Ne
-			</ion-button>
+			@if (controls()) {
+				<ion-button
+					fill="outline"
+					color="danger"
+					[disabled]="busy()"
+					(click)="reject()"
+					[boTooltip]="
+						options().length
+							? 'Klávesa N – obličej se už nikomu automaticky nepřiřadí.'
+							: 'Klávesa N – nevím, kdo to je, a automatika ho nemá přiřazovat.'
+					"
+				>
+					<ion-icon slot="start" name="close-outline"></ion-icon>
+					Ne
+				</ion-button>
+			}
 		</div>
 		<div class="fr-secondary">
 			@if (history().length) {

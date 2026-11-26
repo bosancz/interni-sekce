@@ -4811,6 +4811,12 @@ export namespace SDK {
          * @type {string}
          * @memberof FaceReviewPhotoResponse
          */
+        'caption'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceReviewPhotoResponse
+         */
         'timestamp': string;
     }
     
