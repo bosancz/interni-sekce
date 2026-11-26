@@ -77,23 +77,19 @@ bo-page-content {
 .weekdays {
 	display: grid;
 	grid-template-columns: repeat(7, minmax(0, 1fr));
-	padding: 4px 0;
-	background-color: var(--bo-white);
-	border-bottom: 2px solid var(--bo-yellow);
-	font-size: 11px;
+	padding: 6px 0;
+	background-color: var(--bo-yellow);
+	border-bottom: 2px solid var(--bo-blue);
+	font-size: 12px;
 	font-weight: 800;
-	letter-spacing: 0.04em;
+	letter-spacing: 0.06em;
 	text-align: center;
 	text-transform: uppercase;
-	color: var(--ion-color-medium);
+	color: #fff;
 
 	.weekend {
-		color: var(--bo-blue-mid);
+		color: #2a3478;
 	}
-}
-
-:host-context(body.dark) .weekdays .weekend {
-	color: #8a96e0;
 }
 
 @media (min-width: 992px) {
