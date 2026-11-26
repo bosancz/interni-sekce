@@ -209,7 +209,7 @@ export class EventAttendeesListComponent {
 
 	setSort(sort: AdminTableSort) {
 		this.sort.set(sort.sort);
-		this.order.set(sort.order);
+		this.order.set(sort.order === "DESC" ? "DESC" : "ASC");
 	}
 
 	async changeRole(attendee: Attendee) {

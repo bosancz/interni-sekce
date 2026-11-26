@@ -266,6 +266,10 @@ const changelog = {
 	pageEntries: 40,
 };
 
+const sorting = {
+	maxKeys: 4,
+};
+
 @Injectable()
 export class Config {
 	announcements = announcements;
@@ -290,6 +294,7 @@ export class Config {
 	redis = redis;
 	seed = seed;
 	server = server;
+	sorting = sorting;
 	statistics = statistics;
 	eventAttendees = eventAttendees;
 	workers = workers;

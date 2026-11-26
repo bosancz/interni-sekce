@@ -16,7 +16,7 @@ import { SDK } from "src/sdk";
 import { Action } from "../action-buttons/action-buttons.component";
 import { AdminTableCellDirective } from "../admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "../admin-table/admin-table-column.component";
-import { AdminTableComponent, AdminTableSort, AdminTableSortOrder } from "../admin-table/admin-table.component";
+import { AdminTableComponent, AdminTableSort } from "../admin-table/admin-table.component";
 import { AvatarComponent } from "../avatar/avatar.component";
 import { GroupBadgeComponent } from "../group-badge/group-badge.component";
 import { MemberBadgesInlineComponent } from "../member-badges-inline/member-badges-inline.component";
@@ -68,7 +68,8 @@ export class PeopleTableComponent {
 	actions = input<((row: any) => Action[]) | null>(null);
 	actionsHeader = input<((row: any) => string | null | undefined) | null>(null);
 	sort = input<string | null>(null);
-	order = input<AdminTableSortOrder>("ASC");
+	order = input<string>("ASC");
+	multiSort = input<boolean>(false);
 	sortChange = output<AdminTableSort>();
 
 	visible = input.required<{ [key: string]: boolean }>();

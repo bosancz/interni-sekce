@@ -72,7 +72,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	selectedAchievements = computed(() => this.normalizeFilterValueToArray(this.model.value("achievements")));
 
 	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? null);
-	sortOrder = computed<"ASC" | "DESC">(() => (this.model.value("order") === "DESC" ? "DESC" : "ASC"));
+	sortOrder = computed<string>(() => (this.model.value("order") as string) || "ASC");
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "nickname", label: "Přezdívka" },
@@ -208,7 +208,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			) as SDK.MemberAchievementTypesEnum[],
 			...this.groupParams((this.filter as any)["groups"], (this.filter as any)["active"]),
 			sort: ((this.filter as any)["sort"] as string) || undefined,
-			order: ((this.filter as any)["order"] as SDK.ExportMembersXlsxOrderEnum) || undefined,
+			order: ((this.filter as any)["order"] as string) || undefined,
 		};
 
 		this.api.MembersApi.exportMembersXlsx(params, { responseType: "blob" }).then((res) => {
@@ -325,7 +325,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			contacts: this.columns.needsContacts() || undefined,
 			badges: this.columns.needsBadges() || undefined,
 			sort: (filter["sort"] as string) || undefined,
-			order: (filter["order"] as SDK.ListMembersOrderEnum) || undefined,
+			order: (filter["order"] as string) || undefined,
 		};
 
 		const pages = await Promise.all(

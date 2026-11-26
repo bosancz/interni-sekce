@@ -15,7 +15,29 @@ export type AdminTableDisplay = "auto" | "table" | "list";
 export type AdminTableSortOrder = "ASC" | "DESC";
 export interface AdminTableSort {
 	sort: string;
+	order: string;
+}
+
+export interface AdminTableSortKey {
+	key: string;
 	order: AdminTableSortOrder;
+}
+
+export function parseAdminTableSort(sort: string | null | undefined, order: string | null | undefined) {
+	const orders = (order ?? "").split(",");
+	return (sort ?? "")
+		.split(",")
+		.map(
+			(key, i): AdminTableSortKey => ({
+				key: key.trim(),
+				order: orders[i]?.trim().toUpperCase() === "DESC" ? "DESC" : "ASC",
+			}),
+		)
+		.filter((item) => !!item.key);
+}
+
+export function serializeAdminTableSort(keys: AdminTableSortKey[]): AdminTableSort {
+	return { sort: keys.map((item) => item.key).join(","), order: keys.map((item) => item.order).join(",") };
 }
 
 type RowFn<T> = ((row: any) => T) | null;
@@ -64,7 +86,9 @@ export class AdminTableComponent {
 
 	sort = input<string | null>(null);
 
-	order = input<AdminTableSortOrder>("ASC");
+	order = input<string>("ASC");
+
+	multiSort = input<boolean>(false);
 
 	rowClick = output<any>();
 
@@ -103,6 +127,19 @@ export class AdminTableComponent {
 
 	readonly skeletonArray = computed(() => Array.from({ length: this.skeletonRows() }));
 
+	readonly activeSort = computed(() => parseAdminTableSort(this.sort(), this.order()));
+
+	sortIndex(key: string | null) {
+		return key ? this.activeSort().findIndex((item) => item.key === key) : -1;
+	}
+
+	sortTitle(key: string | null) {
+		const index = this.sortIndex(key);
+		if (index < 0) return this.multiSort() && this.activeSort().length ? "Přidat řazení" : "Seřadit vzestupně";
+		if (this.activeSort()[index].order === "ASC") return "Seřadit sestupně";
+		return this.multiSort() ? "Zrušit řazení" : "Seřadit vzestupně";
+	}
+
 	constructor(private readonly platformService: PlatformService) {
 		addIcons({ caretUp, caretDown, swapVertical });
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
@@ -111,8 +148,23 @@ export class AdminTableComponent {
 	onSort(column: AdminTableColumnComponent) {
 		const key = column.sort();
 		if (!key) return;
-		const order: AdminTableSortOrder = this.sort() === key && this.order() === "ASC" ? "DESC" : "ASC";
-		this.sortChange.emit({ sort: key, order });
+
+		const current = this.activeSort();
+		const index = current.findIndex((item) => item.key === key);
+
+		if (!this.multiSort()) {
+			const order: AdminTableSortOrder = index === 0 && current[0].order === "ASC" ? "DESC" : "ASC";
+			this.sortChange.emit({ sort: key, order });
+			return;
+		}
+
+		let next: AdminTableSortKey[];
+		if (index < 0) next = [...current, { key, order: "ASC" }];
+		else if (current[index].order === "ASC")
+			next = current.map((item, i) => (i === index ? { ...item, order: "DESC" } : item));
+		else next = current.filter((_, i) => i !== index);
+
+		this.sortChange.emit(serializeAdminTableSort(next));
 	}
 
 	trackRow = (index: number, row: any) => {

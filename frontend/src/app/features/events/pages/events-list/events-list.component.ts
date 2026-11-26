@@ -113,10 +113,7 @@ export class EventsListComponent implements OnInit {
 	private readonly defaultSortOrder = "ASC";
 
 	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? this.defaultSortColumn);
-	sortOrder = computed<"ASC" | "DESC">(() => {
-		const order = this.model.value("order");
-		return order === "ASC" || order === "DESC" ? order : this.defaultSortOrder;
-	});
+	sortOrder = computed<string>(() => (this.model.value("order") as string) || this.defaultSortOrder);
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "name", label: "Název" },

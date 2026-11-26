@@ -63,7 +63,7 @@ export class UsersListComponent implements OnInit, ViewWillEnter, ViewWillLeave 
 	selectedRoles = computed(() => this.normalizeFilterValueToArray(this.model.value("roles")));
 
 	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? null);
-	sortOrder = computed<"ASC" | "DESC">(() => (this.model.value("order") === "DESC" ? "DESC" : "ASC"));
+	sortOrder = computed<string>(() => (this.model.value("order") as string) || "ASC");
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "login", label: "Login" },
@@ -192,7 +192,7 @@ export class UsersListComponent implements OnInit, ViewWillEnter, ViewWillLeave 
 			search: filter.search || undefined,
 			roles: this.normalizeFilterValueToArray(filter.roles) as SDK.UserRolesEnum[],
 			sort: (filter.sort as string) || undefined,
-			order: (filter.order as SDK.ListUsersOrderEnum) || undefined,
+			order: (filter.order as string) || undefined,
 			limit: this.pageSize,
 		};
 
