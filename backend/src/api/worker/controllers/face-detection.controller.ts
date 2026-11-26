@@ -177,6 +177,7 @@ export class FaceDetectionController {
 				memberId: query.memberId,
 				faceId: query.faceId,
 			}),
+			this.photoFacesMatchingService,
 		);
 	}
 }

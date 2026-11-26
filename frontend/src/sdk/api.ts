@@ -4834,6 +4834,12 @@ export namespace SDK {
         'photo'?: FaceReviewPhotoResponse | null;
         /**
          * 
+         * @type {Array<PhotoFaceSuggestionResponse>}
+         * @memberof FaceReviewResponse
+         */
+        'options': Array<PhotoFaceSuggestionResponse>;
+        /**
+         * 
          * @type {number}
          * @memberof FaceReviewResponse
          */

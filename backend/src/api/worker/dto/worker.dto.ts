@@ -1,7 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
 import { IsEnum, IsInt, IsNumber, IsOptional, Max, Min, ValidateIf } from "class-validator";
-import { FaceEmotionsResponse, PhotoFaceResponse } from "src/api/albums/dto/photo-face.dto";
+import {
+	FaceEmotionsResponse,
+	PhotoFaceResponse,
+	PhotoFaceSuggestionResponse,
+} from "src/api/albums/dto/photo-face.dto";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { Member } from "src/models/members/entities/member.entity";
 import {
@@ -243,5 +247,6 @@ export class FaceReviewFaceResponse extends PhotoFaceResponse {
 export class FaceReviewResponse {
 	@ApiPropertyOptional({ type: FaceReviewFaceResponse, nullable: true }) face!: FaceReviewFaceResponse | null;
 	@ApiPropertyOptional({ type: FaceReviewPhotoResponse, nullable: true }) photo!: FaceReviewPhotoResponse | null;
+	@ApiProperty({ type: PhotoFaceSuggestionResponse, isArray: true }) options!: PhotoFaceSuggestionResponse[];
 	@ApiProperty() remaining!: number;
 }

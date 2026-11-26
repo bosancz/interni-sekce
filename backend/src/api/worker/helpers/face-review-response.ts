@@ -1,11 +1,12 @@
+import { PhotoFacesMatchingService } from "src/models/albums/services/photo-faces-matching.service";
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
 import { FaceReviewResponse } from "../dto/worker.dto";
 
-export function toFaceReviewResponse({
-	face,
-	remaining,
-}: Awaited<ReturnType<PhotoFacesService["getFaceForReview"]>>): FaceReviewResponse {
-	if (!face?.photo) return { face: null, photo: null, remaining };
+export async function toFaceReviewResponse(
+	{ face, remaining }: Awaited<ReturnType<PhotoFacesService["getFaceForReview"]>>,
+	matchingService: PhotoFacesMatchingService,
+): Promise<FaceReviewResponse> {
+	if (!face?.photo) return { face: null, photo: null, options: [], remaining };
 
 	const { photo, ...faceData } = face;
 
@@ -21,6 +22,7 @@ export function toFaceReviewResponse({
 			bg: photo.bg,
 			timestamp: photo.timestamp,
 		},
+		options: await matchingService.getReviewOptions(face),
 		remaining,
 	};
 }

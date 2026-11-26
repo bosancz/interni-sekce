@@ -120,7 +120,18 @@ export class PhotoFacesMatchingService {
 	}
 
 	async getSuggestions(face: Pick<PhotoFace, "id">): Promise<{ member: Member; score: number }[]> {
-		const candidates: FaceMatch[] = await this.dataSource.query(
+		const candidates = await this.getMemberScores(face.id, 2);
+		return this.withMembers(pickFaceSuggestions(candidates, this.config.faces.suggestions));
+	}
+
+	async getReviewOptions(face: Pick<PhotoFace, "id">): Promise<{ member: Member; score: number }[]> {
+		const { options, minScore } = this.config.faces.review;
+		const candidates = await this.getMemberScores(face.id, options);
+		return this.withMembers(candidates.filter((candidate) => candidate.score >= minScore));
+	}
+
+	private async getMemberScores(faceId: number, limit: number): Promise<FaceMatch[]> {
+		const rows: FaceMatch[] = await this.dataSource.query(
 			`SELECT r.member_id AS "memberId", -min(r.descriptor <#> f.descriptor) AS "score"
 			FROM photo_faces f
 			JOIN photos p ON p.id = f.photo_id
@@ -136,21 +147,23 @@ export class PhotoFacesMatchingService {
 				)
 			GROUP BY r.member_id
 			ORDER BY min(r.descriptor <#> f.descriptor), r.member_id
-			LIMIT 2`,
-			[face.id, PhotoFaceAssignment.manual, this.config.faces.matching.minAgeYears],
+			LIMIT $4`,
+			[faceId, PhotoFaceAssignment.manual, this.config.faces.matching.minAgeYears, limit],
 		);
+		return rows.map((row) => ({ memberId: row.memberId, score: Number(row.score) }));
+	}
 
-		const suggestions = pickFaceSuggestions(candidates, this.config.faces.suggestions);
-		if (!suggestions.length) return [];
+	private async withMembers(matches: FaceMatch[]): Promise<{ member: Member; score: number }[]> {
+		if (!matches.length) return [];
 
 		const members = await this.dataSource
 			.getRepository(Member)
-			.findBy({ id: In(suggestions.map((suggestion) => suggestion.memberId)) });
+			.findBy({ id: In(matches.map((match) => match.memberId)) });
 		const membersById = new Map(members.map((member) => [member.id, member]));
 
-		return suggestions.flatMap((suggestion) => {
-			const member = membersById.get(suggestion.memberId);
-			return member ? [{ member, score: suggestion.score }] : [];
+		return matches.flatMap((match) => {
+			const member = membersById.get(match.memberId);
+			return member ? [{ member, score: match.score }] : [];
 		});
 	}
 

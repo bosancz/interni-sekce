@@ -161,15 +161,15 @@
 
 .fr-info {
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	gap: 14px;
 	padding: 14px 20px;
 }
 
 .fr-crop {
 	flex: 0 0 auto;
-	width: 60px;
-	height: 60px;
+	width: 112px;
+	height: 112px;
 	border-radius: 50%;
 	object-fit: cover;
 	background: var(--bo-card-line);
@@ -180,17 +180,7 @@
 	min-width: 0;
 	display: flex;
 	flex-direction: column;
-	gap: 3px;
-}
-
-.fr-name-line {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-
-	.bo-pill {
-		font-size: 0.75em;
-	}
+	gap: 6px;
 }
 
 .fr-name {
@@ -199,6 +189,72 @@
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.fr-options {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.fr-option {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	min-height: 34px;
+	padding: 4px 10px 4px 6px;
+	border: 1.5px solid transparent;
+	border-radius: 8px;
+	background: transparent;
+	color: var(--bo-ink);
+	font: inherit;
+	text-align: start;
+	cursor: pointer;
+
+	&:hover:not(:disabled) {
+		background: var(--bo-paper);
+	}
+
+	&.active {
+		border-color: var(--bo-blue);
+		background: var(--bo-paper);
+	}
+
+	&:disabled {
+		cursor: default;
+	}
+
+	.bo-pill {
+		font-size: 0.75em;
+	}
+}
+
+.fr-option-pick {
+	color: var(--bo-muted);
+
+	ion-icon {
+		font-size: 18px;
+	}
+
+	.fr-option-name {
+		font-weight: 600;
+	}
+}
+
+.fr-option-name {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: 700;
+}
+
+.fr-option-score {
+	margin-inline-start: auto;
+	color: var(--bo-muted);
+	font-size: 0.8125rem;
 	white-space: nowrap;
 }
 
@@ -262,8 +318,6 @@
 
 .fr-secondary {
 	display: flex;
-	flex-wrap: wrap;
-	justify-content: flex-end;
 	gap: 2px;
 	margin-inline-start: auto;
 
@@ -277,9 +331,14 @@
 }
 
 @media (max-width: 575.98px) {
+	.fr-crop {
+		width: 84px;
+		height: 84px;
+	}
+
 	.fr-primary {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(2, 1fr);
 		width: 100%;
 
 		ion-button {

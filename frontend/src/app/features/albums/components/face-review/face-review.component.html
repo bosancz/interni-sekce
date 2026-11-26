@@ -80,30 +80,40 @@
 	<div class="fr-info">
 		<img class="fr-crop" [src]="face() | photoFaceImageUrl" alt="Výřez obličeje" />
 		<div class="fr-who">
-			<div class="fr-name-line">
-				@if (suggested(); as s) {
-					<span class="fr-name">{{ s.member.nickname }}</span>
-					@if (face()!.assignment === "auto") {
-						<span class="bo-pill bo-pill-blue">automaticky</span>
-					} @else {
-						<span class="bo-pill bo-pill-yellow">návrh</span>
-					}
-				} @else {
-					<span class="fr-name">Neznámý obličej</span>
+			@if (!options().length) {
+				<div class="fr-name">Neznámý obličej</div>
+			}
+			<div class="fr-options">
+				@for (option of options(); track option.member.id; let i = $index) {
+					<button
+						type="button"
+						class="fr-option"
+						[class.active]="i === activeIndex()"
+						[disabled]="busy()"
+						(click)="confirm(option)"
+					>
+						<span class="fr-option-name">{{ option.member.nickname }}</span>
+						@if (option.kind === "auto") {
+							<span class="bo-pill bo-pill-blue">automaticky</span>
+						}
+						<span class="fr-option-score">{{ score(option.score) }}</span>
+					</button>
 				}
+				<button
+					type="button"
+					class="fr-option fr-option-pick"
+					[class.active]="pickActive()"
+					[disabled]="busy()"
+					(click)="pickMember()"
+				>
+					<ion-icon name="person-add-outline" aria-hidden="true"></ion-icon>
+					<span class="fr-option-name">Vybrat…</span>
+				</button>
 			</div>
 			<div class="fr-meta">
-				@if (suggested(); as s) {
-					<span>
-						shoda <b>{{ score(s.score) }}</b>
-						@if (face()!.candidateSecondScore != null) {
-							· druhý {{ score(face()!.candidateSecondScore) }}
-						}
-					</span>
-				} @else {
+				@if (!options().length) {
 					<span>Systém nemá žádný návrh.</span>
 				}
-				<span>detekce {{ score(face()!.score) }}</span>
 				@if (emotion(); as e) {
 					<span>{{ e.emoji }} {{ e.label }}</span>
 				}
@@ -126,16 +136,16 @@
 		<div class="fr-primary">
 			<ion-button
 				color="success"
-				[disabled]="busy() || !suggested()"
+				[disabled]="busy() || !active()"
 				(click)="confirm()"
-				[boTooltip]="suggested() ? 'Klávesa A' : 'Systém nemá žádný návrh.'"
+				[boTooltip]="
+					active()
+						? 'Enter – přiřadí ' + active()!.member.nickname + ', šipky nahoru a dolů vybírají.'
+						: 'Systém nemá žádný návrh.'
+				"
 			>
 				<ion-icon slot="start" name="checkmark-outline"></ion-icon>
 				Ano
-			</ion-button>
-			<ion-button fill="outline" [disabled]="busy()" (click)="pickMember()" boTooltip="Klávesa V">
-				<ion-icon slot="start" name="person-add-outline"></ion-icon>
-				Vybrat
 			</ion-button>
 			<ion-button
 				fill="outline"
@@ -143,7 +153,7 @@
 				[disabled]="busy()"
 				(click)="reject()"
 				[boTooltip]="
-					suggested()
+					options().length
 						? 'Klávesa N – obličej se už nikomu automaticky nepřiřadí.'
 						: 'Klávesa N – nevím, kdo to je, a automatika ho nemá přiřazovat.'
 				"
@@ -159,17 +169,13 @@
 					color="medium"
 					[disabled]="busy()"
 					(click)="undo()"
-					boTooltip="Klávesa Z – vrátí poslední rozhodnutí."
+					boTooltip="Šipka vlevo – vrátí poslední rozhodnutí."
 				>
 					<ion-icon slot="start" name="arrow-undo-outline"></ion-icon>
 					Zpět
 				</ion-button>
 			}
-			<ion-button fill="clear" color="medium" [disabled]="busy()" (click)="deleteFace()">
-				<ion-icon slot="start" name="trash-outline"></ion-icon>
-				Není to obličej
-			</ion-button>
-			<ion-button fill="clear" color="medium" [disabled]="busy()" (click)="skip()" boTooltip="Klávesa S">
+			<ion-button fill="clear" color="medium" [disabled]="busy()" (click)="skip()" boTooltip="Šipka vpravo">
 				<ion-icon slot="start" name="play-forward-outline"></ion-icon>
 				Přeskočit
 			</ion-button>
@@ -187,7 +193,7 @@
 				size="small"
 				[disabled]="busy()"
 				(click)="undo()"
-				boTooltip="Klávesa Z – vrátí poslední rozhodnutí."
+				boTooltip="Šipka vlevo – vrátí poslední rozhodnutí."
 			>
 				<ion-icon slot="start" name="arrow-undo-outline"></ion-icon>
 				Zpět
