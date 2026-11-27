@@ -115,9 +115,11 @@ export class MembersController {
 	async createMember(@Req() req: Request, @Body() body: MemberCreateBody): Promise<MemberResponse> {
 		MemberCreatePermission.canOrThrow(req);
 
-		const { groupId, ...memberData } = body;
+		const { groupId, groupActive, ...memberData } = body;
 
-		return await this.members.createMember(memberData, groupId).catch(rethrowGroupMembershipErrors);
+		return await this.members
+			.createMember(memberData, groupId, groupActive ?? true)
+			.catch(rethrowGroupMembershipErrors);
 	}
 
 	@Get(":memberId")

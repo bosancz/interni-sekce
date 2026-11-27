@@ -1,6 +1,17 @@
 import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsArray, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from "class-validator";
+import {
+	IsArray,
+	IsBoolean,
+	IsEnum,
+	IsInt,
+	IsNumber,
+	IsOptional,
+	IsString,
+	Max,
+	Min,
+	ValidateNested,
+} from "class-validator";
 import { PaginationQuery } from "src/api/helpers/dto";
 import { MembershipPaymentStates } from "src/helpers/membership";
 import { EnsureArray, EnsureBoolean, Trim } from "src/helpers/validation";
@@ -89,6 +100,7 @@ export class MemberCreateBody implements Pick<
 	@IsNumber()
 	@IsOptional()
 	groupId!: number | null;
+	@ApiPropertyOptional() @IsBoolean() @IsOptional() groupActive?: boolean;
 	@ApiProperty() @Trim() @IsString() nickname!: string;
 	@ApiProperty() @IsString() role!: MemberRoles;
 	@ApiProperty() @Trim() @IsString() @IsOptional() firstName!: string | null;

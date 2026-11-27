@@ -1,3 +1,5 @@
+@use "src/styles/centered-text" as *;
+
 :host {
 	display: inline-flex;
 	flex-wrap: wrap;
@@ -7,14 +9,13 @@
 
 .group-badge {
 	display: inline-block;
-	height: 30px;
 	width: 30px;
 	border-radius: 50%;
 	font-weight: bold;
 	color: #fff;
 	text-align: center;
-	line-height: 30px;
 	vertical-align: middle;
+	@include centered-text-fixed(30px);
 	text-decoration: none;
 	cursor: pointer;
 	opacity: 0.2;

@@ -1,3 +1,5 @@
+@use "src/styles/centered-text" as *;
+
 :host {
 	display: flex;
 	flex: 1 1 0;
@@ -16,13 +18,10 @@ ion-badge {
 	font-weight: 700;
 	--padding-top: 0;
 	--padding-bottom: 0;
-	padding: 0 0.5em;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	height: 1.7em;
-	line-height: 1;
+	padding-inline: 0.5em;
+	display: inline-block;
 	min-width: 1.7em;
+	@include centered-text-fixed(1.7em);
 	text-align: center;
 
 	&.badge-attention {

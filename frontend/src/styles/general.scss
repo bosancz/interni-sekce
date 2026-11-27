@@ -77,6 +77,10 @@ h3 {
 	@supports (text-box: trim-both cap alphabetic) {
 		padding-top: 0;
 		text-box: trim-both cap alphabetic;
+
+		&.bo-initial-accent {
+			padding-top: 0.1em;
+		}
 	}
 }
 

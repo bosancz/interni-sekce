@@ -11,7 +11,10 @@
 			@if (member() | memberProfilePhotoUrl; as src) {
 				<img [src]="src" [alt]="member()!.nickname" />
 			} @else if (member()) {
-				<span>{{ member()! | member: "initials" }}</span>
+				@let initials = member()! | member: "initials";
+				<span class="initials">
+					<span class="bo-initial" [class.bo-initial-accent]="initials | accentAbove">{{ initials }}</span>
+				</span>
 			}
 		</ion-avatar>
 

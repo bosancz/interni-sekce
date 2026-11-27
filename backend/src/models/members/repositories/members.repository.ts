@@ -288,13 +288,19 @@ export class MembersRepository {
 		return this.membersRepository.delete({ id });
 	}
 
-	async createMember(memberData: Partial<Omit<Member, "id" | "groupId" | "active">>, groupId?: number | null) {
+	async createMember(
+		memberData: Partial<Omit<Member, "id" | "groupId" | "active">>,
+		groupId?: number | null,
+		groupActive = true,
+	) {
 		return this.membersRepository.manager.transaction(async (t) => {
 			const member = await t.save(Member, t.create(Member, memberData));
 			if (groupId)
 				await this.groupMemberships.createMembership(
 					member.id,
-					{ groupId, yearFrom: new Date().getFullYear(), yearTill: null, active: true },
+					groupActive
+						? { groupId, yearFrom: new Date().getFullYear(), yearTill: null, active: true }
+						: { groupId, yearFrom: null, yearTill: null, active: false },
 					t,
 				);
 			return t.findOneOrFail(Member, { where: { id: member.id }, relations: { groupMemberships: true } });

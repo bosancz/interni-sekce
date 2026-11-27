@@ -1,3 +1,5 @@
+@use "src/styles/centered-text" as *;
+
 :host {
 	line-height: 0;
 	display: inline-block;
@@ -8,6 +10,7 @@ ion-badge {
 	font-weight: 800;
 	font-size: 0.75rem;
 	min-width: 1.6em;
-	padding: 0.3em 0.45em;
+	padding-inline: 0.45em;
 	text-align: center;
+	@include centered-text(0.3em);
 }

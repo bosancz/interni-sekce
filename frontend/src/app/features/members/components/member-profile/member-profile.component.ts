@@ -7,6 +7,7 @@ import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { PhotosEditComponent } from "src/app/features/albums/components/photos-edit/photos-edit.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
+import { AccentAbovePipe } from "src/app/shared/pipes/accent-above.pipe";
 import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
 import { SDK } from "src/sdk";
 import { GroupPipe } from "../../../../shared/pipes/group.pipe";
@@ -17,7 +18,7 @@ import { MemberProfilePhotoModalComponent } from "../member-profile-photo-modal/
 	selector: "bo-member-profile",
 	templateUrl: "./member-profile.component.html",
 	styleUrl: "./member-profile.component.scss",
-	imports: [GroupPipe, IonAvatar, IonIcon, MemberPipe, MemberProfilePhotoUrlPipe, TooltipDirective],
+	imports: [AccentAbovePipe, GroupPipe, IonAvatar, IonIcon, MemberPipe, MemberProfilePhotoUrlPipe, TooltipDirective],
 })
 export class MemberProfileComponent {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
