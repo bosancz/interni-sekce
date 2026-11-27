@@ -1,4 +1,4 @@
-<ion-content class="modal-bg" [class.info-visible]="photo() && infoVisible()" [scrollY]="false">
+<ion-content class="modal-bg" [class.info-visible]="photo() && (infoVisible() || editVisible())" [scrollY]="false">
 	<ion-toolbar class="top-toolbar" [class.controls-hidden]="!controlsVisible()">
 		@if (photo()) {
 			<ion-buttons slot="start">
@@ -50,13 +50,29 @@
 						<ion-icon slot="icon-only" name="trash-outline"></ion-icon>
 					}
 				</ion-button>
+				@if (canEdit()) {
+					<ion-button
+						fill="clear"
+						class="edit-toggle"
+						[class.active]="editVisible()"
+						(click)="toggleEdit()"
+						(keydown.enter)="$event.preventDefault()"
+						[boTooltip]="editVisible() ? 'Zavřít úpravy' : 'Upravit fotku'"
+					>
+						@if (isLg()) {
+							Upravit
+						} @else {
+							<ion-icon slot="icon-only" name="create-outline"></ion-icon>
+						}
+					</ion-button>
+				}
 				<ion-button
 					fill="clear"
 					class="info-toggle"
-					[class.active]="infoVisible()"
+					[class.active]="infoVisible() && !editVisible()"
 					(click)="toggleInfo()"
 					(keydown.enter)="$event.preventDefault()"
-					[boTooltip]="infoVisible() ? 'Skrýt informace (I)' : 'Ukázat informace (I)'"
+					[boTooltip]="infoVisible() && !editVisible() ? 'Skrýt informace (I)' : 'Ukázat informace (I)'"
 				>
 					@if (isLg()) {
 						Info
@@ -71,7 +87,54 @@
 		</ion-buttons>
 	</ion-toolbar>
 
-	@if (photo() && infoVisible()) {
+	@if (photo() && editVisible()) {
+		<aside class="info-sidebar">
+			<ion-toolbar class="info-toolbar">
+				<ion-title>Upravit</ion-title>
+				<ion-buttons slot="end">
+					<ion-button fill="clear" (click)="toggleEdit()" boTooltip="Zavřít úpravy">
+						<ion-icon slot="icon-only" name="close-outline"></ion-icon>
+					</ion-button>
+				</ion-buttons>
+			</ion-toolbar>
+
+			<div class="info-content">
+				@if (photo()!._links.rotatePhoto?.allowed) {
+					<section>
+						<h4>Otočit</h4>
+						<div class="edit-actions">
+							<button type="button" class="edit-action" [disabled]="rotating()" (click)="rotate(-1)">
+								<ion-icon class="rotate-left" name="refresh-outline"></ion-icon>
+								<span>Proti směru hodinových ručiček</span>
+							</button>
+							<button type="button" class="edit-action" [disabled]="rotating()" (click)="rotate(1)">
+								<ion-icon name="refresh-outline"></ion-icon>
+								<span>Po směru hodinových ručiček</span>
+							</button>
+						</div>
+					</section>
+					<section>
+						<h4>Originál</h4>
+						<button
+							type="button"
+							class="edit-action"
+							[disabled]="rotating() || !photo()!.rotation"
+							(click)="restoreOriginal()"
+						>
+							<ion-icon name="arrow-undo-outline"></ion-icon>
+							<span>Vrátit fotku do podoby originálu</span>
+						</button>
+					</section>
+					@if (rotating()) {
+						<div class="info-loading">
+							<ion-spinner name="dots"></ion-spinner>
+							Ukládám úpravu…
+						</div>
+					}
+				}
+			</div>
+		</aside>
+	} @else if (photo() && infoVisible()) {
 		<aside class="info-sidebar">
 			<ion-toolbar class="info-toolbar">
 				<ion-title>Informace</ion-title>

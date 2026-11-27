@@ -14,6 +14,7 @@ import { FaceEmotion } from "../schema/detected-faces";
 import { PhotoExif } from "../schema/photo-exif";
 import { Photo } from "../entities/photo.entity";
 import { PHOTO_EMBEDDING_DIMENSION, toVectorLiteral } from "../helpers/photo-embeddings";
+import { normalizeRotation, rotateFaceBox } from "../helpers/photo-rotation";
 import { PhotosFilesService } from "../services/photos-files.service";
 
 const VECTOR = `vector(${PHOTO_EMBEDDING_DIMENSION})`;
@@ -212,6 +213,33 @@ export class PhotosRepository {
 
 	async updatePhoto(id: Photo["id"], photo: Partial<Photo>) {
 		return this.repository.save({ ...photo, id });
+	}
+
+	async rotatePhoto(photo: Photo, degrees: number): Promise<Photo> {
+		const rotation = normalizeRotation(degrees);
+		const delta = normalizeRotation(rotation - photo.rotation);
+		if (!delta) return photo;
+
+		await this.photosFiles.renderRotatedPhotoFiles(photo, rotation);
+
+		const swapAxes = delta % 180 !== 0;
+		const faces = await this.facesRepository.find({
+			select: { id: true, x: true, y: true, width: true, height: true },
+			where: { photoId: photo.id },
+		});
+
+		await this.repository.manager.transaction(async (t) => {
+			await t.update(Photo, photo.id, {
+				rotation,
+				width: swapAxes ? photo.height : photo.width,
+				height: swapAxes ? photo.width : photo.height,
+			});
+			for (const face of faces) await t.update(PhotoFace, face.id, rotateFaceBox(face, delta));
+		});
+
+		await Promise.all(faces.map((face) => this.photosFiles.deleteFaceImage(face.id)));
+
+		return (await this.repository.findOneBy({ id: photo.id }))!;
 	}
 
 	async reorderPhotos(albumId: Photo["albumId"], photoIds: number[]) {

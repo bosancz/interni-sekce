@@ -467,7 +467,7 @@ export class MongoImportService {
 				[width, height] = [height, width];
 			}
 
-			const photoData: Omit<Photo, "id"> = {
+			const photoData: Omit<Photo, "id" | "rotation"> = {
 				albumId,
 				bg: mongoPhoto.bg ?? null,
 				caption: mongoPhoto.caption || mongoPhoto.title || null,

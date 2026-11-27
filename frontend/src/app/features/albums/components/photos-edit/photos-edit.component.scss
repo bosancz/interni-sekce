@@ -411,6 +411,7 @@ ion-popover.chips-popover {
 }
 
 .faces-toggle.active,
+.edit-toggle.active,
 .info-toggle.active {
 	--color: var(--ion-color-warning, #ffc409);
 }
@@ -627,5 +628,49 @@ ion-popover.chips-popover {
 
 	&:hover {
 		text-decoration-color: #fff;
+	}
+}
+
+.edit-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.edit-action {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
+	padding: 10px 12px;
+	border: none;
+	border-radius: 8px;
+	background: transparent;
+	color: #fff;
+	font: inherit;
+	font-size: 0.95rem;
+	text-align: left;
+	cursor: pointer;
+
+	&:hover:not(:disabled) {
+		background: rgba(255, 255, 255, 0.08);
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+
+	ion-icon {
+		flex: none;
+		font-size: 1.3rem;
+	}
+
+	.rotate-left {
+		transform: scaleX(-1);
+	}
+
+	span {
+		flex: 1 1 auto;
 	}
 }

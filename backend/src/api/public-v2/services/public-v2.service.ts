@@ -90,15 +90,17 @@ export class PublicV2Service {
 		previewPhotos?: number;
 	}) {
 		const sort = options.sort === "publishedAt" ? `"publishedAt"` : `"dateFrom"`;
+		const version = (alias: string) =>
+			`CASE WHEN ${alias}.rotation = 0 THEN '' ELSE '?r=' || ${alias}.rotation END`;
 		const photoJson = (alias: string) => `json_build_object(
 			'id', ${alias}.id,
 			'width', ${alias}.width,
 			'height', ${alias}.height,
 			'bg', ${alias}.bg,
 			'urls', json_build_object(
-				'small', $3::text || '/photos/' || ${alias}.id || '/small',
-				'big', $3::text || '/photos/' || ${alias}.id || '/big',
-				'original', $3::text || '/photos/' || ${alias}.id || '/original'
+				'small', $3::text || '/photos/' || ${alias}.id || '/small' || ${version(alias)},
+				'big', $3::text || '/photos/' || ${alias}.id || '/big' || ${version(alias)},
+				'original', $3::text || '/photos/' || ${alias}.id || '/original' || ${version(alias)}
 			)
 		)`;
 		const happyFace = (condition: string) => `EXISTS (
@@ -113,7 +115,7 @@ export class PublicV2Service {
 				COALESCE((
 					SELECT json_agg(${photoJson("pp")} ORDER BY pp.priority, pp.random)
 					FROM (
-						SELECT pp.id, pp.width, pp.height, pp.bg,
+						SELECT pp.id, pp.width, pp.height, pp.bg, pp.rotation,
 							CASE WHEN ${happyFace(`(f.member_id IS NULL OR ${childCondition})`)} THEN 0
 								WHEN ${happyFace("m.role = $8")} THEN 1
 								ELSE 2 END AS priority,
@@ -147,7 +149,7 @@ export class PublicV2Service {
 				CASE WHEN p.id IS NULL THEN NULL ELSE ${photoJson("p")} END AS "photo"${previewPhotos}
 			FROM albums a
 			LEFT JOIN LATERAL (
-				SELECT id, bg, width, height FROM photos
+				SELECT id, bg, width, height, rotation FROM photos
 				WHERE album_id = a.id AND deleted_at IS NULL
 				ORDER BY title_photo DESC, "order" ASC NULLS LAST, "timestamp" ASC
 				LIMIT 1
@@ -338,6 +340,7 @@ export class PublicV2Service {
 
 	private serializePhoto(photo: Photo) {
 		const url = `${this.baseUrl}/photos/${photo.id}`;
+		const version = photo.rotation ? `?r=${photo.rotation}` : "";
 
 		return {
 			id: photo.id,
@@ -345,9 +348,9 @@ export class PublicV2Service {
 			height: photo.height,
 			bg: photo.bg ?? null,
 			urls: {
-				small: `${url}/${PhotoSizes.small}`,
-				big: `${url}/${PhotoSizes.big}`,
-				original: `${url}/${PhotoSizes.original}`,
+				small: `${url}/${PhotoSizes.small}${version}`,
+				big: `${url}/${PhotoSizes.big}${version}`,
+				original: `${url}/${PhotoSizes.original}${version}`,
 			},
 		};
 	}

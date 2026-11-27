@@ -64,6 +64,13 @@ export const PhotoEditPermission = new Permission({
 	},
 });
 
+export const PhotoRotatePermission = new Permission({
+	linkTo: PhotoResponse,
+	params: { photoId: "id" },
+	inherit: PhotoEditPermission,
+	applicable: ({ doc }) => !doc.deletedAt,
+});
+
 export const PhotoDeletePermission = new Permission({
 	linkTo: PhotoResponse,
 	params: { photoId: "id" },

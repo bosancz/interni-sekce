@@ -6613,6 +6613,12 @@ export namespace SDK {
         'bg'?: string | null;
         /**
          * 
+         * @type {PhotoRotationEnum}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'rotation': PhotoRotationEnum;
+        /**
+         * 
          * @type {AlbumResponseWithLinks}
          * @memberof MemberPhotoResponseWithLinks
          */
@@ -6654,6 +6660,8 @@ export namespace SDK {
          */
         '_links': object;
     }
+    
+    
     
         /**
      * 
@@ -8509,6 +8517,12 @@ export namespace SDK {
         'bg': string | null;
         /**
          * 
+         * @type {number}
+         * @memberof Photo
+         */
+        'rotation': number;
+        /**
+         * 
          * @type {object}
          * @memberof Photo
          */
@@ -9602,6 +9616,12 @@ export namespace SDK {
         'bg'?: string | null;
         /**
          * 
+         * @type {PhotoRotationEnum}
+         * @memberof PhotoResponse
+         */
+        'rotation': PhotoRotationEnum;
+        /**
+         * 
          * @type {AlbumResponseWithLinks}
          * @memberof PhotoResponse
          */
@@ -9631,6 +9651,8 @@ export namespace SDK {
          */
         'deletedBy'?: UserResponseWithLinks | null;
     }
+    
+    
     
         /**
      * 
@@ -9668,6 +9690,12 @@ export namespace SDK {
          * @memberof PhotoResponseLinks
          */
         'updatePhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoResponseLinks
+         */
+        'rotatePhoto': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -9780,6 +9808,12 @@ export namespace SDK {
         'bg'?: string | null;
         /**
          * 
+         * @type {PhotoRotationEnum}
+         * @memberof PhotoResponseWithLinks
+         */
+        'rotation': PhotoRotationEnum;
+        /**
+         * 
          * @type {AlbumResponseWithLinks}
          * @memberof PhotoResponseWithLinks
          */
@@ -9815,6 +9849,40 @@ export namespace SDK {
          */
         '_links': PhotoResponseLinks;
     }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoRotationBody
+     */
+    export interface PhotoRotationBody {
+        /**
+         * 
+         * @type {PhotoRotationEnum}
+         * @memberof PhotoRotationBody
+         */
+        'rotation': PhotoRotationEnum;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @enum {number}
+     */
+    
+    export const PhotoRotationEnum = {
+        NUMBER_0: 0,
+        NUMBER_90: 90,
+        NUMBER_180: 180,
+        NUMBER_270: 270
+    } as const;
+    
+    export type PhotoRotationEnum = typeof PhotoRotationEnum[keyof typeof PhotoRotationEnum];
+    
     
         /**
      * 
@@ -19386,6 +19454,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * PhotoGalleryApi - object-oriented interface
      * @export
@@ -20963,6 +21035,59 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} photoId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async rotatePhoto(
+            photoId: number,
+            body: PhotoRotationBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('rotatePhoto', 'photoId', photoId)
+            assertParamExists('rotatePhoto', 'photoRotationBody', body)
+            
+            // verify required parameter 'photoRotationBody' is not null or undefined
+            assertParamExists('rotatePhoto', 'photoId', photoId)
+            assertParamExists('rotatePhoto', 'photoRotationBody', body)
+            
+            const localVarPath = `/api/photos/{photoId}/rotation`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<PhotoResponseWithLinks>(axiosRequestConfig);
         }
     
         /**

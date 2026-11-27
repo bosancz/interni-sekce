@@ -57,6 +57,8 @@ import {
 	personCircleOutline,
 	personOutline,
 	pricetagOutline,
+	refreshOutline,
+	arrowUndoOutline,
 	sparklesOutline,
 	trashOutline,
 	star,
@@ -172,6 +174,10 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	failedPhotoIds = signal(new Set<number>());
 
 	editingCaption = signal(false);
+
+	rotating = signal(false);
+	editVisible = signal(false);
+	canEdit = computed(() => !!this.photo()?._links.rotatePhoto?.allowed);
 
 	currentIndex = signal(0);
 
@@ -339,6 +345,8 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 			personCircleOutline,
 			personOutline,
 			pricetagOutline,
+			refreshOutline,
+			arrowUndoOutline,
 			trashOutline,
 			createOutline,
 			downloadOutline,
@@ -355,7 +363,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 
 		effect(() => {
 			const photo = this.photo();
-			if (!photo || !this.infoVisible()) return;
+			if (!photo || !this.infoVisible() || this.editVisible()) return;
 			untracked(() => this.loadExif(photo));
 		});
 	}
@@ -405,7 +413,16 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		this.userSettings.set("photoFacesVisible", !this.facesVisible());
 	}
 
+	toggleEdit() {
+		this.editVisible.update((visible) => !visible);
+	}
+
 	toggleInfo() {
+		if (this.editVisible()) {
+			this.editVisible.set(false);
+			if (!this.infoVisible()) this.userSettings.set("photoInfoVisible", true);
+			return;
+		}
 		this.userSettings.set("photoInfoVisible", !this.infoVisible());
 	}
 
@@ -1031,6 +1048,50 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		this.photo.set({ ...photo, titlePhoto: !isTitle });
 
 		this.toastService.toast(isTitle ? "Odebráno z titulní fotky." : "Nastaveno jako titulní fotka.");
+	}
+
+	async rotate(direction: 1 | -1) {
+		const current = this.photo();
+		if (!current) return;
+		await this.setRotation(((((current.rotation ?? 0) + direction * 90) % 360) + 360) % 360);
+	}
+
+	async restoreOriginal() {
+		await this.setRotation(0);
+	}
+
+	private async setRotation(rotation: number) {
+		const current = this.photo();
+		if (!current || this.rotating() || !current._links.rotatePhoto?.allowed) return;
+		if ((current.rotation ?? 0) === rotation) return;
+
+		this.rotating.set(true);
+		let response: SDK.PhotoResponseWithLinks;
+		try {
+			response = (
+				await this.api.PhotoGalleryApi.rotatePhoto(current.id, { rotation: rotation as SDK.PhotoRotationEnum })
+			).data;
+		} catch (e) {
+			this.toastService.toast("Fotku se nepodařilo otočit.", { color: "warning" });
+			return;
+		} finally {
+			this.rotating.set(false);
+		}
+
+		const index = this.photos.findIndex((item) => item.id === current.id);
+		const source = index === -1 ? current : this.photos[index];
+		const updated = { ...source, rotation: response.rotation, width: response.width, height: response.height };
+		if (index !== -1) this.photos[index] = updated;
+		this.photosVersion.update((version) => version + 1);
+
+		if (this.photo()?.id !== current.id) return;
+
+		this.resetZoom();
+		this.hiResRequested.set(false);
+		this.hiResLoaded.set(false);
+		this.imageRect.set(null);
+		this.photo.set(updated);
+		this.loadFaces(updated);
 	}
 
 	async saveTags(tags: string[]) {

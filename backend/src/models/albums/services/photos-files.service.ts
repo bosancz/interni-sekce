@@ -12,6 +12,7 @@ import { PhotoSizes } from "src/api/albums/dto/photo.dto";
 import { Album } from "../entities/album.entity";
 import { Photo } from "../entities/photo.entity";
 import { FaceBox } from "../schema/detected-faces";
+import { PhotoRotation } from "../helpers/photo-rotation";
 import { parsePhotoExif, PhotoExif } from "../schema/photo-exif";
 
 export interface PhotoMetadata {
@@ -47,14 +48,21 @@ export class PhotosFilesService {
 	}
 
 	getPhotoImagePath(photo: Photo, size: PhotoSizes): string {
+		if (size === PhotoSizes.original && !photo.rotation) return this.getOriginalFilePath(photo);
+
 		const ext = extname(photo.name);
 		const albumDir = photo.srcAlbumId ?? String(photo.albumId);
 		const fileId = photo.srcId ?? String(photo.id);
 
-		if (size === PhotoSizes.original) {
-			return join(this.config.fs.photosDir, albumDir, `${fileId}${ext}`);
-		}
 		return join(this.config.fs.thumbnailsDir, albumDir, `${fileId}_${size}${ext}`);
+	}
+
+	getOriginalFilePath(photo: Photo): string {
+		const ext = extname(photo.name);
+		const albumDir = photo.srcAlbumId ?? String(photo.albumId);
+		const fileId = photo.srcId ?? String(photo.id);
+
+		return join(this.config.fs.photosDir, albumDir, `${fileId}${ext}`);
 	}
 
 	getPhotoDownloadName(photo: Photo): string {
@@ -134,7 +142,7 @@ export class PhotosFilesService {
 	}
 
 	async readExif(photo: Photo): Promise<PhotoExif | null> {
-		const path = this.getPhotoImagePath(photo, PhotoSizes.original);
+		const path = this.getOriginalFilePath(photo);
 
 		try {
 			await this.files.fileAccessible(path);
@@ -177,12 +185,45 @@ export class PhotosFilesService {
 		}
 	}
 
-	async deletePhotoFiles(photo: Photo): Promise<void> {
-		const sizes: PhotoSizes[] = [PhotoSizes.original, ...(Object.keys(this.config.photos.sizes) as PhotoSizes[])];
+	async renderRotatedPhotoFiles(photo: Photo, rotation: PhotoRotation): Promise<void> {
+		const source = await readFile(this.getOriginalFilePath(photo));
+		const rotated = { ...photo, rotation };
 
-		await Promise.all(
-			sizes.map((size) => this.files.deleteFile(this.getPhotoImagePath(photo, size)).catch(() => {})),
-		);
+		const oriented = () => {
+			const image = sharp(source, { limitInputPixels: this.config.photos.maxInputPixels }).autoOrient();
+			return rotation ? image.rotate(rotation) : image;
+		};
+
+		for (const [name, size] of Object.entries(this.config.photos.sizes)) {
+			const resized = await oriented().resize(size.width, size.height, { fit: "inside" }).toBuffer();
+			await this.files.saveFile(this.getPhotoImagePath(rotated, name as PhotoSizes), resized);
+		}
+
+		const rotatedOriginalPath = this.getPhotoImagePath({ ...photo, rotation: 90 }, PhotoSizes.original);
+		if (!rotation) {
+			await this.files.deleteFile(rotatedOriginalPath).catch(() => {});
+			return;
+		}
+
+		const image = oriented().keepMetadata();
+		const quality = this.config.photos.rotatedOriginalQuality;
+		const format = (await sharp(source).metadata()).format;
+		const output =
+			format === "jpeg" ? image.jpeg({ quality }) : format === "png" ? image.png() : image.toFormat(format!);
+
+		await this.files.saveFile(rotatedOriginalPath, await output.toBuffer());
+	}
+
+	async deletePhotoFiles(photo: Photo): Promise<void> {
+		const paths = [
+			this.getOriginalFilePath(photo),
+			this.getPhotoImagePath({ ...photo, rotation: 90 }, PhotoSizes.original),
+			...(Object.keys(this.config.photos.sizes) as PhotoSizes[]).map((size) =>
+				this.getPhotoImagePath(photo, size),
+			),
+		];
+
+		await Promise.all(paths.map((path) => this.files.deleteFile(path).catch(() => {})));
 	}
 
 	getFaceImagePath(faceId: number): string {

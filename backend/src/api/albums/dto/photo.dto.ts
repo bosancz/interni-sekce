@@ -1,10 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsDateString, IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
+import { IsDateString, IsEnum, IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { Album } from "src/models/albums/entities/album.entity";
 import { FaceEmotion } from "src/models/albums/schema/detected-faces";
+import { PHOTO_ROTATIONS, PhotoRotation } from "src/models/albums/helpers/photo-rotation";
 import { EnsureArray, Trim } from "src/helpers/validation";
 import { User } from "src/models/users/entities/user.entity";
 import { AlbumResponse } from "./album.dto";
@@ -30,6 +31,7 @@ export class PhotoResponse {
 	@ApiPropertyOptional({ type: "string" }) caption!: string | null;
 	@ApiPropertyOptional({ type: "string", isArray: true }) tags!: string[] | null;
 	@ApiPropertyOptional({ type: "string" }) bg!: string | null;
+	@ApiProperty({ type: "number", enum: PHOTO_ROTATIONS, enumName: "PhotoRotationEnum" }) rotation!: number;
 
 	@ApiPropertyOptional({ type: WithLinks(() => AlbumResponse) }) album?: Album | undefined;
 	@ApiPropertyOptional({ type: WithLinks(() => UserResponse) }) uploadedBy?: User | null;
@@ -55,6 +57,12 @@ export class PhotoUpdateBody {
 	@ApiPropertyOptional({ type: "string", isArray: true }) @IsOptional() @Trim() @IsString({ each: true }) tags?:
 		| string[]
 		| null;
+}
+
+export class PhotoRotationBody {
+	@ApiProperty({ type: "number", enum: PHOTO_ROTATIONS, enumName: "PhotoRotationEnum" })
+	@IsIn(PHOTO_ROTATIONS)
+	rotation!: PhotoRotation;
 }
 
 export class AlbumPhotosOrderBody {
