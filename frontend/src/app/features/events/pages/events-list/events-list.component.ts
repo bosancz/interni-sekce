@@ -1,4 +1,3 @@
-import { AccentAbovePipe } from "src/app/shared/pipes/accent-above.pipe";
 import { CommonModule } from "@angular/common";
 import {
 	afterNextRender,
@@ -45,6 +44,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
 import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
+import { EventLeadersInlineComponent } from "src/app/shared/components/event-leaders-inline/event-leaders-inline.component";
 import { EventHoverPreviewComponent } from "src/app/shared/components/event-hover-preview/event-hover-preview.component";
 import { EventStatusBadgeComponent } from "src/app/shared/components/event-status-badge/event-status-badge.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
@@ -55,9 +55,6 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { ExtractExisting, UrlParams } from "src/helpers/typings";
 import { SDK } from "src/sdk";
-import { GroupPipe } from "../../../../shared/pipes/group.pipe";
-import { MemberPipe } from "../../../../shared/pipes/member.pipe";
-import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
 import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
 import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loading";
 
@@ -73,7 +70,6 @@ type EventStatusActions = ExtractExisting<
 	styleUrls: ["./events-list.component.scss"],
 
 	imports: [
-		AccentAbovePipe,
 		CommonModule,
 		FormsModule,
 		IonInfiniteScroll,
@@ -81,10 +77,8 @@ type EventStatusActions = ExtractExisting<
 		IonItemDivider,
 		IonList,
 		EventStatusBadgeComponent,
+		EventLeadersInlineComponent,
 		EventHoverPreviewComponent,
-		GroupPipe,
-		MemberPipe,
-		MemberProfilePhotoUrlPipe,
 		AdminTableComponent,
 		AdminTableColumnComponent,
 		AdminTableCellDirective,

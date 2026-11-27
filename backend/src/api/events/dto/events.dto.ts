@@ -21,6 +21,7 @@ export class ListEventsQuery extends PaginationQuery {
 	status?: string[];
 
 	@IsString() @IsOptional() search?: string;
+	@Type(() => Number) @IsNumber() @IsOptional() leaderId?: number;
 	@EnsureBoolean() @IsBoolean() @IsOptional() my?: boolean;
 	@EnsureBoolean() @IsBoolean() @IsOptional() noleader?: boolean;
 	@EnsureBoolean() @IsBoolean() @IsOptional() deleted?: boolean;
