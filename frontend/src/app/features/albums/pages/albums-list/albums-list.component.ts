@@ -143,7 +143,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	selectedStatuses = computed(() => this.normalizeFilterValueToArray(this.model.value("status")));
 
 	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? null);
-	sortOrder = computed<"ASC" | "DESC">(() => (this.model.value("order") === "DESC" ? "DESC" : "ASC"));
+	sortOrder = computed<string>(() => (this.model.value("order") as string) || "ASC");
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "name", label: "Název alba" },
@@ -370,7 +370,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 			status: this.normalizeFilterValueToArray(filter.status) as SDK.ListAlbumsStatusEnum[],
 			year: this.normalizeFilterValueToArray(filter.year).map((year) => parseInt(year, 10)),
 			sort: (filter.sort as string) || undefined,
-			order: (filter.order as SDK.ListAlbumsOrderEnum) || undefined,
+			order: (filter.order as string) || undefined,
 			limit: this.pageSize,
 		};
 

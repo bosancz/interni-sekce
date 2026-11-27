@@ -12003,14 +12003,6 @@ export namespace SDK {
     
     
     
-    /**
-     * @export
-     */
-    export const ExportEventsProgramOrderEnum = {
-        Asc: 'ASC',
-        Desc: 'DESC'
-    } as const;
-    export type ExportEventsProgramOrderEnum = typeof ExportEventsProgramOrderEnum[keyof typeof ExportEventsProgramOrderEnum];
     
     
     /**
@@ -12043,13 +12035,13 @@ export namespace SDK {
          */
         sort?: string
     
-        //orderisEnumOrderEnum
+        //order
         /**
          * 
-         * @type {'ASC' | 'DESC'}
+         * @type {string}
          * @memberof EventsApiExportEventsProgram
          */
-        order?: ExportEventsProgramOrderEnum
+        order?: string
     
         //format
         /**
@@ -12213,14 +12205,6 @@ export namespace SDK {
     
     
     
-    /**
-     * @export
-     */
-    export const ListEventsOrderEnum = {
-        Asc: 'ASC',
-        Desc: 'DESC'
-    } as const;
-    export type ListEventsOrderEnum = typeof ListEventsOrderEnum[keyof typeof ListEventsOrderEnum];
     
     
     /**
@@ -12253,13 +12237,13 @@ export namespace SDK {
          */
         sort?: string
     
-        //orderisEnumOrderEnum
+        //order
         /**
          * 
-         * @type {'ASC' | 'DESC'}
+         * @type {string}
          * @memberof EventsApiListEvents
          */
-        order?: ListEventsOrderEnum
+        order?: string
     
         //year
         /**
@@ -15045,14 +15029,6 @@ export namespace SDK {
     /**
      * @export
      */
-    export const ExportMembersXlsxOrderEnum = {
-        Asc: 'ASC',
-        Desc: 'DESC'
-    } as const;
-    export type ExportMembersXlsxOrderEnum = typeof ExportMembersXlsxOrderEnum[keyof typeof ExportMembersXlsxOrderEnum];
-    /**
-     * @export
-     */
     export const ExportMembersXlsxRolesEnum = {
         Dite: 'dite',
         Instruktor: 'instruktor',
@@ -15091,13 +15067,13 @@ export namespace SDK {
          */
         sort?: string
     
-        //orderisEnumOrderEnum
+        //order
         /**
          * 
-         * @type {'ASC' | 'DESC'}
+         * @type {string}
          * @memberof MembersApiExportMembersXlsx
          */
-        order?: ExportMembersXlsxOrderEnum
+        order?: string
     
         //membership
         /**
@@ -15201,14 +15177,6 @@ export namespace SDK {
     /**
      * @export
      */
-    export const ExportMembershipXlsxOrderEnum = {
-        Asc: 'ASC',
-        Desc: 'DESC'
-    } as const;
-    export type ExportMembershipXlsxOrderEnum = typeof ExportMembershipXlsxOrderEnum[keyof typeof ExportMembershipXlsxOrderEnum];
-    /**
-     * @export
-     */
     export const ExportMembershipXlsxRolesEnum = {
         Dite: 'dite',
         Instruktor: 'instruktor',
@@ -15247,13 +15215,13 @@ export namespace SDK {
          */
         sort?: string
     
-        //orderisEnumOrderEnum
+        //order
         /**
          * 
-         * @type {'ASC' | 'DESC'}
+         * @type {string}
          * @memberof MembersApiExportMembershipXlsx
          */
-        order?: ExportMembershipXlsxOrderEnum
+        order?: string
     
         //membership
         /**
@@ -15532,14 +15500,6 @@ export namespace SDK {
     /**
      * @export
      */
-    export const ListMembersOrderEnum = {
-        Asc: 'ASC',
-        Desc: 'DESC'
-    } as const;
-    export type ListMembersOrderEnum = typeof ListMembersOrderEnum[keyof typeof ListMembersOrderEnum];
-    /**
-     * @export
-     */
     export const ListMembersRolesEnum = {
         Dite: 'dite',
         Instruktor: 'instruktor',
@@ -15578,13 +15538,13 @@ export namespace SDK {
          */
         sort?: string
     
-        //orderisEnumOrderEnum
+        //order
         /**
          * 
-         * @type {'ASC' | 'DESC'}
+         * @type {string}
          * @memberof MembersApiListMembers
          */
-        order?: ListMembersOrderEnum
+        order?: string
     
         //membership
         /**
@@ -19285,14 +19245,6 @@ export namespace SDK {
     /**
      * @export
      */
-    export const ListAlbumsOrderEnum = {
-        Asc: 'ASC',
-        Desc: 'DESC'
-    } as const;
-    export type ListAlbumsOrderEnum = typeof ListAlbumsOrderEnum[keyof typeof ListAlbumsOrderEnum];
-    /**
-     * @export
-     */
     export const ListAlbumsStatusEnum = {
         Public: 'public',
         Draft: 'draft'
@@ -19330,13 +19282,13 @@ export namespace SDK {
          */
         sort?: string
     
-        //orderisEnumOrderEnum
+        //order
         /**
          * 
-         * @type {'ASC' | 'DESC'}
+         * @type {string}
          * @memberof PhotoGalleryApiListAlbums
          */
-        order?: ListAlbumsOrderEnum
+        order?: string
     
         //search
         /**
@@ -23678,14 +23630,6 @@ export namespace SDK {
     
     
     
-    /**
-     * @export
-     */
-    export const ListUsersOrderEnum = {
-        Asc: 'ASC',
-        Desc: 'DESC'
-    } as const;
-    export type ListUsersOrderEnum = typeof ListUsersOrderEnum[keyof typeof ListUsersOrderEnum];
     
     
     /**
@@ -23718,13 +23662,13 @@ export namespace SDK {
          */
         sort?: string
     
-        //orderisEnumOrderEnum
+        //order
         /**
          * 
-         * @type {'ASC' | 'DESC'}
+         * @type {string}
          * @memberof UsersApiListUsers
          */
-        order?: ListUsersOrderEnum
+        order?: string
     
         //search
         /**

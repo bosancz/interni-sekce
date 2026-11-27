@@ -15,7 +15,7 @@ import { addIcons } from "ionicons";
 import { eyeOutline } from "ionicons/icons";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { TooltipDirective } from "../../directives/tooltip.directive";
-import { AdminTableSort, AdminTableSortOrder } from "../admin-table/admin-table.component";
+import { AdminTableSort } from "../admin-table/admin-table.component";
 import { ColumnsSelectComponent } from "../columns-select/columns-select.component";
 import { FilterPillComponent } from "../filter-pill/filter-pill.component";
 import { FilterComponent, FilterData } from "../filter/filter.component";
@@ -54,7 +54,7 @@ export class PeopleFilterComponent {
 	columns = input.required<PeopleColumns>();
 	sortOptions = input.required<SortOption[]>();
 	sort = input<string | null>(null);
-	order = input<AdminTableSortOrder>("ASC");
+	order = input<string>("ASC");
 	showInactive = input<boolean | null>(null);
 	autofocus = input<boolean>(true);
 

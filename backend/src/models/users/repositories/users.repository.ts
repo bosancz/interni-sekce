@@ -2,7 +2,7 @@ import { memberActiveSql } from "src/models/members/helpers/group-memberships";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { toPrefixTsQuery } from "src/helpers/search";
-import { applySort, SortOrder } from "src/helpers/sort";
+import { applySort } from "src/helpers/sort";
 import { Brackets, FindOptionsWhere, IsNull, Not, Repository } from "typeorm";
 import { User, UserSettings } from "../entities/user.entity";
 import { leftJoinUserAuthor } from "../helpers/user-author";
@@ -20,7 +20,7 @@ export class UsersRepository {
 		limit?: number;
 		offset?: number;
 		sort?: string;
-		order?: SortOrder;
+		order?: string;
 	}) {
 		const q = this.repository
 			.createQueryBuilder("user")
@@ -39,7 +39,7 @@ export class UsersRepository {
 			.take(options.limit || 25)
 			.skip(options.offset || 0);
 
-		applySort(
+		const sortSpecs = applySort(
 			q,
 			options,
 			{
@@ -49,7 +49,7 @@ export class UsersRepository {
 			},
 			{ column: "user.login", order: "ASC" },
 		);
-		if (options.sort && options.sort !== "login") q.addOrderBy("user.login", "ASC");
+		if (sortSpecs.length && !sortSpecs.some((spec) => spec.key === "login")) q.addOrderBy("user.login", "ASC");
 
 		if (options.where) q.andWhere(options.where("user"));
 

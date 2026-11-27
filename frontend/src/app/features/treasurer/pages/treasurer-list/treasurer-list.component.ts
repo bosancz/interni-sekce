@@ -181,7 +181,7 @@ export class TreasurerListComponent implements OnInit, ViewWillEnter, ViewWillLe
 	canStepForward = computed(() => this.year() < LAST_YEAR);
 
 	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? null);
-	sortOrder = computed<"ASC" | "DESC">(() => (this.model.value("order") === "DESC" ? "DESC" : "ASC"));
+	sortOrder = computed<string>(() => (this.model.value("order") as string) || "ASC");
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "membership", label: "Příspěvek" },
@@ -858,7 +858,7 @@ export class TreasurerListComponent implements OnInit, ViewWillEnter, ViewWillLe
 		return {
 			search: filter.search || undefined,
 			sort: (filter["sort"] as string) || undefined,
-			order: (filter["order"] as SDK.ListMembersOrderEnum) || undefined,
+			order: (filter["order"] as string) || undefined,
 			roles: this.normalizeFilterValueToArray(filter["roles"]) as SDK.ListMembersRolesEnum[],
 			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.MembershipPaymentStatesEnum[],
 			// The fee filter and the fee sort are asked about the year on screen, not about today.

@@ -7,7 +7,27 @@ export type SortColumn = string | { column: string; nulls: SortNulls };
 
 export interface SortOptions {
 	sort?: string;
-	order?: SortOrder;
+	order?: string;
+}
+
+export interface SortSpec {
+	key: string;
+	order: SortOrder;
+}
+
+export function parseSort(options: SortOptions, whitelist: Record<string, SortColumn>): SortSpec[] {
+	if (!options.sort) return [];
+
+	const orders = (options.order ?? "").split(",");
+	const specs: SortSpec[] = [];
+
+	options.sort.split(",").forEach((raw, i) => {
+		const key = raw.trim();
+		if (!(key in whitelist) || specs.some((spec) => spec.key === key)) return;
+		specs.push({ key, order: orders[i]?.trim().toUpperCase() === "DESC" ? "DESC" : "ASC" });
+	});
+
+	return specs;
 }
 
 export function applySort<T extends ObjectLiteral>(
@@ -15,13 +35,20 @@ export function applySort<T extends ObjectLiteral>(
 	options: SortOptions,
 	whitelist: Record<string, SortColumn>,
 	fallback: { column: string; order: SortOrder },
-): SelectQueryBuilder<T> {
-	const entry = options.sort ? whitelist[options.sort] : undefined;
-	if (entry) {
-		if (typeof entry === "string") q.orderBy(entry, options.order ?? "ASC");
-		else q.orderBy(entry.column, options.order ?? "ASC", entry.nulls);
-	} else {
+): SortSpec[] {
+	const specs = parseSort(options, whitelist);
+
+	if (!specs.length) {
 		q.orderBy(fallback.column, fallback.order);
+		return specs;
 	}
-	return q;
+
+	specs.forEach((spec, i) => {
+		const entry = whitelist[spec.key];
+		const [column, nulls] = typeof entry === "string" ? [entry, undefined] : [entry.column, entry.nulls];
+		if (i === 0) q.orderBy(column, spec.order, nulls);
+		else q.addOrderBy(column, spec.order, nulls);
+	});
+
+	return specs;
 }

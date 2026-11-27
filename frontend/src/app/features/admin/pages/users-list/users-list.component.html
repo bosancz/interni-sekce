@@ -38,6 +38,7 @@
 		[rowLink]="rowLink"
 		[sort]="sortColumn()"
 		[order]="sortOrder()"
+		[multiSort]="true"
 		(sortChange)="onSortChange($event)"
 	>
 		<admin-table-column header="Login" sort="login" [primary]="true" headerClass="align-middle">

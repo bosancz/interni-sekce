@@ -92,7 +92,7 @@ export class MembersRepository {
 			.addSelect(membershipPaid, "sort_membership")
 			.addSelect(membershipPaidOn, "sort_paid_on");
 
-		applySort(
+		const sortSpecs = applySort(
 			q,
 			options,
 			{
@@ -117,7 +117,7 @@ export class MembersRepository {
 			{ column: "sort_nickname", order: "ASC" },
 		);
 
-		if (options.sort && options.sort !== "nickname") {
+		if (sortSpecs.length && !sortSpecs.some((spec) => spec.key === "nickname")) {
 			q.addOrderBy("sort_nickname", "ASC");
 		}
 

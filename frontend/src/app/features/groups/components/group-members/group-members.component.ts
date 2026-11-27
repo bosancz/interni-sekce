@@ -77,7 +77,7 @@ export class GroupMembersComponent implements OnInit {
 	selectedAchievements = computed(() => this.asArray(this.model.value("achievements")));
 
 	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? null);
-	sortOrder = computed<"ASC" | "DESC">(() => (this.model.value("order") === "ASC" ? "ASC" : "DESC"));
+	sortOrder = computed<string>(() => (this.model.value("order") as string) || "DESC");
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "nickname", label: "Přezdívka" },
@@ -268,7 +268,7 @@ export class GroupMembersComponent implements OnInit {
 			contacts: true,
 			badges: this.columns.needsBadges() || undefined,
 			sort,
-			order: sort ? ((applied["order"] as SDK.ListMembersOrderEnum) ?? "ASC") : undefined,
+			order: sort ? ((applied["order"] as string) ?? "ASC") : undefined,
 		};
 
 		const members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
