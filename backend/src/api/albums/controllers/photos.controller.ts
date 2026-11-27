@@ -12,6 +12,7 @@ import {
 	ParseIntPipe,
 	Patch,
 	Post,
+	Put,
 	Query,
 	Req,
 	Res,
@@ -45,6 +46,7 @@ import {
 	PhotoExifReadPermission,
 	PhotoReadPermission,
 	PhotoRestorePermission,
+	PhotoRotatePermission,
 	PhotosBrowsePermission,
 	PhotosDeletedListPermission,
 	PhotosListPermission,
@@ -56,6 +58,7 @@ import {
 	PhotoDailyResponse,
 	PhotoExifResponse,
 	PhotoResponse,
+	PhotoRotationBody,
 	PhotoSizes,
 	PhotoUpdateBody,
 } from "../dto/photo.dto";
@@ -234,6 +237,33 @@ export class PhotosController {
 		PhotoEditPermission.canOrThrow(req, photo);
 
 		await this.photos.updatePhoto(photo.id, body);
+	}
+
+	@Put(":photoId/rotation")
+	@AcLinks(PhotoRotatePermission)
+	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse) })
+	async rotatePhoto(
+		@Param("photoId", ParseIntPipe) photoId: number,
+		@Req() req: Request,
+		@Body() body: PhotoRotationBody,
+	): Promise<PhotoResponse> {
+		const photo = await this.photos.getPhoto(photoId);
+		if (!photo) throw new NotFoundException();
+
+		PhotoRotatePermission.canOrThrow(req, photo);
+
+		const rotated = await this.photos.rotatePhoto(photo, body.rotation);
+
+		if (rotated.rotation !== photo.rotation) {
+			this.facesDetectionService
+				.enqueuePhotos([rotated])
+				.catch((err) => this.logger.error(`Failed to queue photo ${photo.id} for face detection.`, err));
+			this.photoContentService
+				.enqueuePhotos([rotated])
+				.catch((err) => this.logger.error(`Failed to queue photo ${photo.id} for content recognition.`, err));
+		}
+
+		return rotated;
 	}
 
 	@Delete(":photoId")

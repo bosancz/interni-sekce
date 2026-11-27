@@ -100,6 +100,7 @@ const photos = {
 		small: { width: 1024, height: 340 },
 	},
 	maxInputPixels: 24000 * 24000,
+	rotatedOriginalQuality: 95,
 	faceImage: { size: 256, padding: 0.3 },
 	profilePhoto: { size: 512, padding: 0.4, maxUploadSize: 20 * 1024 * 1024 },
 	browseLimit: 60,

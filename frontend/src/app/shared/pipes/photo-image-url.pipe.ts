@@ -10,8 +10,9 @@ export type PhotoImageSize = "small" | "big" | "original";
 export class PhotoImageUrlPipe implements PipeTransform {
 	constructor(private config: Config) {}
 
-	transform(photo: { id: number } | undefined | null, size: PhotoImageSize = "big"): string {
+	transform(photo: { id: number; rotation?: number } | undefined | null, size: PhotoImageSize = "big"): string {
 		if (!photo) return "";
-		return `${this.config.apiRoot}api/photos/${photo.id}/image/${size}`;
+		const version = photo.rotation ? `?r=${photo.rotation}` : "";
+		return `${this.config.apiRoot}api/photos/${photo.id}/image/${size}${version}`;
 	}
 }

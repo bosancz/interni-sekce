@@ -47,6 +47,7 @@ export class Photo {
 	@Column({ type: "text", nullable: true }) caption!: string | null;
 	@Column({ type: "varchar", array: true, nullable: true }) tags!: string[] | null;
 	@Column({ type: "varchar", nullable: true }) bg!: string | null;
+	@Column({ type: "smallint", nullable: false, default: 0 }) rotation!: number;
 	@Column({ type: "jsonb", nullable: true, select: false }) exif?: PhotoExif | null;
 
 	@Column({ type: "timestamp with time zone", nullable: true }) facesDetectedAt?: Date | null;
