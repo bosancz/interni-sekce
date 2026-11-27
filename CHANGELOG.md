@@ -1,3 +1,8 @@
+## v4.39.0 — 2026-11-27
+
+- <span class="changelog-type" title="patch">🚸</span> [Členství v oddílech s historií po letech](https://github.com/bosancz/interni-sekce/commit/cace6fe84e235ce482f8816eef29b6b65f0b663f) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+- <span class="changelog-type" title="patch">🚸</span> [Tučné řádky novinek v seznamu změn](https://github.com/bosancz/interni-sekce/commit/4eddc7f19e70afc288ae237ccdec1ec49a5eadce) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.38.11 — 2026-11-26
 
 - <span class="changelog-type" title="patch">🚸</span> [Šedé nadpisy patch verzí v seznamu změn](https://github.com/bosancz/interni-sekce/commit/bfce8452b76de85d376889f72ddbb66dfab883f2) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
