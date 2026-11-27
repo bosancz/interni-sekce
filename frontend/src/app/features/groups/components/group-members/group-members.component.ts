@@ -141,7 +141,7 @@ export class GroupMembersComponent implements OnInit {
 		return missing ? `${text} ${withoutEmailLabel(missing)}, ${notDeliveredLabel(missing)}.` : text;
 	});
 
-	private groupId?: number;
+	groupId?: number;
 	private latestLoadId = 0;
 
 	readonly roleOptions: FilterPillOption[] = Object.entries(MemberRoles).map(([key, role]) => ({
@@ -162,7 +162,7 @@ export class GroupMembersComponent implements OnInit {
 
 	rowLink = (member: SDK.MemberResponseWithLinks) => ["/databaze/clenove", member.id];
 	rowClass = (member: SDK.MemberResponseWithLinks) => ({
-		"member-inactive": !member.active,
+		"member-inactive": member.groupId !== this.groupId,
 		"member-vedouci": member.role === "vedouci",
 		"member-instruktor": member.role === "instruktor",
 	});

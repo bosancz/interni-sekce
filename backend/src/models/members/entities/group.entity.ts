@@ -1,5 +1,5 @@
 import { ApiHideProperty } from "@nestjs/swagger";
-import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Member } from "./member.entity";
 
 export enum GroupMeetingDays {
@@ -25,8 +25,6 @@ export class Group {
 	@Column({ type: "integer", nullable: true }) leaderId!: number | null;
 
 	@DeleteDateColumn() deletedAt!: string | null;
-
-	@OneToMany(() => Member, (member) => member.group) members?: Member[];
 
 	@ManyToOne(() => Member, { onDelete: "SET NULL", onUpdate: "CASCADE" })
 	@JoinColumn({ name: "leader_id" })

@@ -1,3 +1,4 @@
+import { memberGroupIdSql } from "src/models/members/helpers/group-memberships";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
@@ -18,7 +19,7 @@ export interface TopLeader {
 	nickname: string;
 	firstName: string | null;
 	lastName: string | null;
-	groupId: number;
+	groupId: number | null;
 	childDays: number;
 	eventsCount: number;
 	rank: number;
@@ -93,7 +94,7 @@ export class LeadersStatisticsService {
 			.addSelect("m.nickname", "nickname")
 			.addSelect("m.first_name", "firstName")
 			.addSelect("m.last_name", "lastName")
-			.addSelect("m.group_id", "groupId")
+			.addSelect(memberGroupIdSql("m"), "groupId")
 			.addSelect(childDays, "childDays")
 			.addSelect("COUNT(*)", "eventsCount")
 			.innerJoin(Member, "m", "m.id = la.memberId AND m.deletedAt IS NULL")

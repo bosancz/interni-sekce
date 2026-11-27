@@ -12,6 +12,7 @@ import { MemberRoles } from "src/models/members/schema/member-roles";
 import { MembershipPaymentResponse } from "./membership-payment.dto";
 import { MemberAchievementResponse } from "./member-achievement.dto";
 import { MemberTrainingResponse } from "./member-training.dto";
+import { GroupMembershipResponse } from "./group-membership.dto";
 
 export class HealthEntryDto implements HealthEntry {
 	@ApiProperty({ type: "string" }) @Trim() @IsString() name!: string;
@@ -22,10 +23,12 @@ export class HealthEntryDto implements HealthEntry {
 
 export class MemberResponse implements Member {
 	@ApiProperty() id!: number;
-	@ApiProperty() groupId!: number;
+	@ApiProperty({ type: "integer", nullable: true }) groupId!: number | null;
 	@ApiProperty({ type: "string" }) @Trim() nickname!: string;
 	@ApiProperty({ type: "string", enum: MemberRoles, enumName: "MemberRolesEnum" }) role!: MemberRoles;
 	@ApiProperty({ type: "boolean" }) active!: boolean;
+	@ApiPropertyOptional({ type: GroupMembershipResponse, isArray: true })
+	groupMemberships?: GroupMembershipResponse[];
 	// The fees the member has paid, one per season (see helpers/membership.ts); ask
 	// isMembershipPaid() about a year rather than searching the list. Written only through
 	// PATCH /members/:id/membership, so no update body carries it.
@@ -81,7 +84,11 @@ export class MemberCreateBody implements Pick<
 	MemberResponse,
 	"nickname" | "firstName" | "lastName" | "groupId" | "role"
 > {
-	@ApiProperty() @Type(() => Number) @IsNumber() groupId!: number;
+	@ApiPropertyOptional({ type: "integer", nullable: true })
+	@Type(() => Number)
+	@IsNumber()
+	@IsOptional()
+	groupId!: number | null;
 	@ApiProperty() @Trim() @IsString() nickname!: string;
 	@ApiProperty() @IsString() role!: MemberRoles;
 	@ApiProperty() @Trim() @IsString() @IsOptional() firstName!: string | null;
@@ -94,6 +101,9 @@ export class MemberUpdateBody extends PartialType(
 		"achievements",
 		"trainings",
 		"id",
+		"groupId",
+		"active",
+		"groupMemberships",
 		"membership",
 		"profilePhotoFaceId",
 		"profilePhotoUpdatedAt",
@@ -147,6 +157,11 @@ export class MembersListQuery extends PaginationQuery {
 	membershipYear?: number;
 
 	@EnsureBoolean() @IsOptional() active?: boolean;
+
+	@ApiPropertyOptional({ type: "boolean" })
+	@EnsureBoolean()
+	@IsOptional()
+	noGroup?: boolean;
 
 	/**
 	 * Keeps the members who paid the fee of `membershipYear` in the list even when `active` would

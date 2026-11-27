@@ -1099,7 +1099,7 @@ export namespace SDK {
          * @type {number}
          * @memberof BoardMemberMemberResponse
          */
-        'groupId'?: number;
+        'groupId'?: number | null;
         /**
          * 
          * @type {string}
@@ -4924,12 +4924,6 @@ export namespace SDK {
          * @memberof Group
          */
         'deletedAt': string | null;
-        /**
-         * 
-         * @type {Array<Member>}
-         * @memberof Group
-         */
-        'members'?: Array<Member>;
     }
     
     export const GroupMeetingDayEnum = {
@@ -4997,6 +4991,228 @@ export namespace SDK {
     
     export type GroupMeetingDaysEnum = typeof GroupMeetingDaysEnum[keyof typeof GroupMeetingDaysEnum];
     
+    
+        /**
+     * 
+     * @export
+     * @interface GroupMembership
+     */
+    export interface GroupMembership {
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembership
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembership
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembership
+         */
+        'groupId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembership
+         */
+        'yearFrom': number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembership
+         */
+        'yearTill': number | null;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof GroupMembership
+         */
+        'active': boolean;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface GroupMembershipCreateBody
+     */
+    export interface GroupMembershipCreateBody {
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipCreateBody
+         */
+        'groupId'?: number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipCreateBody
+         */
+        'yearFrom'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipCreateBody
+         */
+        'yearTill'?: number | null;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof GroupMembershipCreateBody
+         */
+        'active'?: boolean;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface GroupMembershipResponse
+     */
+    export interface GroupMembershipResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipResponse
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipResponse
+         */
+        'groupId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipResponse
+         */
+        'yearFrom': number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipResponse
+         */
+        'yearTill': number | null;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof GroupMembershipResponse
+         */
+        'active': boolean;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface GroupMembershipResponseLinks
+     */
+    export interface GroupMembershipResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof GroupMembershipResponseLinks
+         */
+        'updateGroupMembership': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof GroupMembershipResponseLinks
+         */
+        'deleteGroupMembership': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface GroupMembershipResponseWithLinks
+     */
+    export interface GroupMembershipResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipResponseWithLinks
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipResponseWithLinks
+         */
+        'groupId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipResponseWithLinks
+         */
+        'yearFrom': number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipResponseWithLinks
+         */
+        'yearTill': number | null;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof GroupMembershipResponseWithLinks
+         */
+        'active': boolean;
+        /**
+         * 
+         * @type {GroupMembershipResponseLinks}
+         * @memberof GroupMembershipResponseWithLinks
+         */
+        '_links': GroupMembershipResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface GroupMembershipUpdateBody
+     */
+    export interface GroupMembershipUpdateBody {
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipUpdateBody
+         */
+        'groupId'?: number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipUpdateBody
+         */
+        'yearFrom'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupMembershipUpdateBody
+         */
+        'yearTill'?: number | null;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof GroupMembershipUpdateBody
+         */
+        'active'?: boolean;
+    }
     
         /**
      * 
@@ -5465,7 +5681,7 @@ export namespace SDK {
          * @type {number}
          * @memberof Member
          */
-        'groupId': number;
+        'groupId': number | null;
         /**
          * 
          * @type {string}
@@ -5598,6 +5814,12 @@ export namespace SDK {
          * @memberof Member
          */
         'deletedAt'?: string;
+        /**
+         * 
+         * @type {Array<GroupMembership>}
+         * @memberof Member
+         */
+        'groupMemberships'?: Array<GroupMembership>;
         /**
          * 
          * @type {Array<MemberContact>}
@@ -6005,7 +6227,7 @@ export namespace SDK {
          * @type {number}
          * @memberof MemberCreateBody
          */
-        'groupId': number;
+        'groupId'?: number | null;
         /**
          * 
          * @type {string}
@@ -6127,7 +6349,6 @@ export namespace SDK {
         Role: 'role',
         Rank: 'rank',
         Function: 'function',
-        Active: 'active',
         Birthday: 'birthday',
         Address: 'address',
         Mobile: 'mobile',
@@ -6500,7 +6721,7 @@ export namespace SDK {
          * @type {number}
          * @memberof MemberResponse
          */
-        'groupId': number;
+        'groupId': number | null;
         /**
          * 
          * @type {string}
@@ -6519,6 +6740,12 @@ export namespace SDK {
          * @memberof MemberResponse
          */
         'active': boolean;
+        /**
+         * 
+         * @type {Array<GroupMembershipResponse>}
+         * @memberof MemberResponse
+         */
+        'groupMemberships'?: Array<GroupMembershipResponse>;
         /**
          * 
          * @type {Array<MembershipPaymentResponse>}
@@ -6690,6 +6917,18 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof MemberResponseLinks
          */
+        'listGroupMemberships': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'createGroupMembership': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
         'listMemberTrainings': AcLink;
         /**
          * 
@@ -6830,7 +7069,7 @@ export namespace SDK {
          * @type {number}
          * @memberof MemberResponseWithLinks
          */
-        'groupId': number;
+        'groupId': number | null;
         /**
          * 
          * @type {string}
@@ -6849,6 +7088,12 @@ export namespace SDK {
          * @memberof MemberResponseWithLinks
          */
         'active': boolean;
+        /**
+         * 
+         * @type {Array<GroupMembershipResponse>}
+         * @memberof MemberResponseWithLinks
+         */
+        'groupMemberships'?: Array<GroupMembershipResponse>;
         /**
          * 
          * @type {Array<MembershipPaymentResponse>}
@@ -7356,12 +7601,6 @@ export namespace SDK {
     export interface MemberUpdateBody {
         /**
          * 
-         * @type {number}
-         * @memberof MemberUpdateBody
-         */
-        'groupId'?: number;
-        /**
-         * 
          * @type {string}
          * @memberof MemberUpdateBody
          */
@@ -7372,12 +7611,6 @@ export namespace SDK {
          * @memberof MemberUpdateBody
          */
         'role'?: MemberRolesEnum;
-        /**
-         * 
-         * @type {boolean}
-         * @memberof MemberUpdateBody
-         */
-        'active'?: boolean;
         /**
          * 
          * @type {string}
@@ -7679,7 +7912,7 @@ export namespace SDK {
          * @type {number}
          * @memberof MyRankingResponse
          */
-        'groupId': number;
+        'groupId': number | null;
         /**
          * 
          * @type {number}
@@ -10293,7 +10526,7 @@ export namespace SDK {
          * @type {number}
          * @memberof TopChildResponse
          */
-        'groupId': number;
+        'groupId': number | null;
         /**
          * 
          * @type {number}
@@ -10475,7 +10708,7 @@ export namespace SDK {
          * @type {number}
          * @memberof TopLeaderResponse
          */
-        'groupId': number;
+        'groupId': number | null;
         /**
          * 
          * @type {number}
@@ -14795,6 +15028,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * @export
      */
@@ -14875,6 +15116,14 @@ export namespace SDK {
          * @memberof MembersApiExportMembersXlsx
          */
         membershipYear?: number
+    
+        //noGroup
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        noGroup?: boolean
     
         //includeMembershipPaid
         /**
@@ -15024,6 +15273,14 @@ export namespace SDK {
          */
         membershipYear?: number
     
+        //noGroup
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        noGroup?: boolean
+    
         //includeMembershipPaid
         /**
          * Keeps the members who paid the fee of &#x60;membershipYear&#x60; in the list even when &#x60;active&#x60; would drop them — what the treasurer view asks for, so a fee it counts always has a row.
@@ -15165,6 +15422,10 @@ export namespace SDK {
          */
         year?: number
     }
+    
+    
+    
+    
     
     
     
@@ -15343,6 +15604,14 @@ export namespace SDK {
          */
         membershipYear?: number
     
+        //noGroup
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiListMembers
+         */
+        noGroup?: boolean
+    
         //includeMembershipPaid
         /**
          * Keeps the members who paid the fee of &#x60;membershipYear&#x60; in the list even when &#x60;active&#x60; would drop them — what the treasurer view asks for, so a fee it counts always has a row.
@@ -15407,6 +15676,10 @@ export namespace SDK {
          */
         active?: boolean
     }
+    
+    
+    
+    
     
     
     
@@ -15575,6 +15848,59 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<GroupResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async createGroupMembership(
+            memberId: number,
+            body: GroupMembershipCreateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('createGroupMembership', 'memberId', memberId)
+            assertParamExists('createGroupMembership', 'groupMembershipCreateBody', body)
+            
+            // verify required parameter 'groupMembershipCreateBody' is not null or undefined
+            assertParamExists('createGroupMembership', 'memberId', memberId)
+            assertParamExists('createGroupMembership', 'groupMembershipCreateBody', body)
+            
+            const localVarPath = `/api/members/{memberId}/group-memberships`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<GroupMembershipResponse>(axiosRequestConfig);
         }
     
         /**
@@ -15888,6 +16214,58 @@ export namespace SDK {
             
             const localVarPath = `/api/groups/{groupId}`
                 .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {number} membershipId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async deleteGroupMembership(
+            memberId: number,
+            membershipId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('deleteGroupMembership', 'memberId', memberId)
+            assertParamExists('deleteGroupMembership', 'membershipId', membershipId)
+            
+            // verify required parameter 'membershipId' is not null or undefined
+            assertParamExists('deleteGroupMembership', 'memberId', memberId)
+            assertParamExists('deleteGroupMembership', 'membershipId', membershipId)
+            
+            const localVarPath = `/api/members/{memberId}/group-memberships/{membershipId}`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)))
+                .replace(`{${"membershipId"}}`, encodeURIComponent(String(membershipId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -16293,6 +16671,10 @@ export namespace SDK {
                 requestQueryParameter['membershipYear'] = queryParams.membershipYear;
             }
     
+            if (queryParams.noGroup !== undefined) {
+                requestQueryParameter['noGroup'] = queryParams.noGroup;
+            }
+    
             if (queryParams.includeMembershipPaid !== undefined) {
                 requestQueryParameter['includeMembershipPaid'] = queryParams.includeMembershipPaid;
             }
@@ -16392,6 +16774,10 @@ export namespace SDK {
     
             if (queryParams.membershipYear !== undefined) {
                 requestQueryParameter['membershipYear'] = queryParams.membershipYear;
+            }
+    
+            if (queryParams.noGroup !== undefined) {
+                requestQueryParameter['noGroup'] = queryParams.noGroup;
             }
     
             if (queryParams.includeMembershipPaid !== undefined) {
@@ -16931,6 +17317,50 @@ export namespace SDK {
         /**
          * 
     
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async listGroupMemberships(
+            memberId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('listGroupMemberships', 'memberId', memberId)
+            
+            const localVarPath = `/api/members/{memberId}/group-memberships`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<GroupMembershipResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {MembersApiListGroupsQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -17218,6 +17648,10 @@ export namespace SDK {
     
             if (queryParams.membershipYear !== undefined) {
                 requestQueryParameter['membershipYear'] = queryParams.membershipYear;
+            }
+    
+            if (queryParams.noGroup !== undefined) {
+                requestQueryParameter['noGroup'] = queryParams.noGroup;
             }
     
             if (queryParams.includeMembershipPaid !== undefined) {
@@ -17661,6 +18095,69 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {number} membershipId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async updateGroupMembership(
+            memberId: number,
+            membershipId: number,
+            body: GroupMembershipUpdateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('updateGroupMembership', 'memberId', memberId)
+            assertParamExists('updateGroupMembership', 'membershipId', membershipId)
+            assertParamExists('updateGroupMembership', 'groupMembershipUpdateBody', body)
+            
+            // verify required parameter 'membershipId' is not null or undefined
+            assertParamExists('updateGroupMembership', 'memberId', memberId)
+            assertParamExists('updateGroupMembership', 'membershipId', membershipId)
+            assertParamExists('updateGroupMembership', 'groupMembershipUpdateBody', body)
+            
+            // verify required parameter 'groupMembershipUpdateBody' is not null or undefined
+            assertParamExists('updateGroupMembership', 'memberId', memberId)
+            assertParamExists('updateGroupMembership', 'membershipId', membershipId)
+            assertParamExists('updateGroupMembership', 'groupMembershipUpdateBody', body)
+            
+            const localVarPath = `/api/members/{memberId}/group-memberships/{membershipId}`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)))
+                .replace(`{${"membershipId"}}`, encodeURIComponent(String(membershipId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<GroupMembershipResponse>(axiosRequestConfig);
         }
     
         /**

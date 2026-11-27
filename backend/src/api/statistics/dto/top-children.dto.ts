@@ -4,7 +4,7 @@ import { TopLeadersQuery } from "./top-leaders.dto";
 export class TopChildResponse {
 	@ApiProperty() memberId!: number;
 	@ApiProperty() nickname!: string;
-	@ApiProperty() groupId!: number;
+	@ApiProperty({ type: "integer", nullable: true }) groupId!: number | null;
 
 	@ApiProperty() days!: number;
 	@ApiProperty() eventsCount!: number;

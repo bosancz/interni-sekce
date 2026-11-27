@@ -69,3 +69,7 @@ ion-checkbox {
 	width: auto;
 	--size: 18px;
 }
+
+.group-badge.inactive-group {
+	text-decoration: line-through;
+}

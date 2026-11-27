@@ -3,6 +3,8 @@
 		<span
 			(click)="toggleGroup(group.id)"
 			[class.active]="isSelected(group.id)"
+			[class.inactive-group]="!group.active"
+			[title]="group.name ?? group.shortName"
 			[style.background-color]="group.color || '#999'"
 			class="group-badge me-2 my-2"
 		>

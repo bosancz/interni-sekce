@@ -44,6 +44,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	multiple = input<boolean>(false);
 	required = input<boolean>(false);
 	leadersOption = input<boolean>(false);
+	includeInactive = input<boolean>(false);
 	leadersEvent = model<boolean>(false);
 
 	readonly leadersGroup = LeadersEventGroup;
@@ -54,15 +55,17 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	constructor(
 		private elRef: ElementRef<HTMLElement>,
 		private api: ApiService,
-	) {
+	) {}
+
+	ngOnInit() {
 		this.loadGroups();
 	}
 
-	ngOnInit() {}
-
 	async loadGroups() {
-		const groups = await this.api.MembersApi.listGroups({ active: true }).then((res) => res.data);
-		this.groups.set(groups);
+		const groups = await this.api.MembersApi.listGroups(this.includeInactive() ? {} : { active: true }).then(
+			(res) => res.data,
+		);
+		this.groups.set([...groups.filter((group) => group.active), ...groups.filter((group) => !group.active)]);
 	}
 
 	ngAfterViewInit() {

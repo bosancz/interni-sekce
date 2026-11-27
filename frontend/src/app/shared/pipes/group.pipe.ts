@@ -32,7 +32,7 @@ export class GroupPipe implements PipeTransform {
 		});
 	}
 
-	transform(groupId: number | undefined, property: GroupPipeProperty): string | undefined {
+	transform(groupId: number | null | undefined, property: GroupPipeProperty): string | undefined {
 		if (!groupId || !this.groupsMap.has(groupId)) return this.defaultValues[property];
 
 		const group = this.groupsMap.get(groupId)!;

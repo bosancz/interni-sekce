@@ -13,7 +13,6 @@ import { CardHeaderComponent } from "../../../../shared/components/card-header/c
 import { CardTitleComponent } from "../../../../shared/components/card-title/card-title.component";
 import { CardComponent } from "../../../../shared/components/card/card.component";
 import { EditButtonComponent } from "../../../../shared/components/edit-button/edit-button.component";
-import { GroupBadgeComponent } from "../../../../shared/components/group-badge/group-badge.component";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 
 @Component({
@@ -27,7 +26,6 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 		IonIcon,
 		IonSkeletonText,
 		EditButtonComponent,
-		GroupBadgeComponent,
 		MemberPipe,
 	],
 	templateUrl: "./member-membership.component.html",
@@ -54,21 +52,6 @@ export class MemberMembershipComponent {
 		addIcons({ peopleOutline });
 	}
 
-	async editActivity() {
-		const member = this.member();
-		const result = await this.modalService.selectModal({
-			header: "Změnit aktivitu",
-			buttonText: "Uložit",
-			values: [
-				{ label: "Aktivní", value: true },
-				{ label: "Neaktivní", value: false },
-			],
-			value: member?.active,
-		});
-
-		if (result !== null) this.update.emit({ active: result });
-	}
-
 	async editRole() {
 		const member = this.member();
 		const role = await this.modalService.selectModal<SDK.MemberRolesEnum>({
@@ -83,21 +66,6 @@ export class MemberMembershipComponent {
 		});
 
 		if (role !== null) this.update.emit({ role });
-	}
-
-	async editGroup() {
-		const member = this.member();
-		const groups = await this.api.MembersApi.listGroups({ active: true }).then((res) => res.data);
-		groups.sort((a, b) => a.shortName.localeCompare(b.shortName, "cs", { numeric: true }));
-
-		const group = await this.modalService.selectModal({
-			header: "Změnit oddíl",
-			buttonText: "Uložit",
-			values: groups.map((g) => ({ label: g.name ?? g.shortName, value: g.id })),
-			value: member?.groupId,
-		});
-
-		if (group !== null) this.update.emit({ groupId: group });
 	}
 
 	async editMembership() {

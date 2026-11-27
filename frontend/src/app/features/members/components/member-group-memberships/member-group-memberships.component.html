@@ -1,0 +1,47 @@
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="flag-outline" />
+				Oddíl
+			</span>
+		</bo-card-title>
+		@if (menuOptions().length) {
+			<button
+				slot="buttons"
+				type="button"
+				class="gm-menu-button"
+				aria-label="Změnit oddíl"
+				(click)="menu.open($event)"
+			>
+				<ion-icon name="ellipsis-vertical"></ion-icon>
+			</button>
+		}
+	</bo-card-header>
+
+	<bo-card-content>
+		<bo-dropdown-menu #menu header="Oddíl" [options]="menuOptions()" (select)="onMenu($event)"></bo-dropdown-menu>
+		@if (groupMemberships() === undefined) {
+			<ion-skeleton-text [animated]="true"></ion-skeleton-text>
+		} @else {
+			<ol class="gm-timeline">
+				@for (membership of timeline(); track membership.id) {
+					<li class="gm-item" [class.gm-active]="membership.active">
+						<span class="gm-dot" aria-hidden="true"></span>
+						<button
+							type="button"
+							class="gm-row"
+							[disabled]="!canEdit(membership)"
+							(click)="editGroupMembership(membership)"
+						>
+							<bo-group-badge [groupId]="membership.groupId"></bo-group-badge>
+							<span class="gm-years">{{ formatYears(membership) }}</span>
+						</button>
+					</li>
+				} @empty {
+					<li class="gm-empty">Nikdy nebyl v žádném oddílu.</li>
+				}
+			</ol>
+		}
+	</bo-card-content>
+</bo-card>

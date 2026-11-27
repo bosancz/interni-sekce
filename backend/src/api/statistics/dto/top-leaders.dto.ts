@@ -5,7 +5,7 @@ import { IsInt, IsOptional, Max, Min } from "class-validator";
 export class TopLeaderResponse {
 	@ApiProperty() memberId!: number;
 	@ApiProperty() nickname!: string;
-	@ApiProperty() groupId!: number;
+	@ApiProperty({ type: "integer", nullable: true }) groupId!: number | null;
 
 	@ApiProperty() childDays!: number;
 
@@ -20,7 +20,7 @@ export class TopLeaderResponse {
 export class MyRankingResponse {
 	@ApiProperty() memberId!: number;
 	@ApiProperty() nickname!: string;
-	@ApiProperty() groupId!: number;
+	@ApiProperty({ type: "integer", nullable: true }) groupId!: number | null;
 	@ApiProperty() childDays!: number;
 	@ApiProperty() eventsCount!: number;
 

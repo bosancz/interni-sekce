@@ -36,6 +36,8 @@ import { MembershipPaymentStates } from "../../../../core/config/membership";
 import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
 import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loading";
 
+const NO_GROUP = "bez";
+
 @UntilDestroy()
 @Component({
 	selector: "members-list",
@@ -64,6 +66,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	roles = MemberRoles;
 
 	selectedGroups = computed(() => this.normalizeFilterValueToArray(this.model.value("groups")));
+	noGroupSelected = computed(() => this.selectedGroups().includes(NO_GROUP));
 	selectedRoles = computed(() => this.normalizeFilterValueToArray(this.model.value("roles")));
 	selectedMembership = computed(() => this.normalizeFilterValueToArray(this.model.value("membership")));
 	selectedAchievements = computed(() => this.normalizeFilterValueToArray(this.model.value("achievements")));
@@ -88,7 +91,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	groupOptions = computed<FilterPillOption[]>(() => {
 		const showInactive = this.showInactive();
 		const selected = this.selectedGroups();
-		return this.groups()
+		const options: FilterPillOption[] = this.groups()
 			.filter((group) => showInactive || group.active || selected.includes(String(group.id)))
 			.map((group) => ({
 				value: String(group.id),
@@ -96,6 +99,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 				shortLabel: group.shortName ?? group.name,
 				color: this.groupPipe.transform(group.id, "color"),
 			}));
+		return [...options, { value: NO_GROUP, label: "Bez oddílu", shortLabel: "Bez oddílu" }];
 	});
 	readonly roleOptions: FilterPillOption[] = Object.entries(MemberRoles).map(([key, role]) => ({
 		value: key,
@@ -202,10 +206,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			achievements: this.normalizeFilterValueToArray(
 				(this.filter as any)["achievements"],
 			) as SDK.MemberAchievementTypesEnum[],
-			groups: this.normalizeFilterValueToArray((this.filter as any)["groups"]).map((group) =>
-				parseInt(group, 10),
-			),
-			active: (((this.filter as any)["active"] as string) || "active") === "all" ? undefined : true,
+			...this.groupParams((this.filter as any)["groups"], (this.filter as any)["active"]),
 			sort: ((this.filter as any)["sort"] as string) || undefined,
 			order: ((this.filter as any)["order"] as SDK.ExportMembersXlsxOrderEnum) || undefined,
 		};
@@ -245,6 +246,16 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 		this.filter = { ...params };
 		this.loadMembers(this.filter);
+	}
+
+	private groupParams(groupsValue: unknown, activeValue: unknown) {
+		const values = this.normalizeFilterValueToArray(groupsValue);
+		const noGroup = values.includes(NO_GROUP);
+		return {
+			groups: values.filter((value) => value !== NO_GROUP).map((group) => parseInt(group, 10)),
+			noGroup: noGroup || undefined,
+			active: noGroup || ((activeValue as string) || "active") === "all" ? undefined : true,
+		};
 	}
 
 	private modelFromParams(p: Params): FilterValues {
@@ -310,8 +321,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.MembershipPaymentStatesEnum[],
 			achievements: this.normalizeFilterValueToArray(filter["achievements"]) as SDK.MemberAchievementTypesEnum[],
 			limit: this.pageSize,
-			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
-			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,
+			...this.groupParams(filter["groups"], filter["active"]),
 			contacts: this.columns.needsContacts() || undefined,
 			badges: this.columns.needsBadges() || undefined,
 			sort: (filter["sort"] as string) || undefined,

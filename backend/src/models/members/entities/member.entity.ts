@@ -12,7 +12,10 @@ import {
 	OneToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
+	VirtualColumn,
 } from "typeorm";
+import { memberActiveSql, memberGroupIdSql } from "../helpers/group-memberships";
+import { GroupMembership } from "./group-membership.entity";
 import { Group } from "./group.entity";
 import { MemberAchievement } from "./member-achievements.entity";
 import { MemberContact } from "./member-contact.entity";
@@ -44,10 +47,10 @@ export class Member {
 	@PrimaryGeneratedColumn()
 	id!: number;
 
-	@Column({ nullable: false }) groupId!: Group["id"];
+	@VirtualColumn({ type: "integer", query: (alias) => memberGroupIdSql(alias) }) groupId!: Group["id"] | null;
 	@Column({ type: "varchar", nullable: false }) nickname!: string;
 	@Column({ type: "enum", enum: MemberRoles, nullable: false }) role!: MemberRoles;
-	@Column({ type: "boolean", nullable: false, default: true }) active!: boolean;
+	@VirtualColumn({ type: "boolean", query: (alias) => memberActiveSql(alias) }) active!: boolean;
 	@Column({ type: "enum", enum: MemberRanks, nullable: true }) rank?: MemberRanks | null;
 	@Column({ type: "varchar", nullable: true }) function?: string | null;
 	@Column({ type: "varchar", nullable: true }) firstName?: string | null;
@@ -87,10 +90,8 @@ export class Member {
 
 	@DeleteDateColumn() deletedAt?: Date;
 
-	@ManyToOne(() => Group, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
-	@JoinColumn({ name: "group_id" })
-	@ApiHideProperty()
-	group?: Group;
+	@OneToMany(() => GroupMembership, (membership) => membership.member)
+	groupMemberships?: GroupMembership[];
 
 	@OneToMany(() => MemberContact, (mb) => mb.member)
 	contacts?: MemberContact[];

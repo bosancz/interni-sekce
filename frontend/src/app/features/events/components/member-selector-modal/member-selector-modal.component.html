@@ -84,9 +84,11 @@
 					<span class="mp-nickname">{{ member | member: "nickname" }}</span>
 					<span class="mp-name"><bo-member-item-detail [member]="member"></bo-member-item-detail></span>
 				</span>
-				<span class="mp-tag" [style]="tagStyles().get(member.groupId)">
-					{{ member.groupId | group: "name" }}
-				</span>
+				@if (member.groupId) {
+					<span class="mp-tag" [style]="tagStyles().get(member.groupId)">
+						{{ member.groupId | group: "name" }}
+					</span>
+				}
 			</label>
 		}
 

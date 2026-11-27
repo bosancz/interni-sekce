@@ -26,6 +26,7 @@ import { MemberInfoComponent } from "../../components/member-info/member-info.co
 import { MemberAchievementsComponent } from "../../components/member-achievements/member-achievements.component";
 import { MemberTrainingsComponent } from "../../components/member-trainings/member-trainings.component";
 import { MemberMergeModalComponent } from "../../components/member-merge-modal/member-merge-modal.component";
+import { MemberGroupMembershipsComponent } from "../../components/member-group-memberships/member-group-memberships.component";
 import { MemberMembershipComponent } from "../../components/member-membership/member-membership.component";
 import { MemberPaymentComponent } from "../../components/member-payment/member-payment.component";
 import { MemberPhotosComponent } from "../../components/member-photos/member-photos.component";
@@ -48,6 +49,7 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 		MemberTrainingsComponent,
 		MemberContactComponent,
 		MemberMembershipComponent,
+		MemberGroupMembershipsComponent,
 		MemberPaymentComponent,
 		MemberHealthComponent,
 		MemberContactsComponent,

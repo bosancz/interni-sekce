@@ -93,8 +93,10 @@ function filterMembers(members: Member[], groups: Group[], params: URLSearchPara
 		result = result.filter((m) => m.active || (includePaid && isMembershipPaid(m.membership, year)));
 	}
 
+	if (params.get("noGroup") === "true") result = result.filter((m) => !m.groupMemberships?.length);
+
 	const groupIds = params.getAll("groups").map(Number);
-	if (groupIds.length) result = result.filter((m) => groupIds.includes(m.groupId));
+	if (groupIds.length) result = result.filter((m) => m.groupId !== null && groupIds.includes(m.groupId));
 
 	const roles = params.getAll("roles");
 	if (roles.length) result = result.filter((m) => roles.includes(m.role));
@@ -142,7 +144,7 @@ function sortMembers(members: Member[], groups: Group[], sort: string, desc: boo
 		variableSymbol: (m) => m.id,
 		age: (m) => (m.birthday ? -new Date(m.birthday).getTime() : null),
 		birthday: (m) => m.birthday ?? null,
-		group: (m) => groupNames.get(m.groupId) ?? null,
+		group: (m) => (m.groupId !== null ? groupNames.get(m.groupId) : null) ?? null,
 		city: (m) => m.addressCity ?? null,
 		street: (m) => m.addressStreet ?? null,
 		status: (m) => m.active,

@@ -1,3 +1,4 @@
+import { rethrowGroupMembershipErrors } from "../helpers/group-membership-errors";
 import {
 	Body,
 	Controller,
@@ -114,7 +115,9 @@ export class MembersController {
 	async createMember(@Req() req: Request, @Body() body: MemberCreateBody): Promise<MemberResponse> {
 		MemberCreatePermission.canOrThrow(req);
 
-		return await this.members.createMember(body);
+		const { groupId, ...memberData } = body;
+
+		return await this.members.createMember(memberData, groupId).catch(rethrowGroupMembershipErrors);
 	}
 
 	@Get(":memberId")

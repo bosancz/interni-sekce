@@ -34,6 +34,10 @@
 				</div>
 
 				<div class="card-col">
+					<bo-member-group-memberships [member]="member()" (reload)="reloadMember()" />
+				</div>
+
+				<div class="card-col">
 					<bo-member-membership
 						[member]="member()"
 						(update)="updateMember($event)"

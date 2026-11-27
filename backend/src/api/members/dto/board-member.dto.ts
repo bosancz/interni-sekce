@@ -6,7 +6,7 @@ import { Trim } from "src/helpers/validation";
 export class BoardMemberMemberResponse {
 	@ApiProperty() id!: number;
 	@ApiProperty() nickname!: string;
-	@ApiProperty({ required: false }) groupId?: number;
+	@ApiProperty({ required: false, type: "integer", nullable: true }) groupId?: number | null;
 	@ApiProperty({ type: "string", nullable: true, required: false }) firstName?: string | null;
 	@ApiProperty({ type: "string", nullable: true, required: false }) lastName?: string | null;
 	@ApiProperty({ type: "string", nullable: true, required: false }) email?: string | null;

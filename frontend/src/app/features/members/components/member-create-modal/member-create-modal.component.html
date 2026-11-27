@@ -36,7 +36,14 @@
 
 			<ion-item>
 				<ion-label position="stacked">Oddíl</ion-label>
-				<bo-group-select formControlName="groupId" [required]="true"></bo-group-select>
+				<bo-group-select formControlName="groupId"></bo-group-select>
+				<p class="group-hint">
+					@if (form.controls.groupId.value) {
+						Člen bude v oddílu aktivní od {{ currentYear }}.
+					} @else {
+						Bez oddílu bude člen neaktivní.
+					}
+				</p>
 			</ion-item>
 
 			<ion-item>

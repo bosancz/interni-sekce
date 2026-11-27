@@ -172,7 +172,7 @@ export class GroupViewComponent implements OnInit {
 
 		if (loadId !== this.latestLoadId) return;
 
-		this.members.set(members);
+		this.members.set(members.map((member) => ({ ...member, active: member.groupId === groupId })));
 	}
 
 	protected async editGroup() {

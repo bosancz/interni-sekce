@@ -1,0 +1,85 @@
+<bo-modal-layout>
+	<h4 slot="title">{{ title }}</h4>
+
+	<div class="bm-body">
+		<div class="ma-field">
+			<span class="ma-label">Oddíl</span>
+			<bo-group-select
+				[includeInactive]="true"
+				[required]="true"
+				[readonly]="!canEdit()"
+				[ngModel]="groupId()"
+				(ngModelChange)="groupId.set($event ?? null); error.set(null)"
+			></bo-group-select>
+		</div>
+
+		<div class="ma-fields">
+			<label class="ma-field">
+				<span class="ma-label">Od roku</span>
+				<input
+					type="number"
+					inputmode="numeric"
+					class="ma-input"
+					min="1900"
+					max="2200"
+					placeholder="neznámý"
+					[disabled]="!canEdit()"
+					[value]="yearFrom()"
+					(input)="yearFrom.set($any($event.target).value); error.set(null)"
+				/>
+			</label>
+
+			<label class="ma-field">
+				<span class="ma-label">Do roku</span>
+				<input
+					type="number"
+					inputmode="numeric"
+					class="ma-input"
+					min="1900"
+					max="2200"
+					[placeholder]="ongoing() ? 'dosud' : 'neznámý'"
+					[disabled]="!canEdit() || ongoing()"
+					[value]="ongoing() ? '' : yearTill()"
+					(input)="yearTill.set($any($event.target).value); error.set(null)"
+				/>
+			</label>
+		</div>
+
+		@if (mode === "edit") {
+			<label class="gm-ongoing">
+				<input
+					type="checkbox"
+					[disabled]="!canEdit()"
+					[checked]="ongoing()"
+					(change)="setOngoing($any($event.target).checked)"
+				/>
+				<span>Stále aktivní v tomto oddílu</span>
+			</label>
+		}
+
+		@if (closesActive()) {
+			<p class="gm-note">
+				Dosavadní aktivní členství v oddílu {{ groupName(activeGroupId) }} se ukončí rokem {{ currentYear }}.
+			</p>
+		}
+
+		@if (error(); as errorText) {
+			<p class="ma-error">{{ errorText }}</p>
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		@if (canDelete()) {
+			<button type="button" class="ma-delete-btn" (click)="remove()">
+				<ion-icon name="trash-outline"></ion-icon>
+				Smazat
+			</button>
+		}
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		@if (canEdit()) {
+			<button type="button" class="bm-btn-primary" (click)="save()">
+				{{ saveLabel }}
+			</button>
+		}
+	</div>
+</bo-modal-layout>
