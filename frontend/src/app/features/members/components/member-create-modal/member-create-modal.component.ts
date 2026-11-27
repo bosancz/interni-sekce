@@ -54,6 +54,7 @@ export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCr
 		firstName: new FormControl<string>("", { nonNullable: true }),
 		lastName: new FormControl<string>("", { nonNullable: true }),
 		groupId: new FormControl<number | null>(null),
+		groupInactive: new FormControl<boolean>(false, { nonNullable: true }),
 		role: new FormControl<SDK.MemberCreateBodyRoleEnum | null>(null, { validators: [Validators.required] }),
 	});
 
@@ -84,6 +85,7 @@ export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCr
 
 		const memberData: SDK.MemberCreateBody = {
 			groupId: value.groupId ?? null,
+			groupActive: value.groupId ? !value.groupInactive : undefined,
 			nickname: value.nickname,
 			role: value.role!,
 			firstName: value.firstName || null,

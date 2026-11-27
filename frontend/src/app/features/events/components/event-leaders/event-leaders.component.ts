@@ -1,3 +1,4 @@
+import { AccentAbovePipe } from "src/app/shared/pipes/accent-above.pipe";
 import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray } from "@angular/cdk/drag-drop";
 import { Component, computed, effect, input, OnDestroy, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
@@ -27,6 +28,7 @@ const compareLeaderPositions = (a: SDK.EventAttendeeResponseWithLinks, b: SDK.Ev
 	templateUrl: "./event-leaders.component.html",
 	styleUrl: "./event-leaders.component.scss",
 	imports: [
+		AccentAbovePipe,
 		RouterLink,
 		CdkDropList,
 		CdkDrag,

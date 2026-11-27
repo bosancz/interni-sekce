@@ -25,7 +25,10 @@
 							@if (leader.member | memberProfilePhotoUrl; as photoUrl) {
 								<img [src]="photoUrl" alt="" />
 							} @else {
-								<span class="bo-initial">{{ (leader.member | member: "nickname")?.charAt(0) }}</span>
+								@let initial = (leader.member | member: "nickname")?.charAt(0);
+								<span class="bo-initial" [class.bo-initial-accent]="initial | accentAbove">{{
+									initial
+								}}</span>
 							}
 						</span>
 						<span class="leader-text">

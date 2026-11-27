@@ -1,3 +1,4 @@
+import { AccentAbovePipe } from "src/app/shared/pipes/accent-above.pipe";
 import { Component, computed, input } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonIcon } from "@ionic/angular/standalone";
@@ -24,6 +25,7 @@ import { EventGroupsComponent } from "../event-groups/event-groups.component";
 	styleUrls: ["./event-card.component.scss"],
 
 	imports: [
+		AccentAbovePipe,
 		RouterLink,
 		IonIcon,
 		EventPipe,

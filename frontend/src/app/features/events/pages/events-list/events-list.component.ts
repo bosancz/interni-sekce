@@ -1,3 +1,4 @@
+import { AccentAbovePipe } from "src/app/shared/pipes/accent-above.pipe";
 import { CommonModule } from "@angular/common";
 import {
 	afterNextRender,
@@ -72,6 +73,7 @@ type EventStatusActions = ExtractExisting<
 	styleUrls: ["./events-list.component.scss"],
 
 	imports: [
+		AccentAbovePipe,
 		CommonModule,
 		FormsModule,
 		IonInfiniteScroll,

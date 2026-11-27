@@ -37,8 +37,16 @@
 			<ion-item>
 				<ion-label position="stacked">Oddíl</ion-label>
 				<bo-group-select formControlName="groupId"></bo-group-select>
+				@if (form.controls.groupId.value) {
+					<label class="group-inactive">
+						<input type="checkbox" formControlName="groupInactive" />
+						<span>Neaktivní</span>
+					</label>
+				}
 				<p class="group-hint">
-					@if (form.controls.groupId.value) {
+					@if (form.controls.groupId.value && form.controls.groupInactive.value) {
+						Člen bude v oddílu veden jako neaktivní.
+					} @else if (form.controls.groupId.value) {
 						Člen bude v oddílu aktivní od {{ currentYear }}.
 					} @else {
 						Bez oddílu bude člen neaktivní.

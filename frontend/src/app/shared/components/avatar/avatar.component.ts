@@ -1,9 +1,11 @@
 import { Component, input } from "@angular/core";
+import { AccentAbovePipe } from "src/app/shared/pipes/accent-above.pipe";
 
 @Component({
 	selector: "bo-avatar",
 	templateUrl: "./avatar.component.html",
 	styleUrl: "./avatar.component.scss",
+	imports: [AccentAbovePipe],
 	host: {
 		"[class.ringed]": "!!photoUrl() && !!color()",
 		"[class.empty]": "!photoUrl() && !initials()",

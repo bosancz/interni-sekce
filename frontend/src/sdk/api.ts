@@ -6230,6 +6230,12 @@ export namespace SDK {
         'groupId'?: number | null;
         /**
          * 
+         * @type {boolean}
+         * @memberof MemberCreateBody
+         */
+        'groupActive'?: boolean;
+        /**
+         * 
          * @type {string}
          * @memberof MemberCreateBody
          */

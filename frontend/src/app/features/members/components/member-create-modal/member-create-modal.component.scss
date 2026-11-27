@@ -2,6 +2,22 @@ bo-group-select {
 	margin-top: 8px;
 }
 
+.group-inactive {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 10px;
+	font-size: 14px;
+	cursor: pointer;
+
+	input {
+		width: 18px;
+		height: 18px;
+		margin: 0;
+		accent-color: var(--ion-color-primary);
+	}
+}
+
 .group-hint {
 	margin: 6px 0 10px;
 	color: var(--ion-color-medium);

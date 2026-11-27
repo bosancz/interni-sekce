@@ -2,6 +2,6 @@
 	<img [src]="photoUrl()" alt="" />
 } @else if (initials()) {
 	<h3 [style.color]="color()">
-		<span class="bo-initial">{{ initials() }}</span>
+		<span class="bo-initial" [class.bo-initial-accent]="initials() | accentAbove">{{ initials() }}</span>
 	</h3>
 }

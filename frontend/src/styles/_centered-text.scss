@@ -1,0 +1,20 @@
+@mixin centered-text($padding-block: 0px) {
+	padding-block: $padding-block;
+
+	@supports (text-box: trim-both cap alphabetic) {
+		padding-block: calc(#{$padding-block} + (1lh - 1cap) / 2);
+		text-box: trim-both cap alphabetic;
+	}
+}
+
+@mixin centered-text-fixed($height) {
+	box-sizing: border-box;
+	height: $height;
+	line-height: $height;
+
+	@supports (text-box: trim-both cap alphabetic) {
+		line-height: 1;
+		padding-block: calc((#{$height} - 1cap) / 2);
+		text-box: trim-both cap alphabetic;
+	}
+}

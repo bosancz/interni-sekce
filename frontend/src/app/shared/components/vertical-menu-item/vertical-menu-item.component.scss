@@ -1,3 +1,5 @@
+@use "src/styles/centered-text" as *;
+
 ion-item {
 	cursor: pointer;
 	--padding-start: 1rem;
@@ -24,13 +26,10 @@ ion-badge {
 	font-weight: 700;
 	--padding-top: 0;
 	--padding-bottom: 0;
-	padding: 0 0.6em;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	height: 1.8em;
-	line-height: 1;
+	padding-inline: 0.6em;
+	display: inline-block;
 	min-width: 1.8em;
+	@include centered-text-fixed(1.8em);
 	text-align: center;
 
 	&.badge-attention {
