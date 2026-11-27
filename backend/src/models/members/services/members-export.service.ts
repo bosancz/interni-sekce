@@ -7,6 +7,8 @@ import writeXlsxFile from "write-excel-file/node";
 import { Member } from "../entities/member.entity";
 import { sortMemberContacts } from "../helpers/member-contacts";
 
+const activeGroupOf = (member: Member) => member.groupMemberships?.find((membership) => membership.active)?.group;
+
 @Injectable()
 export class MembersExportService {
 	constructor() {}
@@ -21,7 +23,7 @@ export class MembersExportService {
 			{
 				column: "Oddíl",
 				type: String,
-				value: (member) => member.group?.name,
+				value: (member) => activeGroupOf(member)?.name,
 			},
 			{
 				column: "Přezdívka",
@@ -143,7 +145,7 @@ export class MembersExportService {
 				column: "Oddíl",
 				type: String,
 				width: 20,
-				value: (member) => member.group?.name ?? member.group?.shortName,
+				value: (member) => activeGroupOf(member)?.name ?? activeGroupOf(member)?.shortName,
 			},
 			{
 				column: "Částka",

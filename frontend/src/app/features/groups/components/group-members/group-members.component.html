@@ -52,6 +52,7 @@
 	[loading]="members() === undefined"
 	[visible]="columns.visible()"
 	rightColumn="status"
+	[activeInGroup]="groupId ?? null"
 	[rowLink]="rowLink"
 	[rowClass]="rowClass"
 	[actions]="memberActions"

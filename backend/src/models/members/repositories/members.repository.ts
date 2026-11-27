@@ -17,6 +17,8 @@ import { sortMemberContacts } from "../helpers/member-contacts";
 import { Member } from "../entities/member.entity";
 import { MembershipPayment } from "../entities/membership-payment.entity";
 import { MemberRoles } from "../schema/member-roles";
+import { GroupMembershipsRepository } from "./group-memberships.repository";
+import { memberActiveSql, memberGroupIdSql, memberInGroupsSql } from "../helpers/group-memberships";
 
 export interface GetMembersOptions extends PaginationOptions {
 	groups?: number[];
@@ -29,6 +31,7 @@ export interface GetMembersOptions extends PaginationOptions {
 	age?: number[];
 	achievements?: MemberAchievementTypes[];
 	active?: boolean;
+	noGroup?: boolean;
 	// Keep the members who paid the fee of membershipYear even where `active` would drop them.
 	includeMembershipPaid?: boolean;
 	contacts?: boolean;
@@ -45,13 +48,14 @@ export class MembersRepository {
 		@InjectRepository(MemberAchievement) private memberAchievements: Repository<MemberAchievement>,
 		@InjectRepository(MemberTraining) private memberTrainings: Repository<MemberTraining>,
 		@InjectRepository(MembershipPayment) private membershipPaymentsRepository: Repository<MembershipPayment>,
+		private groupMemberships: GroupMembershipsRepository,
 	) {}
 
 	async getBirthdayMembers(roles: MemberRoles[], month: number, days: number[]) {
 		return this.membersRepository
 			.createQueryBuilder("members")
 			.select(["members.id", "members.nickname", "members.firstName", "members.lastName", "members.birthday"])
-			.where("members.active = TRUE")
+			.where(memberActiveSql("members"))
 			.andWhere("members.role IN (:...roles)", { roles })
 			.andWhere("EXTRACT(MONTH FROM members.birthday) = :month", { month })
 			.andWhere("EXTRACT(DAY FROM members.birthday) IN (:...days)", { days })
@@ -81,7 +85,8 @@ export class MembersRepository {
 			// id. `groups.name` carries the `natural_numeric` ICU collation (see Group entity),
 			// so embedded numbers order naturally: "3. oddíl" precedes "22. oddíl", and
 			// non-numeric names ("Klub přátel", …) sort after them.
-			.addSelect("(SELECT g.name FROM groups g WHERE g.id = members.group_id)", "sort_group")
+			.addSelect(`(SELECT g.name FROM groups g WHERE g.id = ${memberGroupIdSql("members")})`, "sort_group")
+			.addSelect(memberActiveSql("members"), "sort_status")
 			// Membership is a list of payments, so it is sorted by the one value the list shows:
 			// whether the fee for the year in question is paid.
 			.addSelect(membershipPaid, "sort_membership")
@@ -107,7 +112,7 @@ export class MembersRepository {
 				group: "sort_group",
 				city: "members.addressCity",
 				street: "members.addressStreet",
-				status: "members.active",
+				status: "sort_status",
 			},
 			{ column: "sort_nickname", order: "ASC" },
 		);
@@ -126,9 +131,18 @@ export class MembersRepository {
 
 		// Same for the group: the lists resolve it from their own copy of the groups, only the
 		// exports need the name on the member itself.
-		if (options.withGroup) q.leftJoinAndSelect("members.group", "group");
+		q.leftJoinAndSelect("members.groupMemberships", "groupMemberships");
+		if (options.withGroup) q.leftJoinAndSelect("groupMemberships.group", "group");
 
-		if (options.groups) q.andWhere("members.groupId IN (:...groupIds)", { groupIds: options.groups });
+		if (options.noGroup)
+			q.andWhere("NOT EXISTS (SELECT 1 FROM members_groups mg_none WHERE mg_none.member_id = members.id)");
+
+		if (options.groups?.length) {
+			q.setParameter("groupIds", options.groups);
+			if (options.active === true) q.andWhere(memberInGroupsSql("members", "groupIds", true));
+			else q.andWhere(memberInGroupsSql("members", "groupIds", false));
+			if (options.active === false) q.andWhere(`NOT ${memberInGroupsSql("members", "groupIds", true)}`);
+		}
 
 		if (options.search) {
 			const search = toPrefixTsQuery(options.search);
@@ -170,14 +184,11 @@ export class MembersRepository {
 		// ones who paid the season's fee stay. Their money is in the totals above the table, so the
 		// row it came from cannot be missing from the table itself — it is shown dimmed, as inactive
 		// members are everywhere.
-		if (options.active !== undefined) {
+		if (options.active !== undefined && !options.groups?.length) {
+			const activeCondition = options.active ? memberActiveSql("members") : `NOT ${memberActiveSql("members")}`;
 			if (options.includeMembershipPaid)
-				q.andWhere(
-					new Brackets((qb) =>
-						qb.where("members.active = :active", { active: options.active }).orWhere(membershipPaid),
-					),
-				);
-			else q.andWhere("members.active = :active", { active: options.active });
+				q.andWhere(new Brackets((qb) => qb.where(activeCondition).orWhere(membershipPaid)));
+			else q.andWhere(activeCondition);
 		}
 
 		const members = await q.getMany();
@@ -250,7 +261,7 @@ export class MembersRepository {
 			...options,
 			// The membership is part of every member the API hands out (see getMembers), so it is
 			// always loaded — a caller's relations only add to it.
-			relations: { membership: true, ...options?.relations },
+			relations: { membership: true, groupMemberships: true, ...options?.relations },
 		});
 	}
 
@@ -277,11 +288,20 @@ export class MembersRepository {
 		return this.membersRepository.delete({ id });
 	}
 
-	async createMember(memberData: Partial<Omit<Member, "id">>) {
-		return this.membersRepository.save(memberData);
+	async createMember(memberData: Partial<Omit<Member, "id" | "groupId" | "active">>, groupId?: number | null) {
+		return this.membersRepository.manager.transaction(async (t) => {
+			const member = await t.save(Member, t.create(Member, memberData));
+			if (groupId)
+				await this.groupMemberships.createMembership(
+					member.id,
+					{ groupId, yearFrom: new Date().getFullYear(), yearTill: null, active: true },
+					t,
+				);
+			return t.findOneOrFail(Member, { where: { id: member.id }, relations: { groupMemberships: true } });
+		});
 	}
 
-	async updateMember(id: number, memberData: Partial<Omit<Member, "id">>) {
+	async updateMember(id: number, memberData: Partial<Omit<Member, "id" | "groupId" | "active">>) {
 		return this.membersRepository.update(id, memberData);
 	}
 

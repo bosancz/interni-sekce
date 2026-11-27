@@ -15,7 +15,6 @@ export enum MemberMergeFields {
 	role = "role",
 	rank = "rank",
 	function = "function",
-	active = "active",
 	birthday = "birthday",
 	address = "address",
 	mobile = "mobile",
@@ -27,15 +26,16 @@ export enum MemberMergeFields {
 	user = "user",
 }
 
-const MEMBER_MERGE_COLUMNS: Record<Exclude<MemberMergeFields, MemberMergeFields.user>, (keyof Member)[]> = {
+const MEMBER_MERGE_COLUMNS: Record<
+	Exclude<MemberMergeFields, MemberMergeFields.user | MemberMergeFields.groupId>,
+	(keyof Member)[]
+> = {
 	nickname: ["nickname"],
 	firstName: ["firstName"],
 	lastName: ["lastName"],
-	groupId: ["groupId"],
 	role: ["role"],
 	rank: ["rank"],
 	function: ["function"],
-	active: ["active"],
 	birthday: ["birthday"],
 	address: ["addressStreet", "addressStreetNo", "addressCity", "addressPostalCode", "addressCountry"],
 	mobile: ["mobile"],
@@ -118,6 +118,7 @@ export class MemberMergeService {
 			await this.mergeContacts(t, targetId, sourceId);
 			await this.mergeAchievements(t, targetId, sourceId);
 			await this.mergeMembershipPayments(t, targetId, sourceId);
+			await this.mergeGroupMemberships(t, targetId, sourceId, fields.has(MemberMergeFields.groupId));
 			await this.mergeUser(t, targetId, sourceId, fields.has(MemberMergeFields.user));
 			await t.query(`UPDATE groups SET leader_id = $1 WHERE leader_id = $2`, [targetId, sourceId]);
 			await t.query(
@@ -255,6 +256,18 @@ export class MemberMergeService {
 		);
 
 		await t.query(`UPDATE membership_payments SET member_id = $1 WHERE member_id = $2`, [targetId, sourceId]);
+	}
+
+	private async mergeGroupMemberships(t: EntityManager, targetId: number, sourceId: number, fromSource: boolean) {
+		const [closedId, keptId] = fromSource ? [targetId, sourceId] : [sourceId, targetId];
+		await t.query(
+			`UPDATE members_groups SET active = false, year_till = GREATEST(year_from, EXTRACT(YEAR FROM CURRENT_DATE)::int)
+			WHERE member_id = $1 AND active
+			AND EXISTS (SELECT 1 FROM members_groups WHERE member_id = $2 AND active)`,
+			[closedId, keptId],
+		);
+
+		await t.query(`UPDATE members_groups SET member_id = $1 WHERE member_id = $2`, [targetId, sourceId]);
 	}
 
 	private async mergeUser(t: EntityManager, targetId: number, sourceId: number, fromSource: boolean) {

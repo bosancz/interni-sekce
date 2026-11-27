@@ -4,6 +4,7 @@ import { FilesModule } from "src/models/files/files.module";
 import { SettingsModelModule } from "src/models/settings/settings-model.module";
 import { BoardMember } from "./entities/board-member.entity";
 import { Group } from "./entities/group.entity";
+import { GroupMembership } from "./entities/group-membership.entity";
 import { MemberAchievement } from "./entities/member-achievements.entity";
 import { MemberContact } from "./entities/member-contact.entity";
 import { MemberTraining } from "./entities/member-training.entity";
@@ -12,6 +13,7 @@ import { MembershipPayment } from "./entities/membership-payment.entity";
 import { MemberAchievementsRepository } from "./repositories/member-achievements.repository";
 import { MemberTrainingsRepository } from "./repositories/member-trainings.repository";
 import { BoardMembersRepository } from "./repositories/board-members.repository";
+import { GroupMembershipsRepository } from "./repositories/group-memberships.repository";
 import { GroupsRepository } from "./repositories/groups.repository";
 import { MembersRepository } from "./repositories/members.repository";
 import { MemberMergeService } from "./services/member-merge.service";
@@ -28,6 +30,7 @@ import { MembersExportService } from "./services/members-export.service";
 			MemberTraining,
 			MembershipPayment,
 			Group,
+			GroupMembership,
 			BoardMember,
 		]),
 		SettingsModelModule,
@@ -38,6 +41,7 @@ import { MembersExportService } from "./services/members-export.service";
 		MemberAchievementsRepository,
 		MemberTrainingsRepository,
 		GroupsRepository,
+		GroupMembershipsRepository,
 		BoardMembersRepository,
 		MembersExportService,
 		MemberPaymentRequestService,
@@ -49,6 +53,7 @@ import { MembersExportService } from "./services/members-export.service";
 		MemberAchievementsRepository,
 		MemberTrainingsRepository,
 		GroupsRepository,
+		GroupMembershipsRepository,
 		BoardMembersRepository,
 		MembersExportService,
 		MemberPaymentRequestService,

@@ -19,31 +19,10 @@
 			@let memberValue = member()!;
 			<div class="bo-info-list selectable">
 				<div class="bo-info-row">
-					<span class="bo-info-label">Aktivní</span>
-					<span class="bo-info-action">
-						<span class="bo-info-value">{{
-							memberValue.active === undefined ? "-" : memberValue.active ? "Ano" : "Ne"
-						}}</span>
-						<bo-edit-button
-							[disabled]="!memberValue._links.updateMember.allowed"
-							(click)="editActivity()"
-						/>
-					</span>
-				</div>
-
-				<div class="bo-info-row">
 					<span class="bo-info-label">Role</span>
 					<span class="bo-info-action">
 						<span class="bo-info-value">{{ (memberValue | member: "role") || "-" }}</span>
 						<bo-edit-button [disabled]="!memberValue._links.updateMember.allowed" (click)="editRole()" />
-					</span>
-				</div>
-
-				<div class="bo-info-row">
-					<span class="bo-info-label">Oddíl</span>
-					<span class="bo-info-action">
-						<bo-group-badge [groupId]="memberValue.groupId"></bo-group-badge>
-						<bo-edit-button [disabled]="!memberValue._links.updateMember.allowed" (click)="editGroup()" />
 					</span>
 				</div>
 

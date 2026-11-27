@@ -38,6 +38,12 @@
 	.people-status-column {
 		white-space: nowrap;
 	}
+
+	.people-status-years {
+		margin-inline-start: 6px;
+		color: var(--ion-color-medium);
+		font-size: 0.85em;
+	}
 }
 
 :host ::ng-deep admin-table {

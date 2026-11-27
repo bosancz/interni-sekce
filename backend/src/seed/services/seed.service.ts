@@ -12,6 +12,7 @@ import { EventExpense } from "src/models/events/entities/event-expense.entity";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { BoardMember } from "src/models/members/entities/board-member.entity";
 import { Group } from "src/models/members/entities/group.entity";
+import { GroupMembership } from "src/models/members/entities/group-membership.entity";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberTraining } from "src/models/members/entities/member-training.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
@@ -29,6 +30,7 @@ import {
 	SeedEventSchedules,
 	SeedEvents,
 	SeedGroups,
+	SeedMember,
 	SeedMembers,
 	SeedPhoto,
 	SeedUsers,
@@ -192,6 +194,37 @@ export class SeedService {
 		}
 	}
 
+	private async seedGroupMemberships(
+		t: EntityManager,
+		memberId: number,
+		groupId: number,
+		seedMember: SeedMember,
+		groupIds: Map<string, number>,
+	) {
+		await t.delete(GroupMembership, { memberId });
+
+		const currentYear = new Date().getFullYear();
+		const yearFrom = Math.min(seedMember.groupSince ?? currentYear - 2, currentYear);
+		const memberships = [
+			...(seedMember.pastGroups ?? []).map((past) => {
+				const pastGroupId = groupIds.get(past.group);
+				if (!pastGroupId) throw new Error(`Unknown group '${past.group}' for member '${seedMember.nickname}'.`);
+				return { groupId: pastGroupId, yearFrom: past.yearFrom, yearTill: past.yearTill, active: false };
+			}),
+			{
+				groupId,
+				yearFrom,
+				yearTill: (seedMember.active ?? true) ? null : Math.max(yearFrom, currentYear - 1),
+				active: seedMember.active ?? true,
+			},
+		];
+
+		await t.insert(
+			GroupMembership,
+			memberships.map((membership) => ({ ...membership, memberId })),
+		);
+	}
+
 	private async seedMembers(t: EntityManager, groupIds: Map<string, number>) {
 		const memberIds = new Map<string, number>();
 
@@ -207,12 +240,10 @@ export class SeedService {
 
 			const member = await t.save(Member, {
 				...(existing ? { id: existing.id } : {}),
-				groupId,
 				nickname: seedMember.nickname,
 				role: seedMember.role,
 				rank: seedMember.rank ?? null,
 				function: seedMember.function ?? null,
-				active: seedMember.active ?? true,
 				firstName: seedMember.firstName ?? null,
 				lastName: seedMember.lastName ?? null,
 				birthday: seedMember.birthday ?? null,
@@ -228,6 +259,8 @@ export class SeedService {
 			});
 
 			memberIds.set(seedMember.nickname, member.id);
+
+			await this.seedGroupMemberships(t, member.id, groupId, seedMember, groupIds);
 
 			// Membership is the list of fees the member has paid — one row per season, so a seeded
 			// member is "zaplaceno" for this year exactly when that row exists (helpers/membership.ts).

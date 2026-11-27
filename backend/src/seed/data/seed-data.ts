@@ -32,9 +32,17 @@ export interface SeedMemberContact {
 	isDefault?: boolean;
 }
 
+export interface SeedGroupMembership {
+	group: string;
+	yearFrom: number;
+	yearTill: number;
+}
+
 export interface SeedMember {
 	nickname: string;
 	group: string;
+	groupSince?: number;
+	pastGroups?: SeedGroupMembership[];
 	role: MemberRoles;
 	rank?: MemberRanks;
 	function?: string;
@@ -244,6 +252,8 @@ export const SeedMembers: SeedMember[] = [
 	{
 		nickname: "Beorn (vedoucí)",
 		group: "KP",
+		groupSince: 2017,
+		pastGroups: [{ group: "T", yearFrom: 2008, yearTill: 2016 }],
 		role: MemberRoles.vedouci,
 		rank: MemberRanks.vedouci,
 		function: "strážce brodu",
@@ -452,6 +462,8 @@ export const SeedMembers: SeedMember[] = [
 		lastName: "Skřet",
 		birthday: "1968-10-31",
 		mobile: "777 000 022",
+		groupSince: 2015,
+		pastGroups: [{ group: "T", yearFrom: 2005, yearTill: 2014 }],
 		active: false,
 	},
 	{

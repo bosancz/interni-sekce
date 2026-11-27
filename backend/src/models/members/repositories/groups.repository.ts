@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { ListGroupsQuery } from "src/api/members/dto/group.dto";
 import { Brackets, Repository, SelectQueryBuilder } from "typeorm";
 import { Group } from "../entities/group.entity";
+import { GroupMembership } from "../entities/group-membership.entity";
 import { Member } from "../entities/member.entity";
 
 @Injectable()
@@ -35,9 +36,13 @@ export class GroupsRepository {
 						.subQuery()
 						.select("COUNT(*)")
 						.from(Member, "members")
-						.where("members.groupId = groups.id")
+						.innerJoin(
+							GroupMembership,
+							"membership",
+							"membership.member_id = members.id AND membership.active",
+						)
+						.where("membership.group_id = groups.id")
 						.andWhere("members.deletedAt IS NULL")
-						.andWhere("members.active = true")
 						.andWhere("members.role = 'dite'"),
 				"groups_childrenCount",
 			);
@@ -48,9 +53,13 @@ export class GroupsRepository {
 						.subQuery()
 						.select("COUNT(*)")
 						.from(Member, "members")
-						.where("members.groupId = groups.id")
+						.innerJoin(
+							GroupMembership,
+							"membership",
+							"membership.member_id = members.id AND membership.active",
+						)
+						.where("membership.group_id = groups.id")
 						.andWhere("members.deletedAt IS NULL")
-						.andWhere("members.active = true")
 						.andWhere("members.role IN ('instruktor', 'vedouci')"),
 				"groups_leadersCount",
 			);

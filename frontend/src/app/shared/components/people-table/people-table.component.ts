@@ -79,6 +79,7 @@ export class PeopleTableComponent {
 	member = input<(row: any) => SDK.MemberResponse | undefined>((row) => row);
 	role = input<((row: any) => SDK.MemberRolesEnum | undefined) | null>(null);
 	ageAt = input<string | null | undefined>(null);
+	activeInGroup = input<number | null>(null);
 
 	readonly nicknameSuffix = contentChild(PeopleNicknameSuffixDirective);
 
@@ -111,6 +112,29 @@ export class PeopleTableComponent {
 
 	memberOf(row: any): SDK.MemberResponse | undefined {
 		return this.member()(row);
+	}
+
+	isActive(row: any): boolean {
+		const member = this.memberOf(row);
+		const groupId = this.activeInGroup();
+		return groupId === null ? !!member?.active : member?.groupId === groupId;
+	}
+
+	pastYearsInGroup(row: any): string | null {
+		const groupId = this.activeInGroup();
+		if (groupId === null) return null;
+		const memberships = (this.memberOf(row)?.groupMemberships ?? []).filter(
+			(membership) => membership.groupId === groupId && !membership.active,
+		);
+		if (!memberships.length) return null;
+		const tills = memberships.map((membership) => membership.yearTill);
+		const froms = memberships.map((membership) => membership.yearFrom);
+		const till = tills.includes(null) ? null : Math.max(...(tills as number[]));
+		const from = froms.includes(null) ? null : Math.min(...(froms as number[]));
+		if (from === null && till === null) return null;
+		if (from === null) return `do ${till}`;
+		if (till === null) return `od ${from}`;
+		return from === till ? String(from) : `${from}–${till}`;
 	}
 
 	roleOf(row: any): SDK.MemberRolesEnum | undefined {

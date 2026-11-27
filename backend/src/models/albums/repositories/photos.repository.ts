@@ -1,3 +1,4 @@
+import { memberActiveSql } from "src/models/members/helpers/group-memberships";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { extname } from "path";
@@ -313,7 +314,7 @@ export class PhotosRepository {
 					WHERE faces.photo_id = photos.id
 						AND faces.emotion = :emotion
 						AND members.role IN (:...roles)
-						AND members.active = true
+						AND ${memberActiveSql("members")}
 						AND members.deleted_at IS NULL
 				)`,
 				{ roles: DAILY_PHOTO_ROLES, emotion: FaceEmotion.happy },

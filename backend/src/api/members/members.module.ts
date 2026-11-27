@@ -12,6 +12,7 @@ import { GroupProfilePhotoController } from "./controllers/group-profile-photo.c
 import { GroupsController } from "./controllers/groups.controller";
 import { MemberAchievementsController } from "./controllers/member-achievements.controller";
 import { MemberTrainingsBulkController } from "./controllers/member-trainings-bulk.controller";
+import { GroupMembershipsController } from "./controllers/group-memberships.controller";
 import { MemberTrainingsController } from "./controllers/member-trainings.controller";
 import { MemberContactsController } from "./controllers/member-contacts.controller";
 import { MemberInsuranceCardController } from "./controllers/member-insurance-card.controller";
@@ -32,6 +33,7 @@ import { MembersExportController } from "./controllers/members-export.controller
 		MemberContactsController,
 		MemberAchievementsController,
 		MemberTrainingsController,
+		GroupMembershipsController,
 		MemberTrainingsBulkController,
 		MemberMembershipController,
 		MemberPaymentRequestController,

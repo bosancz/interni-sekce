@@ -1,3 +1,4 @@
+import { memberActiveSql } from "src/models/members/helpers/group-memberships";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { toPrefixTsQuery } from "src/helpers/search";
@@ -69,7 +70,7 @@ export class UsersRepository {
 					qb.where("false");
 					if (assignedRoles.length)
 						qb.orWhere("user.roles && array[:...assignedRoles]::users_roles_enum[]", { assignedRoles });
-					if (roles.includes(UserDynamicRoles.vedouci)) qb.orWhere("member.active = true");
+					if (roles.includes(UserDynamicRoles.vedouci)) qb.orWhere(memberActiveSql("member"));
 					if (roles.includes(UserDynamicRoles.uzivatel)) qb.orWhere("true");
 				}),
 			);
@@ -98,7 +99,7 @@ export class UsersRepository {
 	async getUser(id: number, options: { includeMember?: boolean } = {}) {
 		const user = await this.repository.findOne({
 			where: { id },
-			relations: { member: options.includeMember ? { group: true } : true },
+			relations: { member: true },
 		});
 		if (!user) return null;
 		this.withDynamicRoles(user);

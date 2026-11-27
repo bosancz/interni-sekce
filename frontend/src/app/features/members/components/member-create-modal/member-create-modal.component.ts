@@ -47,11 +47,13 @@ export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCr
 
 	showValidationErrors = signal(false);
 
+	readonly currentYear = new Date().getFullYear();
+
 	form = new FormGroup({
 		nickname: new FormControl<string>("", { nonNullable: true, validators: [Validators.required] }),
 		firstName: new FormControl<string>("", { nonNullable: true }),
 		lastName: new FormControl<string>("", { nonNullable: true }),
-		groupId: new FormControl<number | null>(null, { validators: [Validators.required] }),
+		groupId: new FormControl<number | null>(null),
 		role: new FormControl<SDK.MemberCreateBodyRoleEnum | null>(null, { validators: [Validators.required] }),
 	});
 
@@ -81,7 +83,7 @@ export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCr
 		const value = this.form.getRawValue();
 
 		const memberData: SDK.MemberCreateBody = {
-			groupId: value.groupId!,
+			groupId: value.groupId ?? null,
 			nickname: value.nickname,
 			role: value.role!,
 			firstName: value.firstName || null,

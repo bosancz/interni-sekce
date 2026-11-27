@@ -1,3 +1,4 @@
+import { GroupMembership } from "src/models/members/entities/group-membership.entity";
 import { Injectable, Logger } from "@nestjs/common";
 import { DateTime } from "luxon";
 import mongoose, { Model } from "mongoose";
@@ -135,6 +136,7 @@ export class MongoImportService {
 		await this.clearJoinTable(t, "events_groups");
 		await this.clearTable(t, Event);
 		await this.clearTable(t, MemberContact);
+		await this.clearTable(t, GroupMembership);
 		await this.clearTable(t, Member);
 		await this.clearTable(t, User);
 		await this.clearTable(t, Group);
@@ -215,10 +217,8 @@ export class MongoImportService {
 					? roleTransform[mongoMember.role]
 					: MemberRoles.dite;
 
-			const memberData: Omit<Member, "id"> = {
+			const memberData: Omit<Member, "id" | "groupId" | "active"> = {
 				function: mongoMember.function ?? null,
-				groupId,
-				active: mongoMember.inactive === false ? true : false,
 				// The legacy database has no per-year membership fees — imported members start
 				// with no year paid and the fees are recorded here from now on.
 				membership: [],
@@ -240,6 +240,14 @@ export class MongoImportService {
 			const member = await t.save(Member, memberData);
 
 			memberIds[mongoMember._id.toString()] = member.id;
+
+			await t.insert(GroupMembership, {
+				memberId: member.id,
+				groupId,
+				yearFrom: null,
+				yearTill: null,
+				active: mongoMember.inactive === false,
+			});
 
 			if (mongoMember.contacts?.father) {
 				const contactData: Omit<MemberContact, "id"> = {

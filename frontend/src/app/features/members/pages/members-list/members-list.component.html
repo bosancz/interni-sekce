@@ -50,7 +50,7 @@
 		(sortChange)="onSortChange($event)"
 	/>
 
-	@if (members()?.length) {
+	@if (members()?.length && !noGroupSelected()) {
 		<p class="ion-padding members-active-toggle">
 			@if ((filter["active"] || "active") !== "all") {
 				Zobrazeni pouze aktivní členové.

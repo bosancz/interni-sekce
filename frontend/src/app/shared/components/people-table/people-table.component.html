@@ -53,8 +53,8 @@
 	cellClass="align-middle"
 >
 	<ng-container *adminCell="let row">
-		@if (memberOf(row); as member) {
-			<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
+		@if (memberOf(row)?.groupId; as groupId) {
+			<bo-group-badge [groupId]="groupId"></bo-group-badge>
 		}
 	</ng-container>
 </admin-table-column>
@@ -174,10 +174,13 @@
 	cellClass="people-status-column"
 >
 	<ng-container *adminCell="let row">
-		@if (memberOf(row)?.active) {
+		@if (isActive(row)) {
 			<span class="bo-pill bo-pill-green">AKTIVNÍ</span>
 		} @else {
 			<span class="bo-pill">NEAKTIVNÍ</span>
+			@if (pastYearsInGroup(row); as years) {
+				<span class="people-status-years">{{ years }}</span>
+			}
 		}
 	</ng-container>
 </admin-table-column>
