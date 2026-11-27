@@ -19,6 +19,7 @@ export interface GetEventsOptions extends PaginationOptions {
 	status?: string[];
 	search?: string;
 	memberId?: number;
+	leaderId?: number;
 	noleader?: boolean;
 	deleted?: boolean;
 	dateFrom?: string;
@@ -95,6 +96,12 @@ export class EventsRepository {
 		}
 
 		if (options.memberId) q.andWhere("attendees.member_id = :memberId", { memberId: options.memberId });
+
+		if (options.leaderId)
+			q.andWhere(
+				"EXISTS (SELECT 1 FROM events_attendees ea WHERE ea.event_id = events.id AND ea.type = 'leader' AND ea.member_id = :leaderId)",
+				{ leaderId: options.leaderId },
+			);
 
 		if (options.noleader) q.andWhere("attendees.member_id IS NULL");
 

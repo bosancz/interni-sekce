@@ -1,0 +1,68 @@
+<div
+	class="member-events-wrapper"
+	(pointerover)="preview.hover($event)"
+	(pointermove)="preview.hover($event)"
+	(pointerleave)="preview.clear()"
+	(pointerdown)="preview.clear()"
+>
+	<admin-table
+		class="member-events-table"
+		[rows]="events()"
+		[loading]="loading()"
+		[rowLink]="rowLink"
+		[rowId]="rowId"
+		[sort]="sort()"
+		[order]="order()"
+		(sortChange)="onSortChange($event)"
+	>
+		<admin-table-column
+			header="Název"
+			sort="name"
+			[primary]="true"
+			cellClass="member-events-name-column"
+			headerClass="align-middle member-events-name-column"
+		>
+			<ng-container *adminCell="let event">{{ event.name }}</ng-container>
+		</admin-table-column>
+
+		<admin-table-column
+			header="Datum"
+			sort="dateFrom"
+			cellClass="member-events-date-column"
+			headerClass="member-events-date-column align-middle"
+		>
+			<ng-container *adminCell="let event">
+				{{ event.dateFrom | date: "EEEEEE d. M." }} -
+				{{ event.dateTill | date: "EEEEEE d. M. y" }}
+			</ng-container>
+		</admin-table-column>
+
+		<admin-table-column
+			header="Stav"
+			sort="status"
+			[right]="true"
+			cellClass="member-events-status-column"
+			headerClass="member-events-status-column"
+		>
+			<ng-container *adminCell="let event">
+				<bo-event-status-badge [event]="event" />
+			</ng-container>
+		</admin-table-column>
+
+		<admin-table-column
+			header="Vedoucí"
+			cellClass="member-events-leaders-column"
+			headerClass="member-events-leaders-column"
+		>
+			<ng-container *adminCell="let event">
+				<bo-event-leaders-inline [leaders]="event.leaders" />
+			</ng-container>
+		</admin-table-column>
+	</admin-table>
+
+	@if (!loading() && !events().length) {
+		<p class="text-muted text-center my-4">Žádné vedené akce.</p>
+	}
+</div>
+
+<bo-event-hover-preview #preview [events]="events()" />

@@ -12159,6 +12159,14 @@ export namespace SDK {
          */
         search?: string
     
+        //leaderId
+        /**
+         * 
+         * @type {number}
+         * @memberof EventsApiExportEventsProgram
+         */
+        leaderId?: number
+    
         //my
         /**
          * 
@@ -12352,6 +12360,14 @@ export namespace SDK {
          * @memberof EventsApiListEvents
          */
         search?: string
+    
+        //leaderId
+        /**
+         * 
+         * @type {number}
+         * @memberof EventsApiListEvents
+         */
+        leaderId?: number
     
         //my
         /**
@@ -13133,6 +13149,10 @@ export namespace SDK {
                 requestQueryParameter['search'] = queryParams.search;
             }
     
+            if (queryParams.leaderId !== undefined) {
+                requestQueryParameter['leaderId'] = queryParams.leaderId;
+            }
+    
             if (queryParams.my !== undefined) {
                 requestQueryParameter['my'] = queryParams.my;
             }
@@ -13837,6 +13857,10 @@ export namespace SDK {
     
             if (queryParams.search !== undefined) {
                 requestQueryParameter['search'] = queryParams.search;
+            }
+    
+            if (queryParams.leaderId !== undefined) {
+                requestQueryParameter['leaderId'] = queryParams.leaderId;
             }
     
             if (queryParams.my !== undefined) {

@@ -113,23 +113,7 @@
 
 			<admin-table-column header="Vedoucí" cellClass="events-leaders-column" headerClass="events-leaders-column">
 				<ng-container *adminCell="let event">
-					@for (leader of event.leaders; track leader.id; let isLast = $last) {
-						<span class="leader"
-							><span class="leader-avatar" [style.background-color]="leader.groupId | group: 'color'">
-								@if (leader | memberProfilePhotoUrl; as photoUrl) {
-									<img [src]="photoUrl" alt="" />
-								} @else {
-									@let initial = (leader | member: "nickname")?.charAt(0);
-									<span class="bo-initial" [class.bo-initial-accent]="initial | accentAbove">{{
-										initial
-									}}</span>
-								}</span
-							>{{ leader | member: "nickname" }}{{ isLast ? "" : "," }}</span
-						>
-					}
-					@if (!event.leaders?.length) {
-						<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
-					}
+					<bo-event-leaders-inline [leaders]="event.leaders" />
 				</ng-container>
 			</admin-table-column>
 		</admin-table>

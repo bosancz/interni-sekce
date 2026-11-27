@@ -1,0 +1,34 @@
+:host {
+	display: block;
+}
+
+:host ::ng-deep admin-table .table-responsive {
+	margin-inline: 0;
+}
+
+:host ::ng-deep .member-events-table {
+	table-layout: fixed;
+	width: 100%;
+}
+
+:host ::ng-deep .member-events-table .member-events-name-column {
+	width: 32%;
+	white-space: normal;
+}
+
+:host ::ng-deep .member-events-table .member-events-date-column {
+	width: 24%;
+}
+
+:host ::ng-deep .member-events-table .member-events-status-column {
+	width: 16%;
+}
+
+:host ::ng-deep .member-events-table .member-events-leaders-column {
+	width: 28%;
+	white-space: normal;
+}
+
+:host ::ng-deep .member-events-table tbody tr {
+	cursor: pointer;
+}

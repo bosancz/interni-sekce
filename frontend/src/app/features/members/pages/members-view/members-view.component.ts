@@ -1,9 +1,16 @@
-import { Component, computed, DestroyRef, ElementRef, OnInit, signal } from "@angular/core";
+import { Component, computed, DestroyRef, ElementRef, OnInit, signal, viewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { callOutline, gitMergeOutline, imagesOutline, medkitOutline, personCircleOutline } from "ionicons/icons";
+import {
+	calendarOutline,
+	callOutline,
+	gitMergeOutline,
+	imagesOutline,
+	medkitOutline,
+	personCircleOutline,
+} from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { TitleService } from "src/app/core/services/title.service";
@@ -29,6 +36,7 @@ import { MemberMergeModalComponent } from "../../components/member-merge-modal/m
 import { MemberGroupMembershipsComponent } from "../../components/member-group-memberships/member-group-memberships.component";
 import { MemberMembershipComponent } from "../../components/member-membership/member-membership.component";
 import { MemberPaymentComponent } from "../../components/member-payment/member-payment.component";
+import { MemberEventsComponent } from "../../components/member-events/member-events.component";
 import { MemberPhotosComponent } from "../../components/member-photos/member-photos.component";
 import { MemberProfileComponent } from "../../components/member-profile/member-profile.component";
 
@@ -55,13 +63,16 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 		MemberContactsComponent,
 		GroupBadgeComponent,
 		MemberPhotosComponent,
+		MemberEventsComponent,
 		VerticalMenuComponent,
 		VerticalMenuItemComponent,
 	],
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {
 	member = signal<SDK.MemberResponseWithLinks | undefined>(undefined);
-	view = signal<"health" | "contacts" | "profile" | "photos">("profile");
+	view = signal<"health" | "contacts" | "profile" | "events" | "photos">("profile");
+
+	private memberEvents = viewChild(MemberEventsComponent);
 
 	// actions that do not apply to the member are hidden,
 	// actions that apply but the user is not permitted to use are shown disabled
@@ -108,7 +119,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		destroyRef: DestroyRef,
 	) {
 		destroyRef.onDestroy(() => this.titleService.removePageTitle(this.el.nativeElement));
-		addIcons({ personCircleOutline, medkitOutline, callOutline, imagesOutline, gitMergeOutline });
+		addIcons({ calendarOutline, personCircleOutline, medkitOutline, callOutline, imagesOutline, gitMergeOutline });
 	}
 
 	ngOnInit() {
@@ -117,9 +128,13 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		});
 	}
 
-	ionViewWillEnter(): void {}
+	ionViewWillEnter(): void {
+		this.memberEvents()?.resume();
+	}
 
-	ionViewWillLeave(): void {}
+	ionViewWillLeave(): void {
+		this.memberEvents()?.pause();
+	}
 
 	async loadMember(id: number) {
 		const member = await this.api.MembersApi.getMember(id).then((res) => res.data);

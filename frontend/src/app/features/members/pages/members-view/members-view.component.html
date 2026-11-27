@@ -13,6 +13,7 @@
 				<bo-vertical-menu-item name="profile" label="Profil" icon="person-circle-outline" />
 				<bo-vertical-menu-item name="health" label="Zdraví" icon="medkit-outline" />
 				<bo-vertical-menu-item name="contacts" label="Kontakty" icon="call-outline" />
+				<bo-vertical-menu-item name="events" label="Akce" icon="calendar-outline" />
 				@if (member()?._links?.listMemberPhotos?.allowed) {
 					<bo-vertical-menu-item name="photos" label="Fotky" icon="images-outline" />
 				}
@@ -64,6 +65,10 @@
 				</div>
 			</div>
 
+			<div [class.d-none]="view() !== 'events'">
+				<bo-member-events [member]="member()" [active]="view() === 'events'" />
+			</div>
+
 			@if (member()?._links?.listMemberPhotos?.allowed) {
 				<div class="photos-col" [class.d-none]="view() !== 'photos'">
 					<bo-member-photos [member]="member()" [active]="view() === 'photos'" />
@@ -78,6 +83,7 @@
 		<bo-tab name="profile" label="Profil" icon="person-circle-outline"></bo-tab>
 		<bo-tab name="health" label="Zdraví" icon="medkit-outline" color="var(--san-red)"></bo-tab>
 		<bo-tab name="contacts" label="Kontakty" icon="call-outline"></bo-tab>
+		<bo-tab name="events" label="Akce" icon="calendar-outline"></bo-tab>
 		@if (member()?._links?.listMemberPhotos?.allowed) {
 			<bo-tab name="photos" label="Fotky" icon="images-outline"></bo-tab>
 		}
