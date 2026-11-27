@@ -50,7 +50,12 @@
 							<span class="mm-member-name">{{
 								member.nickname || member.firstName || "#" + member.id
 							}}</span>
-							<span class="mm-member-meta">{{ member.groupId | group: "name" }} · #{{ member.id }}</span>
+							<span class="mm-member-meta">
+								@if (member.groupId) {
+									{{ member.groupId | group: "name" }} ·
+								}
+								#{{ member.id }}
+							</span>
 						</span>
 						<span class="mm-pill" [class.keep]="isTarget">{{ isTarget ? "Zůstane" : "Bude smazán" }}</span>
 					</button>

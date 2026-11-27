@@ -30,9 +30,11 @@
 								<h4>{{ member.nickname || member.firstName || "?" }}</h4>
 								<p>
 									{{ member.firstName }} {{ member.lastName }}
-									<span [style.color]="member.groupId | group: 'color'">
-										&middot; {{ member.groupId | group: "name" }}
-									</span>
+									@if (member.groupId) {
+										<span [style.color]="member.groupId | group: 'color'">
+											&middot; {{ member.groupId | group: "name" }}
+										</span>
+									}
 								</p>
 							</ion-label>
 						</ion-item>
