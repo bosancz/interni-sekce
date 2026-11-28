@@ -1,0 +1,157 @@
+.camps {
+	padding: 0 16px 16px;
+
+	@media (min-width: 576px) {
+		padding: 0 32px 32px;
+	}
+}
+
+.filter-actions {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.filter-modal {
+	padding: 8px 12px 4px;
+
+	bo-filter-pill {
+		display: block;
+	}
+}
+
+.year {
+	display: grid;
+	grid-template-columns: 88px minmax(0, 1fr);
+	gap: 8px 16px;
+	padding: 20px 0;
+	border-top: 1px solid var(--bo-line);
+
+	&:first-child {
+		border-top: none;
+	}
+
+	@media (max-width: 767.98px) {
+		grid-template-columns: minmax(0, 1fr);
+		padding: 16px 0;
+	}
+}
+
+.year-head {
+	h2 {
+		margin: 0;
+		font-family: var(--font-san);
+		font-size: 1.75rem;
+		line-height: 1.1;
+		color: var(--bo-blue);
+	}
+
+	@media (max-width: 767.98px) {
+		display: flex;
+		align-items: baseline;
+		flex-wrap: wrap;
+		gap: 4px 12px;
+	}
+}
+
+.theme {
+	margin-top: 2px;
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--bo-blue);
+}
+
+.tiles {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: 12px;
+}
+
+.tile-skeleton {
+	height: 84px;
+	margin: 0;
+	border-radius: var(--bo-radius-card);
+}
+
+.camp {
+	display: flex;
+	gap: 12px;
+	padding: 12px 14px;
+	border: 1px solid var(--bo-line);
+	border-radius: var(--bo-radius-card);
+	background: var(--bo-white);
+	color: inherit;
+	text-decoration: none;
+	transition:
+		border-color 0.15s,
+		box-shadow 0.15s;
+
+	&:hover {
+		border-color: var(--bo-blue);
+		box-shadow: 0 2px 8px rgba(42, 52, 120, 0.12);
+	}
+
+	&.trip {
+		background: var(--bo-yellow-tint);
+	}
+}
+
+.camp-icon {
+	flex: 0 0 40px;
+	width: 40px;
+	height: 40px;
+}
+
+.camp-body {
+	min-width: 0;
+	flex: 1;
+}
+
+.camp-name {
+	font-weight: 700;
+	line-height: 1.25;
+}
+
+.camp-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0 10px;
+	margin-top: 2px;
+	color: var(--bo-muted);
+	font-size: 0.875rem;
+}
+
+.camp-details {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 10px;
+	margin-top: 8px;
+	font-size: 0.875rem;
+
+	.leaders {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.count {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		color: var(--bo-muted);
+	}
+
+	.album {
+		color: var(--bo-muted);
+		font-size: 1rem;
+	}
+}
+
+.empty {
+	padding: 32px 0;
+	color: var(--bo-muted);
+	text-align: center;
+}

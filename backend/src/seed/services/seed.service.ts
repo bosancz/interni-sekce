@@ -9,7 +9,7 @@ import { Photo } from "src/models/albums/entities/photo.entity";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
-import { Event, EventStates } from "src/models/events/entities/event.entity";
+import { Event, EventKinds, EventStates } from "src/models/events/entities/event.entity";
 import { BoardMember } from "src/models/members/entities/board-member.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { GroupMembership } from "src/models/members/entities/group-membership.entity";
@@ -365,6 +365,8 @@ export class SeedService {
 				...(existing ? { id: existing.id } : {}),
 				name: seedEvent.name,
 				type: seedEvent.type,
+				kind: seedEvent.kind ?? EventKinds.akce,
+				campTheme: seedEvent.campTheme ?? null,
 				status: seedEvent.status,
 				statusNote: null,
 				publishedAt: this.isPublishedSeedStatus(seedEvent.status)

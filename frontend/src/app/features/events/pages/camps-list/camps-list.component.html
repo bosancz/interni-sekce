@@ -1,0 +1,96 @@
+<bo-page-header title="Přehled akcí" backUrl="/">
+	<bo-events-view-switch slot="title-end" class="ms-3 d-none d-lg-block" active="camps" />
+</bo-page-header>
+
+<bo-page-content>
+	<bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
+		@if (isDesktop()) {
+			<div toolbar-actions slot="end" class="filter-actions">
+				<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+			</div>
+		} @else {
+			<div class="filter-modal">
+				<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+			</div>
+		}
+	</bo-filter>
+
+	<ng-template #filterPills>
+		<bo-filter-pill label="Druh" [options]="typeOptions" [selected]="types()" (selectedChange)="setTypes($event)" />
+	</ng-template>
+
+	<div class="camps">
+		@if (years(); as years) {
+			@for (year of years; track year.year) {
+				<section class="year">
+					<header class="year-head">
+						<h2>{{ year.year }}</h2>
+					</header>
+
+					<div class="tiles">
+						@for (camp of year.camps; track camp.id) {
+							<ng-container [ngTemplateOutlet]="tile" [ngTemplateOutletContext]="{ $implicit: camp }" />
+						}
+						@for (camp of year.trips; track camp.id) {
+							<ng-container [ngTemplateOutlet]="tile" [ngTemplateOutletContext]="{ $implicit: camp }" />
+						}
+					</div>
+				</section>
+			} @empty {
+				<p class="empty">Žádný tábor neodpovídá filtru.</p>
+			}
+		} @else {
+			@for (i of [1, 2, 3]; track i) {
+				<section class="year">
+					<header class="year-head">
+						<ion-skeleton-text animated style="width: 4rem; height: 1.5rem" />
+					</header>
+					<div class="tiles">
+						<ion-skeleton-text animated class="tile-skeleton" />
+						<ion-skeleton-text animated class="tile-skeleton" />
+					</div>
+				</section>
+			}
+		}
+	</div>
+</bo-page-content>
+
+<ng-template #tile let-camp>
+	<a class="camp" [class.trip]="camp.kind === 'putak'" [routerLink]="['/akce', camp.id]">
+		<img class="camp-icon" [src]="campImage(camp)" alt="" />
+		<div class="camp-body">
+			<div class="camp-name">{{ camp.name | typography }}</div>
+			@if (camp.kind === "putak" ? camp.river : camp.campTheme; as detail) {
+				<div class="theme">
+					{{ detail | typography }}
+				</div>
+			}
+			<div class="camp-meta">
+				<span>{{ [camp.dateFrom, camp.dateTill] | dateRange }}</span>
+			</div>
+			@if (camp.groupsIds?.length || camp.leaders?.length || camp.childrenCount || camp.album) {
+				<div class="camp-details">
+					@if (camp.groupsIds?.length || camp.leadersEvent) {
+						<bo-event-groups [groupsIds]="camp.groupsIds" [leadersEvent]="camp.leadersEvent" />
+					}
+					@if (leaderNames(camp); as leaders) {
+						<span class="leaders">{{ leaders }}</span>
+					}
+					@if (camp.childrenCount) {
+						<span class="count" title="Počet dětí">
+							<ion-icon name="people-outline" aria-hidden="true"></ion-icon>
+							{{ camp.childrenCount | number }}
+						</span>
+					}
+					@if (camp.album) {
+						<ion-icon class="album" name="images-outline" title="Má fotogalerii"></ion-icon>
+					}
+				</div>
+			}
+		</div>
+	</a>
+</ng-template>
+
+<bo-page-footer class="d-lg-none">
+	<bo-events-view-switch variant="tabs" active="camps" />
+</bo-page-footer>

@@ -44,19 +44,6 @@
 							/>
 						}
 					</bo-item>
-					<bo-item label="Řeka" [loading]="!event()">
-						<p>{{ event()?.river || "-" }}</p>
-						@if (canEdit()) {
-							<bo-edit-button slot="end" label="Řeka" (click)="editRiver()" />
-						}
-					</bo-item>
-					<bo-item label="Typ" [loading]="!event()">
-						<bo-event-type-selector
-							[disabled]="!canEdit()"
-							[ngModel]="event()?.type"
-							(ngModelChange)="update.emit({ type: $event })"
-						></bo-event-type-selector>
-					</bo-item>
 					<bo-item label="Oddíl" [loading]="!event()">
 						<bo-group-select
 							[disabled]="!canEdit()"
@@ -68,6 +55,46 @@
 							(leadersEventChange)="update.emit({ leadersEvent: $event })"
 						></bo-group-select>
 					</bo-item>
+					<bo-item label="Druh" [loading]="!event()">
+						<bo-segmented-control
+							label="Druh akce"
+							[options]="kindOptions"
+							[value]="event()?.kind"
+							[disabled]="!canEdit()"
+							(valueChange)="setKind($event)"
+						/>
+					</bo-item>
+					@if (event()?.kind !== "tabor") {
+						<bo-item label="Typ" [loading]="!event()">
+							<bo-event-type-selector
+								[disabled]="!canEdit()"
+								[allowedTypes]="allowedTypes()"
+								[ngModel]="event()?.type"
+								(ngModelChange)="update.emit({ type: $event })"
+							></bo-event-type-selector>
+						</bo-item>
+					}
+					@if (event()?.kind === "tabor") {
+						<bo-item label="Téma CTH" [loading]="!event()">
+							<p>{{ (event()?.campTheme | typography) || "-" }}</p>
+							@if (canEdit()) {
+								<bo-edit-button-text
+									slot="end"
+									label="Téma celotáborové hry"
+									placeholder="Pán Prstenů"
+									[value]="event()?.campTheme"
+									(update)="update.emit({ campTheme: $event || null })"
+								/>
+							}
+						</bo-item>
+					} @else {
+						<bo-item label="Řeka" [loading]="!event()">
+							<p>{{ event()?.river || "-" }}</p>
+							@if (canEdit()) {
+								<bo-edit-button slot="end" label="Řeka" (click)="editRiver()" />
+							}
+						</bo-item>
+					}
 				</ion-list>
 			</bo-card-content>
 		</bo-card>

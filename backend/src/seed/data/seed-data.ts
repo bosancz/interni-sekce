@@ -1,7 +1,7 @@
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { UserSavedRoles } from "src/models/users/schema/user-roles";
 import { EventExpenseTypes } from "src/models/events/entities/event-expense.entity";
-import { EventStates } from "src/models/events/entities/event.entity";
+import { EventKinds, EventStates } from "src/models/events/entities/event.entity";
 import { GroupMeetingDays } from "src/models/members/entities/group.entity";
 import { MemberAchievementTypes } from "src/models/members/entities/member-achievements.entity";
 import { MemberTrainingTypes } from "src/models/members/entities/member-training.entity";
@@ -91,6 +91,7 @@ export enum SeedEventSchedules {
 export interface SeedEvent {
 	name: string;
 	type: string;
+	kind?: EventKinds;
 	status: EventStates;
 	schedule: SeedEventSchedules;
 	weeks: number;
@@ -99,6 +100,7 @@ export interface SeedEvent {
 	groups: string[];
 	leaders: string[];
 	attendees: string[];
+	campTheme?: string;
 	timeFrom?: string;
 	timeTill?: string;
 	meetingPlaceStart?: string;
@@ -591,6 +593,8 @@ export const SeedEvents: SeedEvent[] = [
 	{
 		name: "Tábor v Roklince",
 		type: "tábor",
+		kind: EventKinds.tabor,
+		campTheme: "Hobit",
 		status: EventStates.public,
 		schedule: SeedEventSchedules.week,
 		weeks: 17,

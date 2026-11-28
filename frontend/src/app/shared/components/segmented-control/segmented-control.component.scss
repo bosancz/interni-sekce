@@ -1,0 +1,52 @@
+:host {
+	display: inline-block;
+	max-width: 100%;
+}
+
+.segmented {
+	display: flex;
+	gap: 2px;
+	padding: 3px;
+	background: var(--bo-paper);
+	border: 1px solid var(--bo-line);
+	border-radius: 12px;
+}
+
+.segmented-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 32px;
+	padding: 0 14px;
+	border: 0;
+	border-radius: 9px;
+	background: transparent;
+	color: var(--bo-muted);
+	font-family: inherit;
+	font-size: 0.8125rem;
+	font-weight: 700;
+	white-space: nowrap;
+	cursor: pointer;
+	transition:
+		background 0.12s ease,
+		color 0.12s ease;
+
+	&:hover:not(:disabled) {
+		color: var(--bo-heading);
+	}
+
+	&.active {
+		background: var(--bo-white);
+		color: var(--bo-heading);
+		font-weight: 800;
+		box-shadow: 0 1px 3px rgba(31, 36, 48, 0.12);
+	}
+
+	&:disabled {
+		cursor: default;
+	}
+}
+
+.disabled .segmented-button:not(.active) {
+	opacity: 0.6;
+}

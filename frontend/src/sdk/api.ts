@@ -1503,6 +1503,278 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface CampAlbumResponse
+     */
+    export interface CampAlbumResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof CampAlbumResponse
+         */
+        'status': CampAlbumResponseStatusEnum;
+        /**
+         * 
+         * @type {PhotoResponse}
+         * @memberof CampAlbumResponse
+         */
+        'coverPhoto'?: PhotoResponse;
+        /**
+         * 
+         * @type {number}
+         * @memberof CampAlbumResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampAlbumResponse
+         */
+        'name': string;
+    }
+    
+    export const CampAlbumResponseStatusEnum = {
+        Public: 'public',
+        Draft: 'draft'
+    } as const;
+    
+    export type CampAlbumResponseStatusEnum = typeof CampAlbumResponseStatusEnum[keyof typeof CampAlbumResponseStatusEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @interface CampResponseWithLinks
+     */
+    export interface CampResponseWithLinks {
+        /**
+         * 
+         * @type {EventStatesEnum}
+         * @memberof CampResponseWithLinks
+         */
+        'status': EventStatesEnum;
+        /**
+         * 
+         * @type {EventKindsEnum}
+         * @memberof CampResponseWithLinks
+         */
+        'kind': EventKindsEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'publishedAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'cancelledAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'reportPublishedAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'announcementSentAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'accountingSentAt'?: string;
+        /**
+         * 
+         * @type {Array<GroupResponse>}
+         * @memberof CampResponseWithLinks
+         */
+        'groups'?: Array<GroupResponse>;
+        /**
+         * 
+         * @type {Array<EventAttendeeResponse>}
+         * @memberof CampResponseWithLinks
+         */
+        'attendees'?: Array<EventAttendeeResponse>;
+        /**
+         * 
+         * @type {Array<EventExpenseResponse>}
+         * @memberof CampResponseWithLinks
+         */
+        'expenses'?: Array<EventExpenseResponse>;
+        /**
+         * 
+         * @type {Array<MemberResponse>}
+         * @memberof CampResponseWithLinks
+         */
+        'leaders'?: Array<MemberResponse>;
+        /**
+         * 
+         * @type {CampAlbumResponse}
+         * @memberof CampResponseWithLinks
+         */
+        'album'?: CampAlbumResponse;
+        /**
+         * 
+         * @type {object}
+         * @memberof CampResponseWithLinks
+         */
+        '_links': object;
+        /**
+         * 
+         * @type {number}
+         * @memberof CampResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'name': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'dateFrom': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'dateTill': string;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof CampResponseWithLinks
+         */
+        'leadersEvent': boolean;
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof CampResponseWithLinks
+         */
+        'groupsIds': Array<number>;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof CampResponseWithLinks
+         */
+        'hasRegistration': boolean;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'type': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'statusNote': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'place': string | null;
+        /**
+         * 
+         * @type {EventPlaceGeometry}
+         * @memberof CampResponseWithLinks
+         */
+        'placeGeometry': EventPlaceGeometry | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'description': string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof CampResponseWithLinks
+         */
+        'price': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'itemList': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'timeFrom': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'timeTill': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'meetingPlaceStart': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'meetingPlaceEnd': string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof CampResponseWithLinks
+         */
+        'waterKm': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'river': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'campTheme': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof CampResponseWithLinks
+         */
+        'deletedAt'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof CampResponseWithLinks
+         */
+        'attendeesCount': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof CampResponseWithLinks
+         */
+        'childrenCount': number;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
      * @interface ChangelogResponseWithLinks
      */
     export interface ChangelogResponseWithLinks {
@@ -1812,6 +2084,18 @@ export namespace SDK {
         'river': string | null;
         /**
          * 
+         * @type {string}
+         * @memberof Event
+         */
+        'kind': EventKindEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof Event
+         */
+        'campTheme': string | null;
+        /**
+         * 
          * @type {boolean}
          * @memberof Event
          */
@@ -1875,6 +2159,13 @@ export namespace SDK {
     } as const;
     
     export type EventStatusEnum = typeof EventStatusEnum[keyof typeof EventStatusEnum];
+    export const EventKindEnum = {
+        Akce: 'akce',
+        Tabor: 'tabor',
+        Putak: 'putak'
+    } as const;
+    
+    export type EventKindEnum = typeof EventKindEnum[keyof typeof EventKindEnum];
     
     
         /**
@@ -2551,6 +2842,21 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @enum {string}
+     */
+    
+    export const EventKindsEnum = {
+        Akce: 'akce',
+        Tabor: 'tabor',
+        Putak: 'putak'
+    } as const;
+    
+    export type EventKindsEnum = typeof EventKindsEnum[keyof typeof EventKindsEnum];
+    
+    
+        /**
+     * 
+     * @export
      * @interface EventLeadersOrderBody
      */
     export interface EventLeadersOrderBody {
@@ -2622,6 +2928,12 @@ export namespace SDK {
          * @memberof EventResponse
          */
         'status': EventStatesEnum;
+        /**
+         * 
+         * @type {EventKindsEnum}
+         * @memberof EventResponse
+         */
+        'kind': EventKindsEnum;
         /**
          * 
          * @type {string}
@@ -2802,6 +3114,12 @@ export namespace SDK {
          * @memberof EventResponse
          */
         'river': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponse
+         */
+        'campTheme': string | null;
         /**
          * 
          * @type {string}
@@ -3056,6 +3374,12 @@ export namespace SDK {
         'status': EventStatesEnum;
         /**
          * 
+         * @type {EventKindsEnum}
+         * @memberof EventResponseWithLinks
+         */
+        'kind': EventKindsEnum;
+        /**
+         * 
          * @type {string}
          * @memberof EventResponseWithLinks
          */
@@ -3245,6 +3569,12 @@ export namespace SDK {
          * @type {string}
          * @memberof EventResponseWithLinks
          */
+        'campTheme': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
         'deletedAt'?: string | null;
     }
     
@@ -3293,6 +3623,12 @@ export namespace SDK {
          * @memberof EventUpdateBody
          */
         'groupsIds'?: Array<number>;
+        /**
+         * 
+         * @type {EventKindsEnum}
+         * @memberof EventUpdateBody
+         */
+        'kind'?: EventKindsEnum;
         /**
          * 
          * @type {number}
@@ -3373,6 +3709,12 @@ export namespace SDK {
         'river'?: string | null;
         /**
          * 
+         * @type {string}
+         * @memberof EventUpdateBody
+         */
+        'campTheme'?: string | null;
+        /**
+         * 
          * @type {EventUpdateBodyPlaceCoordinates}
          * @memberof EventUpdateBody
          */
@@ -3446,6 +3788,12 @@ export namespace SDK {
          * @memberof EventWithReportResponseWithLinks
          */
         'status': EventStatesEnum;
+        /**
+         * 
+         * @type {EventKindsEnum}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'kind': EventKindsEnum;
         /**
          * 
          * @type {string}
@@ -3638,6 +3986,12 @@ export namespace SDK {
          * @memberof EventWithReportResponseWithLinks
          */
         'river': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'campTheme': string | null;
         /**
          * 
          * @type {string}
@@ -10142,6 +10496,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'listCamps': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'getCPVEvents': AcLink;
         /**
          * 
@@ -12289,6 +12649,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for listEvents operation in EventsApi.
      * @export
@@ -13673,6 +14037,44 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async listCamps(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/camps`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<CampResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -22073,6 +22475,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * Query parameters for getPublicGallery operation in PublicAPIV2Api.
      * @export
@@ -22445,6 +22855,78 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicCamps(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/v2/camps`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<object>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicCampsHistory(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/v2/camps/history`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<object>>(axiosRequestConfig);
         }
     
         /**

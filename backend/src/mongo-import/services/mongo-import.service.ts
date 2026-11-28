@@ -8,7 +8,7 @@ import { Photo } from "src/models/albums/entities/photo.entity";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { getAttendeeRoleByAge } from "src/models/events/helpers/event-attendee-role";
 import { EventExpense, EventExpenseTypes } from "src/models/events/entities/event-expense.entity";
-import { Event, EventStates } from "src/models/events/entities/event.entity";
+import { Event, EventKinds, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member, MemberRanks } from "src/models/members/entities/member.entity";
@@ -333,6 +333,8 @@ export class MongoImportService {
 				type: mongoEvent.subtype ?? null,
 				waterKm: null,
 				river: null,
+				kind: EventKinds.akce,
+				campTheme: null,
 				leadersEvent: mongoEvent.groups?.includes("V") || false,
 				hasRegistration: !!mongoEvent.registration,
 				report: null,

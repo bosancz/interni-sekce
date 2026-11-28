@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { AfterViewInit, Component, ElementRef, forwardRef, input, signal } from "@angular/core";
+import { AfterViewInit, Component, computed, ElementRef, forwardRef, input, signal } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { EventTypeID, EventTypes } from "src/app/core/config/event-types";
 
@@ -23,7 +23,14 @@ import { EventTypeID, EventTypes } from "src/app/core/config/event-types";
 })
 export class EventTypeSelectorComponent implements ControlValueAccessor, AfterViewInit {
 	value = signal<EventTypeID | undefined>(undefined);
-	types = EventTypes;
+	allowedTypes = input<EventTypeID[] | null>(null);
+	types = computed(() => {
+		const allowed = this.allowedTypes();
+		return (Object.keys(EventTypes) as EventTypeID[])
+			.filter((key) => !allowed || allowed.includes(key))
+			.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
+			.map((key) => ({ key, value: EventTypes[key] }));
+	});
 
 	onChange: any = () => {};
 	onTouched: any = () => {};

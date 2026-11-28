@@ -1,4 +1,4 @@
-@for (type of types | keyvalue; track type.key) {
+@for (type of types(); track type.key) {
 	<span
 		(click)="select($any(type.key))"
 		[class.selected]="type.key === value()"

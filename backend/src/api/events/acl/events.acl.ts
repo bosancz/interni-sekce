@@ -429,3 +429,12 @@ export const EventAttendeeDeletePermission = new Permission({
 	linkTo: EventAttendeeResponse,
 	inherit: EventAttendeeEditPermission,
 });
+
+export const CampsListPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: EventResponse,
+
+	allowed: {
+		vedouci: true,
+	},
+});

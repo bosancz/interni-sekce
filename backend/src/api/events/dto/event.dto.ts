@@ -9,7 +9,7 @@ import { PhotoResponse } from "src/api/albums/dto/photo.dto";
 import { Album, AlbumStatus } from "src/models/albums/entities/album.entity";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense, EventExpenseTypes } from "src/models/events/entities/event-expense.entity";
-import { Event, EventPlaceGeometry, EventStates } from "src/models/events/entities/event.entity";
+import { Event, EventKinds, EventPlaceGeometry, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { EventAttendeeResponse } from "./event-attendee.dto";
@@ -26,6 +26,7 @@ export class EventResponse implements Omit<Event, "setLeaders" | "srcId" | "repo
 	hasRegistration!: boolean;
 
 	type!: string | null;
+	@ApiProperty({ enum: EventKinds, enumName: "EventKindsEnum" }) kind!: EventKinds;
 	statusNote!: string | null;
 	place!: string | null;
 	placeGeometry!: EventPlaceGeometry | null;
@@ -38,6 +39,7 @@ export class EventResponse implements Omit<Event, "setLeaders" | "srcId" | "repo
 	meetingPlaceEnd!: string | null;
 	waterKm!: number | null;
 	river!: string | null;
+	campTheme!: string | null;
 	deletedAt?: Date | null;
 	@ApiPropertyOptional({ type: "string" }) publishedAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) cancelledAt!: Date | string | null;
@@ -50,6 +52,19 @@ export class EventResponse implements Omit<Event, "setLeaders" | "srcId" | "repo
 	@ApiPropertyOptional({ type: EventAttendeeResponse, isArray: true }) attendees?: EventAttendee[] | undefined;
 	@ApiPropertyOptional({ type: EventExpenseResponse, isArray: true }) expenses?: EventExpense[] | undefined;
 	@ApiPropertyOptional({ type: MemberResponse, isArray: true }) leaders?: Member[] | undefined;
+}
+
+export class CampAlbumResponse {
+	id!: number;
+	name!: string;
+	@ApiProperty({ enum: AlbumStatus }) status!: AlbumStatus;
+	@ApiPropertyOptional({ type: () => PhotoResponse }) coverPhoto?: PhotoResponse;
+}
+
+export class CampResponse extends OmitType(EventResponse, ["album"]) {
+	attendeesCount!: number;
+	childrenCount!: number;
+	@ApiPropertyOptional({ type: CampAlbumResponse }) album?: CampAlbumResponse;
 }
 
 export class EventReportResponse {
@@ -119,12 +134,17 @@ export class EventUpdateBody {
 	groupsIds?: number[];
 
 	@IsOptional() @IsString() type?: string | null;
+	@ApiPropertyOptional({ enum: EventKinds, enumName: "EventKindsEnum" })
+	@IsOptional()
+	@IsEnum(EventKinds)
+	kind?: EventKinds;
 	@IsOptional() @Trim() @IsString() description?: string | null;
 	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsNumber() price?: number | null;
 	@IsOptional() @Trim() @IsString() itemList?: string | null;
 	@IsOptional() @Trim() @IsString() statusNote?: string | null;
 	@IsOptional() @Trim() @IsString() place?: string | null;
 	@IsOptional() @Trim() @IsString() river?: string | null;
+	@IsOptional() @Trim() @IsString() campTheme?: string | null;
 	@IsOptional() placeCoordinates?: { lat: number; lng: number } | null;
 	@IsOptional() @Trim() @IsString() timeFrom?: string | null;
 	@IsOptional() @Trim() @IsString() timeTill?: string | null;
