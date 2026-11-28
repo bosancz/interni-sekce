@@ -1,6 +1,8 @@
 @use "src/styles/variables" as *;
 
 $eventHeight: 20px;
+$eventSlot: 23px;
+$dateHeight: 26px;
 
 :host {
 	--calendar-week-line: #dadde8;
@@ -23,10 +25,10 @@ $eventHeight: 20px;
 .calendar-row {
 	position: relative;
 	width: 100%;
-	min-height: 80px;
-	padding-bottom: 20px;
+	min-height: $dateHeight + 2 * $eventSlot + 3px;
+	padding-bottom: 2px;
 	overflow: hidden;
-	padding-top: 26px;
+	padding-top: $dateHeight;
 	border-top: 1px solid var(--calendar-week-line);
 }
 
