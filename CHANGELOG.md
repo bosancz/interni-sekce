@@ -1,3 +1,7 @@
+## v4.40.2 — 2026-11-28
+
+- <span class="changelog-type" title="patch">🚸</span> [Širší karty táborů na desktopu](https://github.com/bosancz/interni-sekce/commit/9e337212635c8caddc77e025fa16d90a6b3f64f4) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.40.1 — 2026-11-28
 
 - <span class="changelog-type" title="patch">🚸</span> [Vedoucí tábora na řádku s datem](https://github.com/bosancz/interni-sekce/commit/328abe5e09d3a474e19f583f8a179eccd654985e) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
