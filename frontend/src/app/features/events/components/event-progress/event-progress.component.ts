@@ -22,6 +22,7 @@ export interface EventProgressStep {
 	accent: string;
 	accentOut: string;
 	image?: string;
+	tooltip?: string;
 }
 
 const STEPS: { key: EventProgressStep["key"]; statuses: EventStatusID[] }[] = [
@@ -98,7 +99,12 @@ export class EventProgressComponent {
 
 	private closureReached = computed(() => this.announcementSent() && (this.eventEnded() || this.closureDone() > 0));
 
+	private announcementMissing = computed(
+		() => this.status() === "public" && this.eventStarted() && !this.announcementSent(),
+	);
+
 	private activeIndex = computed(() => {
+		if (this.announcementMissing()) return STEPS.length;
 		if (!this.announcementSent()) return this.statusIndex();
 		if (this.closureReached()) return STEPS.length + 2;
 		return this.eventStarted() ? STEPS.length + 1 : STEPS.length;
@@ -129,7 +135,8 @@ export class EventProgressComponent {
 				reached: activeIndex >= STEPS.length,
 				clickable: !!event,
 				note: false,
-				accent: this.accentColor(),
+				accent: this.announcementMissing() ? IN_PROGRESS_COLOR : this.accentColor(),
+				tooltip: this.announcementSent() ? undefined : "Ohláška neodeslána",
 			},
 			{
 				key: "event" as const,
