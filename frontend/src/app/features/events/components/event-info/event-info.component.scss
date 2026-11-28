@@ -10,39 +10,6 @@
 	margin-bottom: 1.25rem;
 }
 
-.info-card bo-card-title ::ng-deep h3 {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	margin: 0;
-	font-family: var(--font-regular);
-	font-size: 1rem;
-	font-weight: 800;
-	color: var(--bo-ink);
-
-	&::before {
-		content: "";
-		flex: 0 0 auto;
-		width: 4px;
-		height: 1.1rem;
-		border-radius: 2px;
-		background: var(--bo-yellow);
-	}
-}
-
-.info-card bo-card-header {
-	padding: 1rem 1rem 0;
-}
-
-.info-card bo-card-content {
-	padding: 0 1rem 0.5rem;
-}
-
-.info-card ion-list {
-	padding: 0;
-	background: transparent;
-}
-
 .leaders-card bo-card-content {
 	padding: 0.25rem 1rem 0.75rem;
 }

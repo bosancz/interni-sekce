@@ -1,5 +1,5 @@
 import { Component, input, output } from "@angular/core";
-import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { peopleOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
@@ -11,6 +11,7 @@ import { SDK } from "src/sdk";
 import { CardContentComponent } from "../../../../shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "../../../../shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "../../../../shared/components/card-title/card-title.component";
+import { ItemComponent } from "src/app/shared/components/item/item.component";
 import { CardComponent } from "../../../../shared/components/card/card.component";
 import { EditButtonComponent } from "../../../../shared/components/edit-button/edit-button.component";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
@@ -19,11 +20,11 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 	selector: "bo-member-membership",
 
 	imports: [
+		ItemComponent,
 		CardComponent,
 		CardHeaderComponent,
 		CardTitleComponent,
 		CardContentComponent,
-		IonIcon,
 		IonSkeletonText,
 		EditButtonComponent,
 		MemberPipe,
