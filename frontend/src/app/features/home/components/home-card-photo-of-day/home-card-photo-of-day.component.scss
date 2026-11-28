@@ -37,6 +37,7 @@
 .meta {
 	display: flex;
 	flex-wrap: wrap;
+	align-items: baseline;
 	justify-content: space-between;
 	gap: 0.25rem 1rem;
 	margin: 0.5rem 0 0;
@@ -50,6 +51,11 @@
 		gap: 0.125rem 0.75rem;
 		min-width: 0;
 		margin-inline-start: auto;
+	}
+
+	.members {
+		flex: 1 1 8rem;
+		min-width: 0;
 	}
 
 	.date {
@@ -67,7 +73,7 @@
 
 	.album {
 		display: inline-flex;
-		align-items: flex-start;
+		align-items: baseline;
 		gap: 0.3rem;
 		min-width: 0;
 		color: inherit;
@@ -76,7 +82,8 @@
 
 		ion-icon {
 			flex: none;
-			margin-top: 0.2em;
+			position: relative;
+			top: 0.15em;
 		}
 
 		&:hover {
