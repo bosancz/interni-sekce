@@ -45,6 +45,14 @@
 							<span class="bo-pill">{{ leader.role | role: "title" }}</span>
 						}
 					</span>
+					@if (leader._links.deleteEventAttendee.allowed) {
+						<bo-delete-button
+							class="leader-delete"
+							boTooltip="Odebrat vedoucího"
+							aria-label="Odebrat vedoucího"
+							(click)="remove(leader)"
+						/>
+					}
 				</div>
 			}
 		</div>

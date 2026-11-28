@@ -11,12 +11,26 @@ import {
 import { addIcons } from "ionicons";
 import { ellipsisVertical } from "ionicons/icons";
 import { PlatformService } from "src/app/core/services/platform.service";
+import { TooltipDirective } from "../../directives/tooltip.directive";
 import { Action } from "../action-buttons/action-buttons.component";
 
 @Component({
 	selector: "[admin-table-actions]",
 	template: `
-		@if (visibleActions().length) {
+		@for (action of pinnedActions(); track action.text) {
+			<ion-button
+				fill="clear"
+				size="small"
+				[color]="action.color"
+				[disabled]="action.disabled"
+				[boTooltip]="action.text"
+				[attr.aria-label]="action.text"
+				(click)="runPinned($event, action)"
+			>
+				<ion-icon slot="icon-only" [icon]="action.icon"></ion-icon>
+			</ion-button>
+		}
+		@if (menuActions().length) {
 			<ion-button fill="clear" size="small" (click)="openActions($event)">
 				<ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
 			</ion-button>
@@ -57,7 +71,7 @@ import { Action } from "../action-buttons/action-buttons.component";
 			}
 		`,
 	],
-	imports: [IonButton, IonIcon, IonPopover, IonList, IonItem, IonLabel],
+	imports: [IonButton, IonIcon, IonPopover, IonList, IonItem, IonLabel, TooltipDirective],
 })
 export class AdminTableActionsComponent {
 	actions = input<Action[]>([]);
@@ -65,7 +79,10 @@ export class AdminTableActionsComponent {
 	subHeader = input<string | null | undefined>();
 
 	visibleActions = computed(() => this.actions().filter((action) => !action.hidden));
-	menuActions = computed(() => this.visibleActions().filter((action) => action.text));
+	pinnedActions = computed(() => this.visibleActions().filter((action) => action.pinned && action.icon));
+	menuActions = computed(() =>
+		this.visibleActions().filter((action) => action.text && !this.pinnedActions().includes(action)),
+	);
 
 	popoverOpen = signal(false);
 	popoverEvent = signal<Event | undefined>(undefined);
@@ -92,6 +109,12 @@ export class AdminTableActionsComponent {
 		} else {
 			await this.openActionSheet();
 		}
+	}
+
+	runPinned(event: Event, action: Action) {
+		event.stopPropagation();
+		event.preventDefault();
+		if (!action.disabled) action.handler?.();
 	}
 
 	runAction(action: Action) {

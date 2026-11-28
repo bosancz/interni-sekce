@@ -6,6 +6,7 @@ import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { reorderTwo } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { DeleteButtonComponent } from "src/app/shared/components/delete-button/delete-button.component";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
@@ -33,6 +34,7 @@ const compareLeaderPositions = (a: SDK.EventAttendeeResponseWithLinks, b: SDK.Ev
 		CdkDropList,
 		CdkDrag,
 		CdkDragHandle,
+		DeleteButtonComponent,
 		IonIcon,
 		IonSkeletonText,
 		TooltipDirective,
@@ -115,20 +117,7 @@ export class EventLeadersComponent implements OnDestroy {
 				return;
 			}
 
-			const name = member.nickname || member.firstName || member.lastName;
-			const confirmation = await this.modalService.deleteConfirmationModal(
-				name ? `Opravdu chcete odebrat vedoucího akce ${name}?` : "Opravdu chcete odebrat vedoucího akce?",
-				{ header: "Odebrat vedoucího?", buttonText: "Odebrat" },
-			);
-			if (!confirmation) return;
-
-			try {
-				await this.api.EventsApi.deleteEventAttendee(event.id, member.id);
-			} catch (e) {
-				this.toastService.toast("Nepodařilo se odebrat vedoucího.", { color: "danger" });
-				return;
-			}
-			await reload();
+			await this.remove(leader);
 		};
 
 		const onClearAll = async () => {
@@ -166,6 +155,29 @@ export class EventLeadersComponent implements OnDestroy {
 			},
 			{ cssClass: "dialog-picker" },
 		);
+	}
+
+	async remove(leader: SDK.EventAttendeeResponseWithLinks) {
+		const event = this.event();
+		if (!event || !leader._links.deleteEventAttendee.allowed) return;
+
+		const member = leader.member;
+		const name = member?.nickname || member?.firstName || member?.lastName;
+		const confirmation = await this.modalService.deleteConfirmationModal(
+			name ? `Opravdu chcete odebrat vedoucího akce ${name}?` : "Opravdu chcete odebrat vedoucího akce?",
+			{ header: "Odebrat vedoucího?", buttonText: "Odebrat" },
+		);
+		if (!confirmation) return;
+
+		try {
+			await this.api.EventsApi.deleteEventAttendee(event.id, leader.memberId);
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se odebrat vedoucího.", { color: "danger" });
+			return;
+		}
+
+		await this.load(event);
+		this.change.emit();
 	}
 
 	async drop(drop: CdkDragDrop<unknown>) {

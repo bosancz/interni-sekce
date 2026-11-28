@@ -435,6 +435,15 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		);
 	}
 
+	private confirmAttendeeRemoval(member?: SDK.MemberResponse | null) {
+		const name = this.memberName(member);
+
+		return this.modalService.deleteConfirmationModal(
+			name ? `Opravdu chcete odebrat ${name} z akce?` : "Opravdu chcete odebrat účastníka z akce?",
+			{ header: "Odebrat z akce?", buttonText: "Odebrat" },
+		);
+	}
+
 	private confirmLeaderDemotion(member: SDK.MemberResponse) {
 		const name = this.memberName(member);
 
@@ -509,10 +518,11 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		const event = this.event();
 		if (!event) return;
 
-		if (attendee.type === "leader") {
-			const confirmation = await this.confirmLeaderRemoval(attendee.member);
-			if (!confirmation) return;
-		}
+		const confirmation =
+			attendee.type === "leader"
+				? await this.confirmLeaderRemoval(attendee.member)
+				: await this.confirmAttendeeRemoval(attendee.member);
+		if (!confirmation) return;
 
 		try {
 			this.attendees.set(this.attendees()?.filter((item) => item.memberId !== attendee.memberId));
