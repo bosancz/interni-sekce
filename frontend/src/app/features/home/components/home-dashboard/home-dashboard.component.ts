@@ -109,8 +109,8 @@ export class HomeDashboardComponent {
 		this.loading.set(true);
 		try {
 			const events = await this.api.EventsApi.listEvents({
-				dateFrom: dateFrom.toISODate()!,
-				dateTill: dateTill.toISODate()!,
+				dateFrom: dateFrom.startOf("week").toISODate()!,
+				dateTill: dateTill.endOf("week").toISODate()!,
 			}).then((res) => res.data);
 			if (request === this.calendarRequest) this.events.set(events);
 		} finally {
