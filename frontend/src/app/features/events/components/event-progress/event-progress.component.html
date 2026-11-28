@@ -6,6 +6,7 @@
 			[style.--accent-out]="step.accentOut"
 			[class.active]="step.active"
 			[class.clickable]="step.clickable"
+			[boTooltip]="step.tooltip"
 			[attr.role]="step.clickable ? 'button' : null"
 			[attr.tabindex]="step.clickable ? 0 : null"
 			(click)="openStep(step)"
