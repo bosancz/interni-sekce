@@ -126,8 +126,10 @@ export class CampsListComponent implements OnInit {
 		this.model.set("druh", types);
 	}
 
+	private leadersFormat = new Intl.ListFormat("cs", { type: "conjunction" });
+
 	leaderNames(camp: Camp) {
-		return (camp.leaders ?? []).map((leader) => leader.nickname).join(", ");
+		return this.leadersFormat.format((camp.leaders ?? []).map((leader) => leader.nickname));
 	}
 
 	private onParams(params: Params) {
