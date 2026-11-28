@@ -27,6 +27,7 @@ export class BackupRunResponse {
 	@ApiPropertyOptional({ type: "number", nullable: true }) filesChecked!: number | null;
 	@ApiPropertyOptional({ type: "number", nullable: true }) filesTransferred!: number | null;
 	@ApiPropertyOptional({ type: "number", nullable: true }) filesRemoved!: number | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) filesPurged!: number | null;
 	@ApiPropertyOptional({ type: BackupRunProgressResponse, nullable: true })
 	progress!: BackupRunProgressResponse | null;
 	@ApiPropertyOptional({ type: "string", nullable: true }) error!: string | null;
