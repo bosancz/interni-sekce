@@ -53,9 +53,10 @@
 	cellClass="align-middle"
 >
 	<ng-container *adminCell="let row">
-		@if (memberOf(row)?.groupId; as groupId) {
-			<bo-group-badge [groupId]="groupId"></bo-group-badge>
-		}
+		<bo-member-groups
+			[member]="memberOf(row)"
+			[reversed]="isDesktop() || rightColumn() !== 'group'"
+		></bo-member-groups>
 	</ng-container>
 </admin-table-column>
 

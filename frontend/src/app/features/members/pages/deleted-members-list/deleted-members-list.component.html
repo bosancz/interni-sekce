@@ -13,7 +13,7 @@
 
 		<admin-table-column header="Oddíl" headerClass="align-middle">
 			<ng-container *adminCell="let member">
-				<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
+				<bo-member-groups [member]="member" [reversed]="true"></bo-member-groups>
 			</ng-container>
 		</admin-table-column>
 

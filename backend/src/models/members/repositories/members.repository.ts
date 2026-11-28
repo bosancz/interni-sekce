@@ -18,7 +18,7 @@ import { Member } from "../entities/member.entity";
 import { MembershipPayment } from "../entities/membership-payment.entity";
 import { MemberRoles } from "../schema/member-roles";
 import { GroupMembershipsRepository } from "./group-memberships.repository";
-import { memberActiveSql, memberGroupIdSql, memberInGroupsSql } from "../helpers/group-memberships";
+import { memberActiveSql, memberInGroupsSql, memberLastGroupIdSql } from "../helpers/group-memberships";
 
 export interface GetMembersOptions extends PaginationOptions {
 	groups?: number[];
@@ -85,7 +85,7 @@ export class MembersRepository {
 			// id. `groups.name` carries the `natural_numeric` ICU collation (see Group entity),
 			// so embedded numbers order naturally: "3. oddíl" precedes "22. oddíl", and
 			// non-numeric names ("Klub přátel", …) sort after them.
-			.addSelect(`(SELECT g.name FROM groups g WHERE g.id = ${memberGroupIdSql("members")})`, "sort_group")
+			.addSelect(`(SELECT g.name FROM groups g WHERE g.id = ${memberLastGroupIdSql("members")})`, "sort_group")
 			.addSelect(memberActiveSql("members"), "sort_status")
 			// Membership is a list of payments, so it is sorted by the one value the list shows:
 			// whether the fee for the year in question is paid.
@@ -270,6 +270,7 @@ export class MembersRepository {
 			.createQueryBuilder("members")
 			.withDeleted()
 			.leftJoinAndSelect("members.membership", "membership")
+			.leftJoinAndSelect("members.groupMemberships", "groupMemberships")
 			.where(where)
 			.andWhere("members.deletedAt IS NOT NULL")
 			.orderBy("members.deletedAt", "DESC")

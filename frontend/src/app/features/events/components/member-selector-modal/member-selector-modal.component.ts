@@ -23,6 +23,7 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { MemberCreateModalComponent } from "src/app/features/members/components/member-create-modal/member-create-modal.component";
 import { MemberItemDetailComponent } from "src/app/shared/components/member-item-detail/member-item-detail.component";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
+import { getMemberGroups } from "src/helpers/member-groups";
 import { SDK } from "src/sdk";
 import { GroupPipe } from "../../../../shared/pipes/group.pipe";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
@@ -96,7 +97,7 @@ export class MemberSelectorModalComponent
 	activeIndex = linkedSignal({ source: this.filteredMembers, computation: () => 0 });
 
 	memberGroups = computed(
-		() => new Map(this.allMembers().map((member) => [member.id, this.getMemberGroups(member)] as const)),
+		() => new Map(this.allMembers().map((member) => [member.id, getMemberGroups(member)] as const)),
 	);
 
 	groupChips = computed(() => {
@@ -334,23 +335,6 @@ export class MemberSelectorModalComponent
 			.toLocaleLowerCase()
 			.normalize("NFD")
 			.replace(/\p{Diacritic}/gu, "");
-	}
-
-	private getMemberGroups(member: SDK.MemberResponse): { id: number; active: boolean }[] {
-		const memberships = [...(member.groupMemberships ?? [])].sort(
-			(a, b) =>
-				Number(b.active) - Number(a.active) ||
-				(b.yearTill ?? b.yearFrom ?? -Infinity) - (a.yearTill ?? a.yearFrom ?? -Infinity),
-		);
-
-		const groups = new Map<number, { id: number; active: boolean }>();
-		if (member.groupId) groups.set(member.groupId, { id: member.groupId, active: true });
-		for (const membership of memberships) {
-			if (!groups.has(membership.groupId))
-				groups.set(membership.groupId, { id: membership.groupId, active: membership.active });
-		}
-
-		return [...groups.values()];
 	}
 
 	private tagStyle(color?: string | null) {

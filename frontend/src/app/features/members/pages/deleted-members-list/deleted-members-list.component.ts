@@ -10,7 +10,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
-import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
+import { MemberGroupsComponent } from "src/app/shared/components/member-groups/member-groups.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
@@ -22,7 +22,7 @@ import { SDK } from "src/sdk";
 	imports: [
 		PageHeaderComponent,
 		PageContentComponent,
-		GroupBadgeComponent,
+		MemberGroupsComponent,
 		AdminTableComponent,
 		AdminTableColumnComponent,
 		AdminTableCellDirective,

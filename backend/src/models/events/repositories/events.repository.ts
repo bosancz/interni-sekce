@@ -403,9 +403,10 @@ export class EventsRepository {
 			.where("attendee.event_id = :id", { id })
 			.leftJoinAndSelect("attendee.member", "member")
 			.leftJoinAndSelect("member.contacts", "contacts")
+			.leftJoinAndSelect("member.groupMemberships", "groupMemberships")
 			.leftJoinAndSelect("attendee.event", "event")
 			.leftJoinAndSelect("event.attendees", "leaders", "leaders.type = :type", { type: "leader" })
-			.select(["attendee", "member", "contacts", "event.id", "leaders"])
+			.select(["attendee", "member", "contacts", "groupMemberships", "event.id", "leaders"])
 			.withDeleted();
 
 		const attendees = await q.getMany();

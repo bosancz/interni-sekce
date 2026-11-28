@@ -1,0 +1,8 @@
+@for (group of groups(); track group.id) {
+	<bo-group-badge
+		[groupId]="group.id"
+		[short]="true"
+		[inactive]="!group.active"
+		[attr.title]="group.id | group: 'name'"
+	></bo-group-badge>
+}
