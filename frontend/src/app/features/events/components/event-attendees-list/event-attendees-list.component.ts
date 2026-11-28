@@ -191,6 +191,7 @@ export class EventAttendeesListComponent {
 				role: "destructive",
 				color: "danger",
 				icon: trashOutline,
+				pinned: true,
 				hidden: !attendee._links.deleteEventAttendee.allowed,
 				handler: () => this.remove.emit(attendee),
 			},
