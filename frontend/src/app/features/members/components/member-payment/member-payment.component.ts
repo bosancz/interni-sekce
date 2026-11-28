@@ -11,6 +11,7 @@ import { CardContentComponent } from "src/app/shared/components/card-content/car
 import { CardFooterComponent } from "src/app/shared/components/card-footer/card-footer.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
+import { ItemComponent } from "src/app/shared/components/item/item.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-button.component";
 import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
@@ -49,6 +50,7 @@ const QR_PNG_QUERY = "?format=png";
 	styleUrl: "./member-payment.component.scss",
 
 	imports: [
+		ItemComponent,
 		CardComponent,
 		CardHeaderComponent,
 		CardTitleComponent,

@@ -1,6 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, computed, effect, input, signal } from "@angular/core";
-import { IonButtons, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonButtons, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { schoolOutline } from "ionicons/icons";
 import {
@@ -30,7 +30,6 @@ import { MemberTrainingModalComponent } from "../member-training-modal/member-tr
 		CardHeaderComponent,
 		CardTitleComponent,
 		CardContentComponent,
-		IonIcon,
 		IonButtons,
 		IonSkeletonText,
 		AddButtonComponent,

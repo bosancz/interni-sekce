@@ -2,7 +2,7 @@ import { DatePipe } from "@angular/common";
 import { Component, computed, effect, input, OnDestroy, output, signal } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { Platform } from "@ionic/angular";
-import { IonButton, IonButtons, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonButton, IonButtons, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { cardOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -33,7 +33,6 @@ import { InsuranceCardCameraModalComponent } from "../insurance-card-camera-moda
 		CardTitleComponent,
 		CardContentComponent,
 		CardFooterComponent,
-		IonIcon,
 		IonSkeletonText,
 		IonButton,
 		IonButtons,
