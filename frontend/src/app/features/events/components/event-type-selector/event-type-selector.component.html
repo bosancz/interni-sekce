@@ -2,7 +2,7 @@
 	<span
 		(click)="select($any(type.key))"
 		[class.selected]="type.key === value()"
-		placement="bottom"
+		[boTooltip]="typeLabel(type.key)"
 		class="type me-2 my-2"
 	>
 		@if (type.value.image) {

@@ -2,6 +2,7 @@ import { CommonModule } from "@angular/common";
 import { AfterViewInit, Component, computed, ElementRef, forwardRef, input, signal } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { EventTypeID, EventTypes } from "src/app/core/config/event-types";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 
 @Component({
 	selector: "bo-event-type-selector",
@@ -19,7 +20,7 @@ import { EventTypeID, EventTypes } from "src/app/core/config/event-types";
 		"[class.readonly]": "readonly",
 	},
 
-	imports: [CommonModule],
+	imports: [CommonModule, TooltipDirective],
 })
 export class EventTypeSelectorComponent implements ControlValueAccessor, AfterViewInit {
 	value = signal<EventTypeID | undefined>(undefined);
@@ -42,6 +43,10 @@ export class EventTypeSelectorComponent implements ControlValueAccessor, AfterVi
 
 	ngAfterViewInit() {
 		this.emitIonStyle();
+	}
+
+	typeLabel(typeId: string) {
+		return typeId.charAt(0).toUpperCase() + typeId.slice(1);
 	}
 
 	select(typeId: EventTypeID) {
