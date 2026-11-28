@@ -74,6 +74,7 @@ const db: DataSourceOptions = {
 const seed = {
 	onStart: ["true", "1"].includes(process.env["SEED_ON_START"] ?? ""),
 	password: process.env["SEED_PASSWORD"] || null,
+	prune: ["true", "1"].includes(process.env["SEED_PRUNE"] ?? ""),
 };
 
 const mongoDb = {
