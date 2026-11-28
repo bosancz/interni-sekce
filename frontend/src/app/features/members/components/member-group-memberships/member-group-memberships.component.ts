@@ -16,6 +16,7 @@ import {
 	DropdownMenuOption,
 } from "src/app/shared/components/dropdown-menu/dropdown-menu.component";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
+import { compareGroupMemberships } from "src/helpers/member-groups";
 import { SDK } from "src/sdk";
 import {
 	GroupMembershipModalComponent,
@@ -47,9 +48,7 @@ export class MemberGroupMembershipsComponent {
 
 	private readonly groups = toSignal(this.groupsService.groups, { initialValue: [] });
 
-	timeline = computed(() =>
-		[...(this.groupMemberships() ?? [])].sort((a, b) => sortKey(a) - sortKey(b) || a.id - b.id),
-	);
+	timeline = computed(() => [...(this.groupMemberships() ?? [])].sort(compareGroupMemberships));
 
 	activeMembership = computed(() => this.groupMemberships()?.find((membership) => membership.active) ?? null);
 
@@ -218,9 +217,4 @@ export class MemberGroupMembershipsComponent {
 		await this.loadGroupMemberships(member.id);
 		this.reload.emit();
 	}
-}
-
-function sortKey(membership: SDK.GroupMembershipResponse) {
-	if (membership.active) return Number.MAX_SAFE_INTEGER;
-	return membership.yearTill ?? membership.yearFrom ?? Number.MIN_SAFE_INTEGER;
 }

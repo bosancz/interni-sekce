@@ -20,6 +20,7 @@ import {
 } from "src/app/shared/components/people-table/people-table.component";
 import { SortOption } from "src/app/shared/components/sort-select/sort-select.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
+import { getMemberLastGroupId } from "src/helpers/member-groups";
 import { SDK } from "src/sdk";
 import { AttendeeNote } from "./attendee-note";
 
@@ -227,7 +228,7 @@ export class EventAttendeesListComponent {
 		switch (sort) {
 			case "group":
 				return (a) => {
-					const groupId = a.member?.groupId;
+					const groupId = getMemberLastGroupId(a.member);
 					return this.groups()?.find((group) => group.id === groupId)?.name ?? null;
 				};
 			case "age":

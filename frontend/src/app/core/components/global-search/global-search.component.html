@@ -28,15 +28,13 @@
 						<ion-item button (click)="navigate(['/databaze/clenove', member.id])" [detail]="true">
 							<ion-label>
 								<h4>{{ member.nickname || member.firstName || "?" }}</h4>
-								<p>
-									{{ member.firstName }} {{ member.lastName }}
-									@if (member.groupId) {
-										<span [style.color]="member.groupId | group: 'color'">
-											&middot; {{ member.groupId | group: "name" }}
-										</span>
-									}
-								</p>
+								<p>{{ member.firstName }} {{ member.lastName }}</p>
 							</ion-label>
+							<bo-member-groups
+								slot="end"
+								class="search-member-groups"
+								[member]="member"
+							></bo-member-groups>
 						</ion-item>
 					} @empty {
 						<ion-item lines="none">

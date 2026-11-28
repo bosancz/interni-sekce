@@ -13,4 +13,5 @@ import { GroupPipe } from "../../pipes/group.pipe";
 export class GroupBadgeComponent {
 	groupId = input.required<SDK.GroupResponse["id"] | null | undefined>();
 	short = input<boolean>(false);
+	inactive = input<boolean>(false);
 }

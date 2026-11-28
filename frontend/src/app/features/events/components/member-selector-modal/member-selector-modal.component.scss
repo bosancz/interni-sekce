@@ -251,7 +251,8 @@
 	@include centered-text-fixed(22px);
 
 	&.inactive {
-		opacity: 0.55;
+		background-image: repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.4) 0 2px, transparent 2px 5px);
+		opacity: 0.5;
 	}
 }
 

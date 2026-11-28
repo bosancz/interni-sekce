@@ -1,5 +1,5 @@
 @if (groupId()) {
-	<ion-badge mode="ios" [style.background-color]="groupId() | group: 'color'">
+	<ion-badge mode="ios" [class.inactive]="inactive()" [style.background-color]="groupId() | group: 'color'">
 		{{ groupId() | group: (short() ? "code" : "name") }}
 	</ion-badge>
 }

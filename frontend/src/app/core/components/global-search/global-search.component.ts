@@ -7,7 +7,7 @@ import { IonItem, IonLabel, IonList, IonSearchbar, IonSkeletonText } from "@ioni
 import { debounceTime, Subject } from "rxjs";
 import { GlobalSearchService } from "src/app/core/services/global-search.service";
 import { ButtonComponent } from "src/app/shared/components/button/button.component";
-import { GroupPipe } from "src/app/shared/pipes/group.pipe";
+import { MemberGroupsComponent } from "src/app/shared/components/member-groups/member-groups.component";
 
 @Component({
 	selector: "bo-global-search",
@@ -20,7 +20,7 @@ import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 		IonList,
 		IonItem,
 		IonLabel,
-		GroupPipe,
+		MemberGroupsComponent,
 		DatePipe,
 		IonSkeletonText,
 		ButtonComponent,

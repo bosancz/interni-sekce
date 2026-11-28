@@ -18,7 +18,7 @@ import { AdminTableCellDirective } from "../admin-table/admin-table-cell.directi
 import { AdminTableColumnComponent } from "../admin-table/admin-table-column.component";
 import { AdminTableComponent, AdminTableSort } from "../admin-table/admin-table.component";
 import { AvatarComponent } from "../avatar/avatar.component";
-import { GroupBadgeComponent } from "../group-badge/group-badge.component";
+import { MemberGroupsComponent } from "../member-groups/member-groups.component";
 import { MemberBadgesInlineComponent } from "../member-badges-inline/member-badges-inline.component";
 import { DefaultContactPipe } from "../../pipes/default-contact.pipe";
 import { GroupPipe } from "../../pipes/group.pipe";
@@ -49,7 +49,7 @@ export class PeopleNicknameSuffixDirective {
 		AdminTableColumnComponent,
 		AdminTableCellDirective,
 		AvatarComponent,
-		GroupBadgeComponent,
+		MemberGroupsComponent,
 		MemberBadgesInlineComponent,
 		DefaultContactPipe,
 		GroupPipe,
