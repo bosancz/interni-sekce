@@ -1,5 +1,6 @@
 import { DatePipe } from "@angular/common";
-import { Component, OnInit, computed, signal } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import {
 	InfiniteScrollCustomEvent,
 	IonButton,
@@ -9,17 +10,13 @@ import {
 	IonSkeletonText,
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import {
-	calendarOutline,
-	documentsOutline,
-	logoGoogle,
-	refreshOutline,
-	serverOutline,
-	timeOutline,
-	warningOutline,
-} from "ionicons/icons";
+import { calendarOutline, logoGoogle, refreshOutline, timeOutline, warningOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
+import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
+import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
@@ -60,37 +57,31 @@ const TYPE_LABELS: Record<SDK.BackupRunTypesEnum, string> = {
 		CardContentComponent,
 		DatePipe,
 		TooltipDirective,
+		AdminTableComponent,
+		AdminTableColumnComponent,
+		AdminTableCellDirective,
 	],
 })
 export class BackupsComponent implements OnInit {
 	backups = signal<SDK.BackupsSummaryResponse | undefined>(undefined);
 	runs = signal<SDK.BackupRunResponse[] | undefined>(undefined);
 	hasMoreRuns = signal(false);
+	isDesktop = toSignal(this.platformService.isLg, { initialValue: true });
 
 	private runsRequest = 0;
 
-	cards = computed(() => {
-		const backups = this.backups();
-		if (!backups) return [];
-		return [
-			{ type: SDK.BackupRunTypesEnum.Database, last: backups.lastDatabase, success: backups.lastDatabaseSuccess },
-			{ type: SDK.BackupRunTypesEnum.Files, last: backups.lastFiles, success: backups.lastFilesSuccess },
-		];
-	});
-
-	statusLabels = STATUS_LABELS;
-	typeLabels = TYPE_LABELS;
+	statusLabels: Record<string, { label: string; pill: string }> = STATUS_LABELS;
+	typeLabels: Record<string, string> = TYPE_LABELS;
 
 	constructor(
 		private api: ApiService,
 		private toastService: ToastService,
+		private platformService: PlatformService,
 	) {
 		addIcons({
 			calendarOutline,
-			documentsOutline,
 			logoGoogle,
 			refreshOutline,
-			serverOutline,
 			timeOutline,
 			warningOutline,
 		});
@@ -180,6 +171,10 @@ export class BackupsComponent implements OnInit {
 		return value.toLocaleString("cs-CZ");
 	}
 
+	optionalCount(value: number | null | undefined) {
+		return value == null ? "" : this.count(value);
+	}
+
 	percent(progress: SDK.BackupRunProgressResponse) {
 		if (!progress.totalBytes) return 0;
 		return Math.min(100, Math.floor((progress.bytes / progress.totalBytes) * 100));
@@ -210,7 +205,7 @@ export class BackupsComponent implements OnInit {
 	}
 
 	details(run: SDK.BackupRunResponse) {
-		if (run.status === "running" && run.progress) return this.progressText(run.progress);
+		if (run.status === "running" && run.progress) return null;
 		const parts: string[] = [];
 		if (run.type === "database") {
 			const size = this.bytes(run.bytes);
@@ -222,6 +217,7 @@ export class BackupsComponent implements OnInit {
 				counts.push(`nahráno: ${this.count(run.filesTransferred)} (${this.bytes(run.bytes ?? 0)})`);
 			if (run.filesTransferred != null || run.filesRemoved != null)
 				counts.push(`do smazaných: ${this.count(run.filesRemoved ?? 0)}`);
+			if (run.filesPurged != null) counts.push(`trvale smazáno: ${this.count(run.filesPurged)}`);
 			if (counts.length) parts.push(counts.join(", "));
 		}
 		const duration = this.duration(run);

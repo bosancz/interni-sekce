@@ -29,6 +29,8 @@ export class BackupRun {
 
 	@Column({ type: "int", nullable: true }) filesRemoved!: number | null;
 
+	@Column({ type: "int", nullable: true }) filesPurged!: number | null;
+
 	@Column({ type: "jsonb", nullable: true }) progress!: BackupRunProgress | null;
 
 	@Column({ type: "text", nullable: true }) error!: string | null;

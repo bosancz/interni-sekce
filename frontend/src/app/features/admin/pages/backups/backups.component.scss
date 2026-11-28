@@ -71,18 +71,10 @@
 	}
 }
 
-.bk-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
-	gap: 1.25rem;
-	align-items: start;
-}
-
 .bk-progress {
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
-	margin: 16px 16px 0;
 	padding: 10px 12px;
 	border-radius: 8px;
 	background: var(--bo-yellow-tint);
@@ -165,4 +157,33 @@
 
 .bk-skeleton {
 	height: 200px;
+}
+
+.bk-table {
+	display: block;
+
+	::ng-deep table {
+		margin-bottom: 0;
+	}
+
+	.bo-pill {
+		display: inline-block;
+		min-width: 80px;
+		text-align: center;
+	}
+
+	.bk-error,
+	.bk-warning {
+		margin: 0;
+	}
+
+	.bk-error + .bk-warning,
+	div + .bk-error,
+	div + .bk-warning {
+		margin-top: 6px;
+	}
+}
+
+.bk-run .bk-progress {
+	margin-top: 6px;
 }

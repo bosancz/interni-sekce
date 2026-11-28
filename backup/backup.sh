@@ -116,19 +116,22 @@ backup_files() {
 	rm -f "$rclone_log"
 
 	if [ -n "$KEEP_DELETED_DAYS" ]; then
-		local cutoff deleted_dirs
+		local cutoff deleted_dirs count purged=0
 		cutoff="$(date -d "-${KEEP_DELETED_DAYS} days" +%Y-%m-%d)"
 		deleted_dirs="$(rclone lsf "${REMOTE}smazane" --dirs-only 2>/dev/null)" || deleted_dirs=""
 		while read -r dir; do
 			dir="${dir%/}"
 			if [[ "$dir" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ && "$dir" < "$cutoff" ]]; then
+				count="$(rclone size --json "${REMOTE}smazane/$dir" 2>/dev/null | jq -r '.count // 0')" || count=0
 				if rclone purge "${REMOTE}smazane/$dir"; then
-					log "Deleted files removed before $dir moved to the Drive trash"
+					purged=$((purged + ${count:-0}))
+					log "Deleted files removed before $dir moved to the Drive trash ($count files)"
 				else
 					warn "Deleted files removed before $dir could not be moved to the Drive trash"
 				fi
 			fi
 		done <<<"$deleted_dirs"
+		run_info files_purged "$purged"
 	fi
 
 	if [ "$status" -ne 0 ]; then

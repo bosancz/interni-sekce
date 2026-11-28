@@ -44,85 +44,6 @@
 				}
 			</div>
 
-			<div class="bk-grid">
-				@for (card of cards(); track card.type) {
-					@let type = card.type;
-					@let last = card.last;
-					@let success = card.success;
-					<bo-card>
-						<bo-card-header>
-							<bo-card-title>
-								<span class="bo-card-section-title bk-title">
-									<ion-icon [name]="type === 'database' ? 'server-outline' : 'documents-outline'" />
-									{{ typeLabels[type] }}
-								</span>
-							</bo-card-title>
-							@if (last) {
-								<span slot="buttons" class="bo-pill" [class]="statusLabels[last.status].pill">
-									{{ statusLabels[last.status].label }}
-								</span>
-							}
-						</bo-card-header>
-						<bo-card-content>
-							@if (last?.status === "running" && last?.progress; as progress) {
-								<div class="bk-progress">
-									<div class="bk-progress-bar">
-										<span [style.width.%]="percent(progress)"></span>
-									</div>
-									<div>{{ progressText(progress) }}</div>
-									<div class="muted">{{ progressMeta(progress) }}</div>
-								</div>
-							}
-							<div class="bo-info-list">
-								<div class="bo-info-row">
-									<span class="bo-info-label">Poslední úspěšná</span>
-									<span class="bo-info-value">
-										@if (success?.finishedAt; as finishedAt) {
-											<strong>{{ finishedAt | date: "d. M. y H:mm" }}</strong>
-											<span class="muted"> · {{ ago(finishedAt) }}</span>
-										} @else {
-											<span class="muted">zatím žádná</span>
-										}
-									</span>
-								</div>
-								@if (success) {
-									<div class="bo-info-row">
-										<span class="bo-info-label">{{
-											type === "database" ? "Soubor" : "Přeneseno"
-										}}</span>
-										<span class="bo-info-value">
-											@if (type === "database") {
-												{{ success.fileName }}
-												<span class="muted"> · {{ details(success) }}</span>
-											} @else {
-												{{ details(success) }}
-											}
-										</span>
-									</div>
-								}
-								@if (last && last.id !== success?.id) {
-									<div class="bo-info-row">
-										<span class="bo-info-label">Poslední běh</span>
-										<span class="bo-info-value">
-											{{ last.startedAt | date: "d. M. y H:mm" }}
-											<span class="muted">
-												· {{ statusLabels[last.status].label.toLowerCase() }}</span
-											>
-										</span>
-									</div>
-								}
-							</div>
-							@if (last?.status === "error" && last?.error) {
-								<pre class="bk-error">{{ last!.error }}</pre>
-							}
-							@if (last?.warnings) {
-								<pre class="bk-warning">{{ last!.warnings }}</pre>
-							}
-						</bo-card-content>
-					</bo-card>
-				}
-			</div>
-
 			<bo-card class="bk-history">
 				<bo-card-header>
 					<bo-card-title>
@@ -133,19 +54,55 @@
 					</bo-card-title>
 				</bo-card-header>
 				<bo-card-content>
-					<div class="bk-runs">
-						@for (run of runs() ?? []; track run.id) {
-							<div class="bk-run">
-								<span class="bo-pill" [class]="statusLabels[run.status].pill">{{
-									statusLabels[run.status].label
-								}}</span>
-								<div class="bk-run-info">
-									<div>
-										<strong>{{ typeLabels[run.type] }}</strong>
-										<span class="muted"> · {{ run.startedAt | date: "d. M. y H:mm" }}</span>
-									</div>
-									@if (details(run); as details) {
-										<div class="muted">{{ details }}</div>
+					@if (isDesktop()) {
+						<admin-table class="bk-table" display="table" [rows]="runs()" [loading]="runs() === undefined">
+							<admin-table-column header="Stav">
+								<ng-container *adminCell="let run">
+									<span class="bo-pill" [class]="statusLabels[run.status].pill">{{
+										statusLabels[run.status].label
+									}}</span>
+								</ng-container>
+							</admin-table-column>
+							<admin-table-column header="Záloha">
+								<ng-container *adminCell="let run">
+									<strong>{{ typeLabels[run.type] }}</strong>
+								</ng-container>
+							</admin-table-column>
+							<admin-table-column header="Začátek">
+								<ng-container *adminCell="let run">{{
+									run.startedAt | date: "d. M. y H:mm"
+								}}</ng-container>
+							</admin-table-column>
+							<admin-table-column header="Doba">
+								<ng-container *adminCell="let run">{{ duration(run) }}</ng-container>
+							</admin-table-column>
+							<admin-table-column header="Velikost" cellClass="text-end" headerClass="text-end">
+								<ng-container *adminCell="let run">{{ bytes(run.bytes) }}</ng-container>
+							</admin-table-column>
+							<admin-table-column header="Zkontrolováno" cellClass="text-end" headerClass="text-end">
+								<ng-container *adminCell="let run">{{ optionalCount(run.filesChecked) }}</ng-container>
+							</admin-table-column>
+							<admin-table-column header="Přidáno" cellClass="text-end" headerClass="text-end">
+								<ng-container *adminCell="let run">{{
+									optionalCount(run.filesTransferred)
+								}}</ng-container>
+							</admin-table-column>
+							<admin-table-column header="Do smazaných" cellClass="text-end" headerClass="text-end">
+								<ng-container *adminCell="let run">{{ optionalCount(run.filesRemoved) }}</ng-container>
+							</admin-table-column>
+							<admin-table-column header="Trvale smazáno" cellClass="text-end" headerClass="text-end">
+								<ng-container *adminCell="let run">{{ optionalCount(run.filesPurged) }}</ng-container>
+							</admin-table-column>
+							<admin-table-column [below]="true">
+								<ng-container *adminCell="let run">
+									@if (run.status === "running" && run.progress; as progress) {
+										<div class="bk-progress">
+											<div class="bk-progress-bar">
+												<span [style.width.%]="percent(progress)"></span>
+											</div>
+											<div>{{ progressText(progress) }}</div>
+											<div class="muted">{{ progressMeta(progress) }}</div>
+										</div>
 									}
 									@if (run.error) {
 										<pre class="bk-error">{{ run.error }}</pre>
@@ -153,12 +110,49 @@
 									@if (run.warnings) {
 										<pre class="bk-warning">{{ run.warnings }}</pre>
 									}
-								</div>
-							</div>
-						} @empty {
+								</ng-container>
+							</admin-table-column>
+						</admin-table>
+						@if (runs()?.length === 0) {
 							<p class="muted bk-empty">Zatím neproběhla žádná záloha.</p>
 						}
-					</div>
+					} @else {
+						<div class="bk-runs">
+							@for (run of runs() ?? []; track run.id) {
+								<div class="bk-run">
+									<span class="bo-pill" [class]="statusLabels[run.status].pill">{{
+										statusLabels[run.status].label
+									}}</span>
+									<div class="bk-run-info">
+										<div>
+											<strong>{{ typeLabels[run.type] }}</strong>
+											<span class="muted"> · {{ run.startedAt | date: "d. M. y H:mm" }}</span>
+										</div>
+										@if (details(run); as details) {
+											<div class="muted">{{ details }}</div>
+										}
+										@if (run.status === "running" && run.progress; as progress) {
+											<div class="bk-progress">
+												<div class="bk-progress-bar">
+													<span [style.width.%]="percent(progress)"></span>
+												</div>
+												<div>{{ progressText(progress) }}</div>
+												<div class="muted">{{ progressMeta(progress) }}</div>
+											</div>
+										}
+										@if (run.error) {
+											<pre class="bk-error">{{ run.error }}</pre>
+										}
+										@if (run.warnings) {
+											<pre class="bk-warning">{{ run.warnings }}</pre>
+										}
+									</div>
+								</div>
+							} @empty {
+								<p class="muted bk-empty">Zatím neproběhla žádná záloha.</p>
+							}
+						</div>
+					}
 				</bo-card-content>
 			</bo-card>
 		} @else {

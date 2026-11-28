@@ -945,6 +945,12 @@ export namespace SDK {
         'filesRemoved'?: number | null;
         /**
          * 
+         * @type {number}
+         * @memberof BackupRunResponse
+         */
+        'filesPurged'?: number | null;
+        /**
+         * 
          * @type {BackupRunProgressResponse}
          * @memberof BackupRunResponse
          */
