@@ -1,3 +1,4 @@
+@use "src/styles/centered-text" as *;
 @use "./../../../../../styles/brand-modal" as *;
 
 .mp-head {
@@ -228,17 +229,33 @@
 	text-overflow: ellipsis;
 }
 
-.mp-tag {
+.mp-beads {
 	flex: none;
-	padding: 4px 10px;
-	border-radius: 7px;
-	font-size: 12px;
-	font-weight: 700;
-	background: var(--mp-tag-bg, var(--bm-chip-bg));
-	color: var(--mp-tag-fg, var(--bm-chip-fg));
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 4px;
+	max-width: 45%;
 }
 
-:host-context(body.dark) .mp-tag {
+.mp-bead {
+	min-width: 26px;
+	padding-inline: 7px;
+	border-radius: var(--bo-radius-pill);
+	font-size: 11px;
+	font-weight: 800;
+	text-align: center;
+	white-space: nowrap;
+	background: var(--mp-tag-bg, var(--bm-chip-bg));
+	color: var(--mp-tag-fg, var(--bm-chip-fg));
+	@include centered-text-fixed(22px);
+
+	&.inactive {
+		opacity: 0.55;
+	}
+}
+
+:host-context(body.dark) .mp-bead {
 	background: var(--mp-tag-bg-dark, var(--bm-chip-bg));
 	color: var(--mp-tag-fg-dark, var(--bm-chip-fg));
 }
