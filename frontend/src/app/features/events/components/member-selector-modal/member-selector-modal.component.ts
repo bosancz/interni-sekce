@@ -88,15 +88,19 @@ export class MemberSelectorModalComponent
 
 		return this.allMembers().filter(
 			(member) =>
-				(group === null || member.groupId === group) &&
+				(group === null || (this.memberGroups().get(member.id) ?? []).some((g) => g.id === group)) &&
 				(!query || (index.get(member.id) ?? "").includes(query)),
 		);
 	});
 
 	activeIndex = linkedSignal({ source: this.filteredMembers, computation: () => 0 });
 
+	memberGroups = computed(
+		() => new Map(this.allMembers().map((member) => [member.id, this.getMemberGroups(member)] as const)),
+	);
+
 	groupChips = computed(() => {
-		const groupIds = new Set(this.allMembers().map((member) => member.groupId));
+		const groupIds = new Set([...this.memberGroups().values()].flat().map((group) => group.id));
 		return this.groups()
 			.filter((group) => groupIds.has(group.id))
 			.map((group) => ({ id: group.id, name: group.name ?? group.shortName }));
@@ -330,6 +334,23 @@ export class MemberSelectorModalComponent
 			.toLocaleLowerCase()
 			.normalize("NFD")
 			.replace(/\p{Diacritic}/gu, "");
+	}
+
+	private getMemberGroups(member: SDK.MemberResponse): { id: number; active: boolean }[] {
+		const memberships = [...(member.groupMemberships ?? [])].sort(
+			(a, b) =>
+				Number(b.active) - Number(a.active) ||
+				(b.yearTill ?? b.yearFrom ?? -Infinity) - (a.yearTill ?? a.yearFrom ?? -Infinity),
+		);
+
+		const groups = new Map<number, { id: number; active: boolean }>();
+		if (member.groupId) groups.set(member.groupId, { id: member.groupId, active: true });
+		for (const membership of memberships) {
+			if (!groups.has(membership.groupId))
+				groups.set(membership.groupId, { id: membership.groupId, active: membership.active });
+		}
+
+		return [...groups.values()];
 	}
 
 	private tagStyle(color?: string | null) {

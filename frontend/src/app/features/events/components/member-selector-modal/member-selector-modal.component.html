@@ -84,10 +84,21 @@
 					<span class="mp-nickname">{{ member | member: "nickname" }}</span>
 					<span class="mp-name"><bo-member-item-detail [member]="member"></bo-member-item-detail></span>
 				</span>
-				@if (member.groupId) {
-					<span class="mp-tag" [style]="tagStyles().get(member.groupId)">
-						{{ member.groupId | group: "name" }}
-					</span>
+				@if (memberGroups().get(member.id); as groups) {
+					@if (groups.length) {
+						<span class="mp-beads">
+							@for (group of groups; track group.id) {
+								<span
+									class="mp-bead"
+									[class.inactive]="!group.active"
+									[style]="tagStyles().get(group.id)"
+									[attr.title]="group.id | group: 'name'"
+								>
+									{{ group.id | group: "code" }}
+								</span>
+							}
+						</span>
+					}
 				}
 			</label>
 		}
