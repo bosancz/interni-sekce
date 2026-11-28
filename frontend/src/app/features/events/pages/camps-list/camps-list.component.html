@@ -66,15 +66,15 @@
 				</div>
 			}
 			<div class="camp-meta">
-				<span>{{ [camp.dateFrom, camp.dateTill] | dateRange }}</span>
+				<span
+					>{{ [camp.dateFrom, camp.dateTill] | dateRange
+					}}{{ leaderNames(camp) ? ", " + leaderNames(camp) : "" }}</span
+				>
 			</div>
-			@if (camp.groupsIds?.length || camp.leaders?.length || camp.childrenCount || camp.album) {
+			@if (camp.groupsIds?.length || camp.leadersEvent || camp.childrenCount || camp.album) {
 				<div class="camp-details">
 					@if (camp.groupsIds?.length || camp.leadersEvent) {
 						<bo-event-groups [groupsIds]="camp.groupsIds" [leadersEvent]="camp.leadersEvent" />
-					}
-					@if (leaderNames(camp); as leaders) {
-						<span class="leaders">{{ leaders }}</span>
 					}
 					@if (camp.childrenCount) {
 						<span class="count" title="Počet dětí">
