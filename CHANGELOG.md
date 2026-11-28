@@ -1,3 +1,8 @@
+## v4.40.1 — 2026-11-28
+
+- <span class="changelog-type" title="patch">🚸</span> [Vedoucí tábora na řádku s datem](https://github.com/bosancz/interni-sekce/commit/328abe5e09d3a474e19f583f8a179eccd654985e) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+- <span class="changelog-type" title="patch">🚸</span> [Odebrání vedoucího přímo v kartě Vedoucí akce](https://github.com/bosancz/interni-sekce/commit/061047ec8f91c217d0e44c1e479b2a1506e9f5d1) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.40.0 — 2026-11-28
 
 - <span class="changelog-type" title="feat">✨</span> [Stránka Tábory a druh akce tábor/puťák](https://github.com/bosancz/interni-sekce/commit/2404fd20d60812b615cc1826d56614a875772de9) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
