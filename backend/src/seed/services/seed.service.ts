@@ -9,7 +9,7 @@ import { Photo } from "src/models/albums/entities/photo.entity";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
-import { Event, EventStates } from "src/models/events/entities/event.entity";
+import { Event, EventKinds, EventStates } from "src/models/events/entities/event.entity";
 import { BoardMember } from "src/models/members/entities/board-member.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { GroupMembership } from "src/models/members/entities/group-membership.entity";
@@ -121,7 +121,7 @@ export class SeedService {
 		}
 
 		try {
-			await this.seed();
+			await this.seed({ prune: this.config.seed.prune });
 		} catch (err) {
 			this.logger.error(
 				`Seeding test data failed, continuing without it: ${err instanceof Error ? err.message : String(err)}`,
@@ -130,7 +130,7 @@ export class SeedService {
 		}
 	}
 
-	async seed() {
+	async seed(options: { prune?: boolean } = {}) {
 		const password = this.config.seed.password;
 
 		if (!password) throw new Error(SeedPasswordMissing);
@@ -143,7 +143,8 @@ export class SeedService {
 			await this.seedGroupLeaders(t, groupIds, memberIds);
 			await this.seedBoardMembers(t, memberIds);
 			const userIds = await this.seedUsers(t, memberIds, password);
-			await this.seedEvents(t, groupIds, memberIds);
+			const eventIds = await this.seedEvents(t, groupIds, memberIds);
+			if (options.prune) await this.pruneEvents(t, eventIds);
 			await this.seedAlbums(t, userIds);
 		});
 
@@ -351,8 +352,20 @@ export class SeedService {
 		return status === EventStates.public || status === EventStates.cancelled;
 	}
 
+	private async pruneEvents(t: EntityManager, eventIds: number[]) {
+		const result = await t
+			.createQueryBuilder()
+			.delete()
+			.from(Event)
+			.where("id NOT IN (:...eventIds)", { eventIds })
+			.execute();
+
+		this.logger.log(` - Deleted ${result.affected ?? 0} events that are not in the seed.`);
+	}
+
 	private async seedEvents(t: EntityManager, groupIds: Map<string, number>, memberIds: Map<string, number>) {
 		const today = DateTime.local().startOf("day");
+		const eventIds: number[] = [];
 
 		assertSeedEventStatuses(SeedEvents);
 
@@ -365,6 +378,8 @@ export class SeedService {
 				...(existing ? { id: existing.id } : {}),
 				name: seedEvent.name,
 				type: seedEvent.type,
+				kind: seedEvent.kind ?? EventKinds.akce,
+				campTheme: seedEvent.campTheme ?? null,
 				status: seedEvent.status,
 				statusNote: null,
 				publishedAt: this.isPublishedSeedStatus(seedEvent.status)
@@ -397,6 +412,8 @@ export class SeedService {
 				}),
 			});
 
+			eventIds.push(event.id);
+
 			await t.delete(EventAttendee, { eventId: event.id });
 			await t.delete(EventExpense, { eventId: event.id });
 
@@ -424,6 +441,8 @@ export class SeedService {
 		}
 
 		this.logger.debug(` - Seeded ${SeedEvents.length} events.`);
+
+		return eventIds;
 	}
 
 	private eventDates(today: DateTime, schedule: SeedEventSchedules, weeks: number) {

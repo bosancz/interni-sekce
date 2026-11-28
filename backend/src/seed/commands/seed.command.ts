@@ -5,6 +5,7 @@ import { SeedService } from "../services/seed.service";
 
 interface SeedCommandOptions {
 	force?: boolean;
+	prune?: boolean;
 }
 
 @Command({
@@ -27,6 +28,14 @@ export class SeedCommand extends CommandRunner {
 		return true;
 	}
 
+	@Option({
+		flags: "--prune",
+		description: "Delete every event that is not in the seed data.",
+	})
+	parsePrune(): boolean {
+		return true;
+	}
+
 	async run(inputs: string[], options: SeedCommandOptions): Promise<void> {
 		await this.seedService.assertTestDatabase("seed test data", options.force);
 
@@ -36,6 +45,6 @@ export class SeedCommand extends CommandRunner {
 			);
 		}
 
-		await this.seedService.seed();
+		await this.seedService.seed({ prune: options.prune });
 	}
 }

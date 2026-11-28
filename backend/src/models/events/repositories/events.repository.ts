@@ -11,7 +11,7 @@ import { sortMemberContacts } from "src/models/members/helpers/member-contacts";
 import { Brackets, FindOptionsSelect, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
 import { EventExpense, EventExpenseTypes } from "../entities/event-expense.entity";
-import { Event, EventStates } from "../entities/event.entity";
+import { Event, EventKinds, EventStates } from "../entities/event.entity";
 import { getEventLeaders } from "../helpers/event-leaders";
 
 export interface GetEventsOptions extends PaginationOptions {
@@ -210,6 +210,53 @@ export class EventsRepository {
 			q.andWhere("unaccent(events.name) ILIKE unaccent(:search)", { search: `%${options.search.trim()}%` });
 
 		return this.withLeaders(await q.getMany());
+	}
+
+	async getCamps(where: Brackets | string = "1=1") {
+		const events = await this.eventsRepository
+			.createQueryBuilder("events")
+			.select([
+				"events.id",
+				"events.name",
+				"events.status",
+				"events.dateFrom",
+				"events.dateTill",
+				"events.type",
+				"events.kind",
+				"events.place",
+				"events.river",
+				"events.campTheme",
+			])
+			.leftJoinAndSelect("events.groups", "groups")
+			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
+			.leftJoinAndSelect("attendees.member", "leaders")
+			.leftJoin("events.album", "album")
+			.addSelect(["album.id", "album.name", "album.status"])
+			.where(where)
+			.andWhere("events.kind <> :akce", { akce: EventKinds.akce })
+			.orderBy("events.dateFrom", "DESC")
+			.addOrderBy("events.id", "DESC")
+			.getMany();
+
+		return this.withLeaders(events);
+	}
+
+	async getEventsAttendeeCounts(eventIds: number[]) {
+		const result = new Map<number, { attendees: number; children: number }>();
+		if (!eventIds.length) return result;
+
+		const rows: { event_id: number; attendees: string; children: string }[] =
+			await this.eventsRepository.manager.query(
+				`SELECT event_id, COUNT(*) AS attendees, COUNT(*) FILTER (WHERE role = $2) AS children
+			FROM events_attendees WHERE event_id = ANY($1) GROUP BY event_id`,
+				[eventIds, MemberRoles.dite],
+			);
+
+		for (const id of eventIds) result.set(id, { attendees: 0, children: 0 });
+		for (const row of rows)
+			result.set(row.event_id, { attendees: Number(row.attendees), children: Number(row.children) });
+
+		return result;
 	}
 
 	async getReportsAccounting(eventIds: number[]) {

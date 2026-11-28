@@ -9,7 +9,7 @@ import { getAlbumChroniclePath } from "src/models/albums/helpers/album-chronicle
 import { AlbumsRepository } from "src/models/albums/repositories/albums.repository";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
-import { Event, EventStates } from "src/models/events/entities/event.entity";
+import { Event, EventKinds, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { FilesService } from "src/models/files/services/files.service";
 import { BoardMembersRepository } from "src/models/members/repositories/board-members.repository";
@@ -282,6 +282,86 @@ export class PublicV2Service {
 					}
 				: null,
 		}));
+	}
+
+	async getCamps(): Promise<unknown[]> {
+		const rows: { camp: unknown }[] = await this.dataSource.query(
+			`SELECT json_build_object(
+				'id', e.id,
+				'kind', e.kind,
+				'name', e.name,
+				'dateFrom', to_char(e.date_from, 'YYYY-MM-DD'),
+				'dateTill', to_char(e.date_till, 'YYYY-MM-DD'),
+				'place', e.place,
+				'river', e.river,
+				'price', e.price,
+				'theme', e.camp_theme,
+				'groups', COALESCE((
+					SELECT json_agg(g.short_name ORDER BY g.short_name COLLATE natural_numeric)
+					FROM events_groups eg JOIN groups g ON g.id = eg.group_id AND g.deleted_at IS NULL
+					WHERE eg.event_id = e.id
+				), '[]'::json),
+				'leadersEvent', e.leaders_event,
+				'leader', (
+					SELECT json_build_object(
+						'id', m.id,
+						'nickname', m.nickname,
+						'firstName', m.first_name,
+						'lastName', m.last_name,
+						'email', m.email,
+						'mobile', m.mobile
+					)
+					FROM events_attendees ea JOIN members m ON m.id = ea.member_id AND m.deleted_at IS NULL
+					WHERE ea.event_id = e.id AND ea.type = 'leader'
+					ORDER BY ea.position ASC NULLS LAST, m.nickname
+					LIMIT 1
+				),
+				'registrationUrl', CASE WHEN e.has_registration THEN $3::text || '/program/' || e.id || '/registration' END
+			) AS camp
+			FROM events e
+			WHERE e.deleted_at IS NULL AND e.status = $1 AND e.kind <> $2 AND e.date_till >= CURRENT_DATE
+			ORDER BY e.date_from, e.id`,
+			[EventStates.public, EventKinds.akce, this.baseUrl],
+		);
+
+		return rows.map((row) => row.camp);
+	}
+
+	async getCampsHistory(): Promise<unknown[]> {
+		const rows: { year: unknown }[] = await this.dataSource.query(
+			`SELECT json_build_object(
+				'year', y.year,
+				'camps', json_agg(json_build_object(
+					'id', y.id,
+					'kind', y.kind,
+					'name', y.name,
+					'dateFrom', to_char(y.date_from, 'YYYY-MM-DD'),
+					'dateTill', to_char(y.date_till, 'YYYY-MM-DD'),
+					'place', y.place,
+					'river', y.river,
+					'theme', y.camp_theme,
+					'leader', (
+						SELECT m.nickname
+						FROM events_attendees ea JOIN members m ON m.id = ea.member_id AND m.deleted_at IS NULL
+						WHERE ea.event_id = y.id AND ea.type = 'leader'
+						ORDER BY ea.position ASC NULLS LAST, m.nickname
+						LIMIT 1
+					),
+					'albumId', y.album_id
+				) ORDER BY y.date_from, y.id)
+			) AS year
+			FROM (
+				SELECT e.*, EXTRACT(YEAR FROM e.date_from)::int AS year, a.id AS album_id
+				FROM events e
+				LEFT JOIN albums a ON a.event_id = e.id AND a.status = $3 AND a.deleted_at IS NULL
+				WHERE e.deleted_at IS NULL AND e.status <> $1 AND e.kind <> $2 AND e.date_till < CURRENT_DATE
+			) y
+			GROUP BY y.year
+			ORDER BY y.year DESC`,
+			[EventStates.cancelled, EventKinds.akce, AlbumStatus.public],
+		);
+
+		return rows.map((row) => row.year);
 	}
 
 	async getGroupLeaderProfilePhotoPath(groupId: number): Promise<string> {

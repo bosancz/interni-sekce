@@ -18,6 +18,9 @@ import { EditButtonLocationComponent } from "src/app/shared/components/edit-butt
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
 import { EditButtonNumberComponent } from "src/app/shared/components/edit-button-number/edit-button-number.component";
 import { EditButtonTextComponent } from "src/app/shared/components/edit-button-text/edit-button-text.component";
+import { SegmentedControlComponent } from "src/app/shared/components/segmented-control/segmented-control.component";
+import { EVENT_KIND_OPTIONS, EventKinds } from "src/app/core/config/event-kinds";
+import { EventTypeID } from "src/app/core/config/event-types";
 import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
 import { GroupsSelectComponent } from "src/app/shared/components/groups-select/groups-select.component";
 import { ItemComponent } from "src/app/shared/components/item/item.component";
@@ -50,6 +53,7 @@ import { RiverSelectModalComponent } from "../river-select-modal/river-select-mo
 		CardFooterComponent,
 		EditButtonComponent,
 		EditButtonTextComponent,
+		SegmentedControlComponent,
 		EventLeadersComponent,
 		EditButtonNumberComponent,
 		EditButtonDateRangeComponent,
@@ -69,6 +73,14 @@ import { RiverSelectModalComponent } from "../river-select-modal/river-select-mo
 export class EventInfoComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>(undefined);
 	update = output<SDK.EventUpdateBody>();
+
+	setKind(kind: SDK.EventKindsEnum) {
+		const allowed = EventKinds[kind].types;
+		const current = this.event()?.type as EventTypeID | undefined;
+		const keep = allowed ? !!current && allowed.includes(current) : !!current;
+		const type = keep ? undefined : EventKinds[kind].type;
+		this.update.emit(type ? { kind, type } : { kind });
+	}
 	change = output<void>();
 
 	private readonly modalService = inject(ModalService);
@@ -78,7 +90,8 @@ export class EventInfoComponent {
 	}
 
 	canEdit = computed(() => this.event()?._links?.updateEvent?.allowed ?? false);
-
+	allowedTypes = computed(() => EventKinds[this.event()?.kind ?? "akce"].types ?? null);
+	kindOptions = EVENT_KIND_OPTIONS;
 	placeCoordinates = computed(() => {
 		const geom = this.event()?.placeGeometry;
 		if (!geom) return null;

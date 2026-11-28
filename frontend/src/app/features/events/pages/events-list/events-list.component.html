@@ -1,4 +1,6 @@
-<bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions()" />
+<bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions()">
+	<bo-events-view-switch slot="title-end" class="ms-3 d-none d-lg-block" active="events" />
+</bo-page-header>
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
 	@if (isDesktop()) {
@@ -125,3 +127,7 @@
 </bo-page-content>
 
 <bo-event-hover-preview #preview [events]="events()" />
+
+<bo-page-footer class="d-lg-none">
+	<bo-events-view-switch variant="tabs" active="events" />
+</bo-page-footer>

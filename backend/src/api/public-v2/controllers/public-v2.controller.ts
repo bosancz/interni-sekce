@@ -106,6 +106,16 @@ export class PublicV2Controller {
 		await this.streamFile(res, path);
 	}
 
+	@Get("camps")
+	async getPublicCamps() {
+		return this.publicService.getCamps();
+	}
+
+	@Get("camps/history")
+	async getPublicCampsHistory() {
+		return this.publicService.getCampsHistory();
+	}
+
 	@Get("groups")
 	async getPublicGroups() {
 		return this.publicService.getGroups();

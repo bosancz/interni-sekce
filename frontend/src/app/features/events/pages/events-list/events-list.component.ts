@@ -53,6 +53,8 @@ import { FilterComponent } from "src/app/shared/components/filter/filter.compone
 import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
+import { EventsViewSwitchComponent } from "src/app/features/events/components/events-view-switch/events-view-switch.component";
 import { ExtractExisting, UrlParams } from "src/helpers/typings";
 import { SDK } from "src/sdk";
 import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
@@ -84,6 +86,8 @@ type EventStatusActions = ExtractExisting<
 		AdminTableCellDirective,
 		PageContentComponent,
 		PageHeaderComponent,
+		PageFooterComponent,
+		EventsViewSwitchComponent,
 		FilterComponent,
 		FilterPillComponent,
 		SortSelectComponent,

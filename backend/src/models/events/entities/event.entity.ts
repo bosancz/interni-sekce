@@ -27,6 +27,12 @@ export enum EventStates {
 	"cancelled" = "cancelled",
 }
 
+export enum EventKinds {
+	"akce" = "akce",
+	"tabor" = "tabor",
+	"putak" = "putak",
+}
+
 export class EventPlaceGeometry {
 	type!: "Point";
 	@ApiProperty({ type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 })
@@ -91,6 +97,8 @@ export class Event {
 	})
 	waterKm!: number | null;
 	@Column({ type: "varchar", nullable: true }) river!: string | null;
+	@Column({ type: "enum", nullable: false, enum: EventKinds, default: EventKinds.akce }) kind!: EventKinds;
+	@Column({ type: "text", nullable: true }) campTheme!: string | null;
 	@Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
 	@Column({ type: "boolean", nullable: false, default: false }) hasRegistration!: boolean;
 	@Column({ type: "varchar", nullable: true, select: false }) report?: string | null;

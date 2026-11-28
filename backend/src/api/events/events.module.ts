@@ -7,6 +7,7 @@ import { EventsModelModule } from "src/models/events/events-model.module";
 import { FilesModule } from "src/models/files/files.module";
 import { NotificationsModelModule } from "src/models/notifications/notifications-model.module";
 import { UsersModelModule } from "src/models/users/users-model.module";
+import { CampsController } from "./controllers/camps.controller";
 import { CPVEventsController } from "./controllers/cpv-events.controller";
 import { EventsAccountingController } from "./controllers/events-accounting.controller";
 import { EventsAnnouncementController } from "./controllers/events-announcement.controller";
@@ -33,6 +34,7 @@ import { CPVEventsService } from "./services/cpv-events.service";
 		CPVEventsController,
 		EventsReportsController,
 		ReportsController,
+		CampsController,
 		EventsRegistrationsController,
 		EventsAnnouncementController,
 		EventsAccountingController,
