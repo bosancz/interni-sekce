@@ -66,6 +66,10 @@
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 	gap: 12px;
+
+	@media (min-width: 992px) {
+		grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+	}
 }
 
 .tile-skeleton {
